@@ -21,6 +21,8 @@ namespace SoSim::NSUGB {
 
         void update(float3 *device_pos);
 
+        void dumpInfo() const;
+
         uint32_t *getPartIndexDevicePtr() const;
 
         uint32_t *getNeighborsDevicePtr() const;
@@ -30,7 +32,10 @@ namespace SoSim::NSUGB {
     private:
         double m_mem{0};
         bool m_isInit{false};
+        uint32_t m_blockNum;
+        uint32_t m_threadNum;
         ConstParams m_host_cp{};
+        DynamicParams m_host_dp{};
 
     private:
         ConstParams *m_device_cp{nullptr};

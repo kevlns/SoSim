@@ -19,7 +19,7 @@ namespace SoSim::NSUGB {
         float3 sceneLB;
         float3 sceneSize;
         uint3 gridSize;
-        std::vector<int3> cellOffsets;
+        int3 cellOffsets[27];
     };
 
     struct DynamicParams {

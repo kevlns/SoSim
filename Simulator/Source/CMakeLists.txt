@@ -9,6 +9,7 @@ add_subdirectory(Framework)
 
 set(sosim-shared-libs "")
 add_subdirectory(Shared)
+set(SOSIM_SHARED_LIBS ${sosim-shared-libs} PARENT_SCOPE)
 
 add_subdirectory(DFSPH)
 

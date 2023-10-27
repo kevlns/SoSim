@@ -8,13 +8,13 @@
 
 namespace SoSim {
 
-    extern inline __device__ float cubic_value(const float3 &x_ij, float sph_h);
+    inline __device__ float cubic_value(const float3 &x_ij, float sph_h);
 
-    extern inline __device__ float3 cubic_grad(const float3 &x_ij, float sph_h);
+    inline __device__ float3 cubic_grad(const float3 &x_ij, float sph_h);
 
-    extern inline __device__ float poly6_value(const float3 &x_ij, float sph_h);
+    inline __device__ float poly6_value(const float3 &x_ij, float sph_h);
 
-    extern inline __device__ float3 spiky_grad(const float3 &x_ij, float sph_h);
+    inline __device__ float3 spiky_grad(const float3 &x_ij, float sph_h);
 
 }
 
