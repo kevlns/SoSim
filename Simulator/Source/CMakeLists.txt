@@ -7,6 +7,12 @@ include_directories(${SOSIM_INCLUDE_DIR})
 
 add_subdirectory(Framework)
 
+set(sosim-shared-libs "")
 add_subdirectory(Shared)
 
 add_subdirectory(DFSPH)
+
+add_subdirectory(MSMSPH)
+
+#list(LENGTH sosim-shared-libs length)
+#message(${length})

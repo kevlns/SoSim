@@ -6,13 +6,16 @@
 #ifndef SOSIM_SOLVER_HPP
 #define SOSIM_SOLVER_HPP
 
+#include <vector_types.h>
+
 namespace SoSim {
 
     class Solver {
     public:
         struct SolverConfig {
-            double m_dt{0};
-            double m_cur_time{0};
+            double dt{0};
+            double cur_time{0};
+            float3 gravity{0.f, -9.8f, 0.0};
         };
 
     public:
@@ -29,6 +32,8 @@ namespace SoSim {
         virtual void destroy() = 0;
 
         virtual void setConfig(const SolverConfig &config) = 0;
+
+        virtual void addObject() = 0;
 
     protected:
         virtual void step() = 0;

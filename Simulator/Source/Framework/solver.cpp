@@ -21,4 +21,6 @@ namespace SoSim {
 
     void Solver::step() {}
 
+    void Solver::addObject() {}
+
 }

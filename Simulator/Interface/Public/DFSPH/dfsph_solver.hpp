@@ -9,8 +9,8 @@
 #include <iostream>
 
 #include "Public/Framework/solver.hpp"
-#include "Private/DFSPH/data_pack.hpp"
 #include "Public/Shared/NeighborSearchUGB/neighbor_search_ugb.hpp"
+#include "Private/DFSPH/data_pack.hpp"
 
 namespace SoSim {
 
@@ -38,6 +38,10 @@ namespace SoSim {
 
             void setConfig(const SolverConfig &config) override;
 
+            void setParticleRadius(float particle_radius);
+
+            void setSceneInfo(float3 scene_lb, float3 scene_size);
+
         protected:
             void step() override;
 
@@ -45,10 +49,12 @@ namespace SoSim {
             SolverConfig m_solverConfig{};
             bool m_isInit{false};
             NeighborSearcher *m_neighborSearcher{nullptr};
+            ConstParams m_host_cp{};
+            float m_particleRadius{0};
 
         private:
-            ConstParams *m_device_constParams{nullptr};
-            DynamicParams *m_device_simParams{nullptr};
+            ConstParams *m_device_cp{nullptr};
+            DynamicParams *m_device_dp{nullptr};
         };
     }
 }

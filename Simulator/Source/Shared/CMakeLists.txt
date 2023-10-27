@@ -7,8 +7,24 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SoSim-Shared)
 
-set(TARGET_NAME sosim-shared-lib)
+enable_language(CUDA)
+find_package(CUDA REQUIRED)
 
-FILE(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR} "*.cpp" "*.cu")
+# ns-lib
+FILE(GLOB NeighborSearchUGB_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/NeighborSearchUGB/*.cpp)
+add_library(sosim-shared-ns-lib ${NeighborSearchUGB_SRC_FILES})
+target_include_directories(sosim-shared-ns-lib PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(sosim-shared-ns-lib PRIVATE ${CUDA_LIBRARIES})
+LIST(APPEND shared-libs sosim-shared-ns-lib)
 
-add_library(${TARGET_NAME} ${SRC_FILES})
+# sphKernel-lib
+FILE(GLOB_RECURSE SPHKernel_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/SPHKernel/*.cu)
+add_library(sosim-shared-sphKernel-lib ${SPHKernel_SRC_FILES})
+target_include_directories(sosim-shared-sphKernel-lib PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(sosim-shared-sphKernel-lib PRIVATE ${CUDA_LIBRARIES})
+LIST(APPEND shared-libs sosim-shared-sphKernel-lib)
+
+
+set(sosim-shared-libs ${shared-libs} PARENT_SCOPE)
+
+
