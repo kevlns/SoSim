@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "Public/Shared/CudaUtils/cuda_tool.hpp"
+#include "Public/Framework/mat.hpp"
 
 namespace SoSim::MSMSPH {
 
@@ -38,8 +39,12 @@ namespace SoSim::MSMSPH {
         float *pressure; // two phase volume pressure
         float *mass;
         float *density;
+        float *density_ba;
+        Material *mat;
+        Phase *original_phase;
 
-        void destroy() const {
+
+        void destroy() const{
             cudaFree(pos);
             cudaFree(predictPos);
             cudaFree(v_m);
@@ -52,8 +57,11 @@ namespace SoSim::MSMSPH {
             cudaFree(pressure);
             cudaFree(mass);
             cudaFree(density);
+            cudaFree(density_ba);
+            cudaFree(mat);
+            cudaFree(original_phase);
 
-            cudaGetLastError_t("ERROR::MSMSPH::destroy() failed.");
+            cudaGetLastError_t("ERROR::MSMSPH::DynamicParams::destroy() failed.");
         }
     };
 

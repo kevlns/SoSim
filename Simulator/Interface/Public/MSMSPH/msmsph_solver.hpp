@@ -26,7 +26,7 @@ namespace SoSim {
 
             MSMSPHSolver() = default;
 
-            ~MSMSPHSolver() override;
+            ~MSMSPHSolver() override = default;
 
             void initialize() override;
 
@@ -39,6 +39,10 @@ namespace SoSim {
             void setConfig(const SolverConfig &config) override;
 
             void addObject() override;
+
+//            void addParticles(const std::string &obj_json) override;
+
+            void addParts(const std::string &obj_json) override;
 
             void setPhaseDensity(float den1, float den2);
 
@@ -62,8 +66,10 @@ namespace SoSim {
             ConstParams m_host_cp{};
             DynamicParams m_host_dp{};
             std::vector<float3> m_host_pos;
-            std::vector<float3> m_host_den;
             std::vector<float3> m_host_vel;
+            std::vector<float> m_host_den;
+            std::vector<Material> m_host_mat;
+            std::vector<Phase> m_host_oPhase;
 
         private:
             SolverConfig m_solverConfig{};
@@ -75,6 +81,7 @@ namespace SoSim {
             float3 m_sceneSize;
             bool m_rIsInit{false};
             bool m_sIsInit{false};
+            bool m_isStart{true};
             double m_mem{0};
             uint32_t m_blockNum;
             uint32_t m_threadNum;

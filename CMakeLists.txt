@@ -18,5 +18,7 @@ find_package(CUDA REQUIRED)
 set(TARGET_NAME SoSim)
 add_executable(${TARGET_NAME} main.cpp)
 include_directories(${SOSIM_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${TARGET_NAME} PRIVATE sosim-framework-lib
-        ${SOSIM_SHARED_LIBS})
+target_link_libraries(${TARGET_NAME} PRIVATE sosim-framework
+        ${SOSIM_SHARED_LIBS}
+        sosim-msmsph)
+

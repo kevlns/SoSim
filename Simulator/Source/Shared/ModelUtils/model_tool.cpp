@@ -5,12 +5,92 @@
 
 #include "Public/Shared/ModelUtils/model_tool.hpp"
 #include "Public/Shared/Math/helper_math.hpp"
+#include "Public/ThirdParty/json/json.hpp"
 
 namespace SoSim {
 
-    extern void genObjFromJson() {/* TODO */};
+    extern uint32_t loadObjFromFile(const std::string &file_path, std::vector<float3> &pos) { /*TODO*/return 0; }
 
-    std::vector<float3>
+    extern void genObjFromJson(const std::string &json_path, std::vector<float3> &pos, std::vector<float3> &vel,
+                               std::vector<float> &den, std::vector<Material> &mat, std::vector<Phase> &phase,
+                               float &radius) {
+
+        using json = nlohmann::json;
+
+        std::ifstream f(json_path);
+        json data = json::parse(f);
+
+        radius = data["unified_partRadius"];
+
+        for (auto obj: data["objs"]) {
+
+            uint32_t newPartNum = 0;
+            std::vector<float3> pos_;
+            std::vector<float3> vel_;
+            std::vector<float> den_;
+            std::vector<Material> mat_;
+            std::vector<Phase> phase_;
+
+            if (!obj["source_file"].get<std::string>().empty()) { // incomplete
+                newPartNum = loadObjFromFile(obj["source_file"], pos_);
+
+            } else {
+
+                if (obj["default"]["shape"] == "box") {
+                    float3 lb = {obj["default"]["lb"][0], obj["default"]["lb"][1], obj["default"]["lb"][2]};
+                    float3 size = {obj["default"]["size"][0], obj["default"]["size"][1], obj["default"]["size"][2]};
+                    pos_ = generate_box(lb, size, radius);
+                    newPartNum = pos_.size();
+                } else if (obj["default"]["shape"] == "cube") {
+                    float3 lb = {obj["default"]["lb"][0], obj["default"]["lb"][1], obj["default"]["lb"][2]};
+                    float3 size = {obj["default"]["size"][0], obj["default"]["size"][1], obj["default"]["size"][2]};
+                    pos_ = generate_cube(lb, size, radius);
+                    newPartNum = pos_.size();
+                } else if (obj["default"]["shape"] == "plane-x") {
+                    float3 lb = {obj["default"]["lb"][0], obj["default"]["lb"][1], obj["default"]["lb"][2]};
+                    float3 size = {obj["default"]["size"][0], obj["default"]["size"][1], obj["default"]["size"][2]};
+                    pos_ = generate_plane_X(lb, size, radius);
+                    newPartNum = pos_.size();
+                } else if (obj["default"]["shape"] == "cylinder") {
+                    // TODO
+                    newPartNum = 0;
+
+                }
+
+            }
+
+            float3 v_ = {obj["velStart"][0], obj["velStart"][1], obj["velStart"][2]};
+            float d_ = obj["density"];
+            vel_ = std::vector<float3>(pos_.size(), v_);
+            den_ = std::vector<float>(pos_.size(), d_);
+
+            pos.insert(pos.end(), pos_.begin(), pos_.end());
+            vel.insert(vel.end(), vel_.begin(), vel_.end());
+            den.insert(den.end(), den_.begin(), den_.end());
+
+            if (obj["mat"].get<std::string>() == "fluid")
+                mat_ = std::vector<Material>(newPartNum, Material::FLUID);
+            else if (obj["mat"].get<std::string>() == "rigid")
+                mat_ = std::vector<Material>(newPartNum, Material::RIGID);
+            else if (obj["mat"].get<std::string>() == "elastic")
+                mat_ = std::vector<Material>(newPartNum, Material::ELASTIC);
+            else if (obj["mat"].get<std::string>() == "bound")
+                mat_ = std::vector<Material>(newPartNum, Material::BOUND);
+            mat.insert(mat.end(), mat_.begin(), mat_.end());
+
+            if (obj["phase"] == 1)
+                phase_ = std::vector<Phase>(newPartNum, Phase::PHASE1);
+            else if (obj["phase"] == 2)
+                phase_ = std::vector<Phase>(newPartNum, Phase::PHASE2);
+            else if (obj["phase"] == 3)
+                phase_ = std::vector<Phase>(newPartNum, Phase::PHASE3);
+            phase.insert(phase.end(), phase_.begin(), phase_.end());
+        }
+
+        f.close();
+    }
+
+    extern std::vector<float3>
     generate_cube(float3 cubeLB, float3 cubeSize, float particleRadius) {
         std::vector<float3> pos;
         auto diameter = 2 * particleRadius;
@@ -163,5 +243,23 @@ namespace SoSim {
 //        float radius = 0;
 //        return {pos, radius};
 //    }
+
+    extern void write_ply(const std::string &filename, const std::vector<float3> &points) {
+        std::ofstream ofs(filename);
+
+        ofs << "ply\n";
+        ofs << "format ascii 1.0\n";
+        ofs << "element vertex " << points.size() << "\n";
+        ofs << "property float x\n";
+        ofs << "property float y\n";
+        ofs << "property float z\n";
+        ofs << "end_header\n";
+
+        for (const auto &point: points) {
+            ofs << point.x << " " << point.y << " " << point.z << "\n";
+        }
+
+        ofs.close();
+    }
 
 }

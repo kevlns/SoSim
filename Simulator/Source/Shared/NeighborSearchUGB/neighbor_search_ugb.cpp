@@ -94,20 +94,24 @@ namespace SoSim::NSUGB {
 
     void NeighborSearchUGB::update(float3 *device_pos) {
         update_cuda(m_host_cp, m_host_dp, m_device_cp, m_device_dp, m_blockNum, m_threadNum, device_pos);
+
+        cudaGetLastError_t("NeighborSearchUGB::update() failed.");
     }
 
     void NeighborSearchUGB::destroy() {
         if (m_isInit) {
+
+            cudaFree(this->m_host_dp.particleIndices);
+            cudaFree(this->m_host_dp.cellIndices);
+            cudaFree(this->m_host_dp.cellStart);
+            cudaFree(this->m_host_dp.cellEnd);
+            cudaFree(this->m_host_dp.neighborNum);
+            cudaFree(this->m_host_dp.neighbors);
+
             cudaFree(m_device_cp);
-
-            cudaFree(m_host_dp.particleIndices);
-            cudaFree(m_host_dp.cellIndices);
-            cudaFree(m_host_dp.cellStart);
-            cudaFree(m_host_dp.cellStart);
-            cudaFree(m_host_dp.neighborNum);
-            cudaFree(m_host_dp.neighbors);
-
             cudaFree(m_device_dp);
+            cudaGetLastError_t("ERROR::NeighborSearchUGB::destroy() failed.");
+
 
             m_device_cp = nullptr;
             m_device_dp = nullptr;
@@ -115,11 +119,11 @@ namespace SoSim::NSUGB {
     }
 
     uint32_t *NeighborSearchUGB::getPartIndexDevicePtr() const {
-        return m_device_dp->particleIndices;
+        return m_host_dp.particleIndices;
     }
 
     uint32_t *NeighborSearchUGB::getNeighborsDevicePtr() const {
-        return m_device_dp->neighbors;
+        return m_host_dp.neighbors;
     }
 
     void NeighborSearchUGB::dumpInfo() const {

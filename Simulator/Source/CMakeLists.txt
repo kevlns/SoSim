@@ -7,9 +7,9 @@ include_directories(${SOSIM_INCLUDE_DIR})
 
 add_subdirectory(Framework)
 
-set(sosim-shared-libs "")
+set(sosim-shared "")
 add_subdirectory(Shared)
-set(SOSIM_SHARED_LIBS ${sosim-shared-libs} PARENT_SCOPE)
+set(SOSIM_SHARED_LIBS ${sosim-shared} PARENT_SCOPE)
 
 add_subdirectory(DFSPH)
 

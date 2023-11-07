@@ -7,6 +7,7 @@
 #define SOSIM_SOLVER_HPP
 
 #include <vector_types.h>
+#include <iostream>
 
 namespace SoSim {
 
@@ -34,6 +35,10 @@ namespace SoSim {
         virtual void setConfig(const SolverConfig &config) = 0;
 
         virtual void addObject() = 0;
+
+        virtual void addParts(const std::string &obj_json) = 0;
+
+//        virtual void addParticles(const std::string &obj_json) = 0;
 
     protected:
         virtual void step() = 0;

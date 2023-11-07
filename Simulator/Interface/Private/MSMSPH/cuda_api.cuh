@@ -7,37 +7,34 @@
 #define SOSIM_MSMSPH_CUDA_API_CUH
 
 #include "data_pack.hpp"
+#include "Public/Shared/NeighborSearchUGB/neighbor_search_ugb.hpp"
+
+using NeighborSearcher = SoSim::NSUGB::NeighborSearchUGB;
 
 namespace SoSim::MSMSPH {
 
-    extern __device__ void
-    update_density(ConstParams *d_const, DynamicParams *d_data, uint32_t *f_partIndex, uint32_t *f_neighbors,
-                   uint32_t *b_partIndex, uint32_t *b_neighbors, uint32_t p_i);
-
-    extern __device__ void
-    update_pressure(ConstParams *d_const, DynamicParams *d_data, uint32_t *f_partIndex, uint32_t *f_neighbors,
-                    uint32_t *b_partIndex, uint32_t *b_neighbors, uint32_t p_i);
-
-    extern __device__ void update_vel();
-
-    extern __device__ void correct_pressure();
-
-    extern __device__ void update_vm();
-
-    extern __device__ void update_vk();
-
-    extern __device__ void update_pos();
-
-    extern __global__ void
-    __step__(ConstParams *d_const, DynamicParams *d_data, uint32_t *f_partIndex, uint32_t *f_neighbors,
-             uint32_t *b_partIndex, uint32_t *b_neighbors);
+    __host__ void
+    init_data(ConstParams *d_const, DynamicParams *d_data, uint32_t blockNum, uint32_t threadNum);
 
     __host__ void
-    step_cuda(ConstParams *d_const, DynamicParams *d_data, uint32_t *f_partIndex, uint32_t *f_neighbors,
-              uint32_t *b_partIndex, uint32_t *b_neighbors, uint32_t blockNum, uint32_t threadNum) {
-        __step__<<< blockNum, threadNum >>>(d_const, d_data, f_partIndex, f_neighbors, b_partIndex, b_neighbors);
-    }
+    compute_drift_vel(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+                      uint32_t blockNum, uint32_t threadNum);
 
+    __host__ void
+    advect_volFrac(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+                   uint32_t blockNum, uint32_t threadNum);
+
+    __host__ void
+    update_density_and_pressure(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+                                uint32_t blockNum, uint32_t threadNum);
+
+    __host__ void
+    compute_overall_acc(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+                        uint32_t blockNum, uint32_t threadNum);
+
+    __host__ void
+    advect_particles(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t blockNum,
+                     uint32_t threadNum);
 }
 
 

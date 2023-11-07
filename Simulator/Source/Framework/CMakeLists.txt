@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SoSim-Framework)
 
-set(TARGET_NAME sosim-framework-lib)
+set(TARGET_NAME sosim-framework)
 
 find_package(CUDA REQUIRED)
 FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)

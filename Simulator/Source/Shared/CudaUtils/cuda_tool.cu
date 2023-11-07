@@ -7,7 +7,7 @@
 
 namespace SoSim {
 
-    extern inline  bool cudaGetLastError_t(const std::string &msg) {
+    extern bool cudaGetLastError_t(const std::string &msg) {
         auto c_error = cudaGetLastError();
         if (cudaSuccess != c_error) {
             std::cerr << "error:: cudaGetLastError:: "
@@ -19,7 +19,7 @@ namespace SoSim {
         return true;
     }
 
-    extern inline void cudaMalloc_t(void **pPtr, size_t size, double &mem) {
+    extern void cudaMalloc_t(void **pPtr, size_t size, double &mem) {
         cudaMalloc(pPtr, size);
         mem += static_cast<double>(size) / 1000000;
     }

@@ -23,4 +23,6 @@ namespace SoSim {
 
     void Solver::addObject() {}
 
+    void Solver::addParts(const std::string &obj_json) {}
+
 }

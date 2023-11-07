@@ -11,9 +11,15 @@
 #include <fstream>
 #include <iostream>
 
+#include "Public/Framework/mat.hpp"
+
 namespace SoSim {
 
-    extern void genObjFromJson();
+    extern uint32_t loadObjFromFile(const std::string &file_path, std::vector<float3> &pos);
+
+    extern void genObjFromJson(const std::string &json_path, std::vector<float3> &pos, std::vector<float3> &vel,
+                               std::vector<float> &den, std::vector<Material> &mat, std::vector<Phase> &phase,
+                               float &radius);
 
     extern std::vector<float3>
     generate_cube(float3 cubeLB, float3 cubeSize, float particleRadius);
@@ -32,6 +38,8 @@ namespace SoSim {
 
     extern std::pair<std::vector<float3>, float>
     import_ply_model(const std::string &file_name);
+
+    extern void write_ply(const std::string &filename, const std::vector<float3> &points);
 
 }
 
