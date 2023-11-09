@@ -38,7 +38,7 @@ namespace SoSim::MSMSPH {
     void MSMSPHSolver::initCP() {
         m_host_cp.gravity = m_solverConfig.gravity;
         m_host_cp.dt = static_cast<float>(m_solverConfig.dt);
-        m_host_cp.rest_volume = static_cast<float>(pow(m_particleRadius, 3));
+        m_host_cp.rest_volume = 8.5 * static_cast<float>(pow(m_particleRadius, 3));
         m_host_cp.ns_maxNeighborNum = 35;
         m_host_cp.sph_h = 4 * m_particleRadius;
 
@@ -63,21 +63,21 @@ namespace SoSim::MSMSPH {
         cudaMalloc_t((void **) &m_host_dp.v_m, size1, m_mem);
         cudaMalloc_t((void **) &m_host_dp.v_mk1, size1, m_mem);
         cudaMalloc_t((void **) &m_host_dp.v_mk2, size1, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.acc, size1, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.volF_k, size2, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.d_volF, size2, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.acc_m, size1, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.M_m, size1, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.alpha_k, size2, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.delta_alpha, size2, m_mem);
         cudaMalloc_t((void **) &m_host_dp.pressure_k, size2, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.pressure, size3, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.mass, size3, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.density, size3, m_mem);
-        cudaMalloc_t((void **) &m_host_dp.density_ba, size3, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.pressure_m, size3, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.density_m, size3, m_mem);
+        cudaMalloc_t((void **) &m_host_dp.density_sph, size3, m_mem);
         cudaMalloc_t((void **) &m_host_dp.mat, size4, m_mem);
         cudaMalloc_t((void **) &m_host_dp.original_phase, size5, m_mem);
 
         cudaMemcpy(m_host_dp.pos, m_host_pos.data(), size1, cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_dp.predictPos, m_host_pos.data(), size1, cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_dp.v_m, m_host_vel.data(), size1, cudaMemcpyHostToDevice);
-        cudaMemcpy(m_host_dp.density, m_host_den.data(), size3, cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_dp.density_m, m_host_den.data(), size3, cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_dp.mat, m_host_mat.data(), size4, cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_dp.original_phase, m_host_oPhase.data(), size5, cudaMemcpyHostToDevice);
 
@@ -132,30 +132,26 @@ namespace SoSim::MSMSPH {
 
         if (m_isStart) {
             init_data(m_device_cp, m_device_dp, m_blockNum, m_threadNum);
-            m_neighborSearcher->update(m_host_dp.pos);
-            update_density_and_pressure(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
-                                        m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
             m_isStart = false;
         }
 
-//        compute_drift_vel(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
-//                          m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
-
-//        advect_volFrac(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
-//                       m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
-
-        update_density_and_pressure(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
-                                    m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
-
-        compute_overall_acc(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
-                            m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
-
-        dump_max(m_host_cp.total_particle_num, m_host_dp.acc);
-
-        advect_particles(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(), m_blockNum,
-                         m_threadNum);
+        advect_gravity(m_device_cp, m_device_dp, m_blockNum, m_threadNum);
 
         m_neighborSearcher->update(m_host_dp.predictPos);
+
+        estimate_density_and_pressure(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
+                                      m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
+
+        compute_pressure_force(m_device_cp, m_device_dp, m_neighborSearcher->getPartIndexDevicePtr(),
+                               m_neighborSearcher->getNeighborsDevicePtr(), m_blockNum, m_threadNum);
+
+        advect_pos(m_device_cp, m_device_dp, m_blockNum, m_threadNum);
+
+//        dump_avg(m_host_cp.total_particle_num, m_host_dp.density_sph);
+//        dump_avg(m_host_cp.total_particle_num, m_host_dp.pressure_m);
+//        dump_max(m_host_cp.total_particle_num, m_host_dp.acc_m);
+//        dump_max(m_host_cp.total_particle_num, m_host_dp.density_m);
+//        dump_max(m_host_cp.total_particle_num, m_host_dp.pressure_m);
     }
 
     void MSMSPHSolver::setPhaseDensity(float den1, float den2) {
@@ -182,13 +178,7 @@ namespace SoSim::MSMSPH {
         return m_neighborSearcher;
     }
 
-    void MSMSPHSolver::addObject() {}
-
-//    void MSMSPHSolver::addParticles(const std::string &obj_json) {
-//        genObjFromJson(obj_json, m_host_pos, m_host_vel, m_host_den, m_host_mat, m_particleRadius);
-//        m_host_cp.total_particle_num = m_host_pos.size();
-//        m_rIsInit = true;
-//    }
+    void MSMSPHSolver::attachObject() {}
 
     void MSMSPHSolver::addParts(const std::string &obj_json) {
         genObjFromJson(obj_json, m_host_pos, m_host_vel, m_host_den, m_host_mat, m_host_oPhase, m_particleRadius);

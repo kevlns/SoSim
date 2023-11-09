@@ -20,7 +20,7 @@
       },
       "source_file": "",        // 外部模型路径，预支持ply模型。若有该项，则物体从模型加载而不使用 default 配置
       "m_partRadius": 0.05,     // 该物体的自有粒子半径
-      "density": 1000,          // 物体的 rest-density
+      "density_m": 1000,          // 物体的 rest-density_m
       "phase": 1,               // 物体的相序号（多相流相关）
       "velStart": [             // 物体初始速度
         0,

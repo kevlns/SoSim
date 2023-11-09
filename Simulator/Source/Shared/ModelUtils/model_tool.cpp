@@ -5,7 +5,6 @@
 
 #include "Public/Shared/ModelUtils/model_tool.hpp"
 #include "Public/Shared/Math/helper_math.hpp"
-#include "Public/ThirdParty/json/json.hpp"
 
 namespace SoSim {
 
@@ -18,11 +17,11 @@ namespace SoSim {
         using json = nlohmann::json;
 
         std::ifstream f(json_path);
-        json data = json::parse(f);
+        json config = json::parse(f);
 
-        radius = data["unified_partRadius"];
+        radius = config["unified_particle_radius"];
 
-        for (auto obj: data["objs"]) {
+        for (auto obj: config["objs"]) {
 
             uint32_t newPartNum = 0;
             std::vector<float3> pos_;
@@ -82,12 +81,39 @@ namespace SoSim {
                 phase_ = std::vector<Phase>(newPartNum, Phase::PHASE1);
             else if (obj["phase"] == 2)
                 phase_ = std::vector<Phase>(newPartNum, Phase::PHASE2);
-            else if (obj["phase"] == 3)
-                phase_ = std::vector<Phase>(newPartNum, Phase::PHASE3);
             phase.insert(phase.end(), phase_.begin(), phase_.end());
         }
 
         f.close();
+    }
+
+    extern std::vector<float3>
+    gen_pos(const nlohmann::json &config, float r) {
+        std::vector<float3> pos;
+        if (config["shape"] == "cube") {
+            float3 lb = make_float3(config["lb"].get<std::vector<float>>());
+            float3 size = make_float3(config["size"].get<std::vector<float>>());
+            pos = generate_cube(lb, size, r);
+        } else if (config["shape"] == "box") {
+            float3 lb = make_float3(config["lb"].get<std::vector<float>>());
+            float3 size = make_float3(config["size"].get<std::vector<float>>());
+            pos = generate_box(lb, size, r);
+        } else if (config["shape"] == "plane-x") {
+            float3 lb = make_float3(config["lb"].get<std::vector<float>>());
+            float3 size = make_float3(config["size"].get<std::vector<float>>());
+            pos = generate_plane_X(lb, size, r);
+        } else if (config["shape"] == "plane-z") {
+            float3 lb = make_float3(config["lb"].get<std::vector<float>>());
+            float3 size = make_float3(config["size"].get<std::vector<float>>());
+            pos = generate_plane_Z(lb, size, r);
+        } else if (config["shape"] == "cylinder") {
+            float3 top_center = make_float3(config["top_center"].get<std::vector<float>>());
+            float height = config["height"];
+            float area_radius = config["area_radius"];
+            pos = generate_cylinder(top_center, height, area_radius, r);
+        }
+
+        return pos;
     }
 
     extern std::vector<float3>

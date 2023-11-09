@@ -17,7 +17,6 @@ namespace SoSim {
     enum Phase : uint8_t {
         PHASE1,
         PHASE2,
-        PHASE3,
     };
 }
 

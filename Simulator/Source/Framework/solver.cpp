@@ -17,12 +17,12 @@ namespace SoSim {
 
     void Solver::destroy() {}
 
-    void Solver::setConfig(const SolverConfig &config) {}
+    void Solver::setSolverConfig(const SoSim::SolverConfig *config) {}
+
+    void Solver::attachObject(Object *obj) {}
+
+    void Solver::addParticles(const std::string &obj_json_path) {}
 
     void Solver::step() {}
-
-    void Solver::addObject() {}
-
-    void Solver::addParts(const std::string &obj_json) {}
 
 }

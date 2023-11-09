@@ -17,24 +17,22 @@ namespace SoSim::MSMSPH {
     init_data(ConstParams *d_const, DynamicParams *d_data, uint32_t blockNum, uint32_t threadNum);
 
     __host__ void
-    compute_drift_vel(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
-                      uint32_t blockNum, uint32_t threadNum);
+    advect_gravity(ConstParams *d_const, DynamicParams *d_data, uint32_t blockNum, uint32_t threadNum);
 
     __host__ void
-    advect_volFrac(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
-                   uint32_t blockNum, uint32_t threadNum);
+    estimate_density_and_pressure(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+                                  uint32_t blockNum, uint32_t threadNum);
 
     __host__ void
-    update_density_and_pressure(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
-                                uint32_t blockNum, uint32_t threadNum);
+    compute_pressure_force(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
+            uint32_t blockNum, uint32_t threadNum);
+
+
+
+
 
     __host__ void
-    compute_overall_acc(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t *neighbors,
-                        uint32_t blockNum, uint32_t threadNum);
-
-    __host__ void
-    advect_particles(ConstParams *d_const, DynamicParams *d_data, uint32_t *partIndex, uint32_t blockNum,
-                     uint32_t threadNum);
+    advect_pos(ConstParams *d_const, DynamicParams *d_data, uint32_t blockNum, uint32_t threadNum);
 }
 
 

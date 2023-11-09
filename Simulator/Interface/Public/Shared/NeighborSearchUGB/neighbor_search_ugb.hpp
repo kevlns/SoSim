@@ -6,22 +6,25 @@
 #ifndef SOSIM_NEIGHBOR_SEARCH_UGB_HPP
 #define SOSIM_NEIGHBOR_SEARCH_UGB_HPP
 
+#include "Public/Shared/NeighborSearchUGB/neighbor_search_config.hpp"
 #include "Private/Shared/NeighborSearchUGB/data_pack.hpp"
 
 namespace SoSim::NSUGB {
 
-    class NeighborSearchUGB {
+    class NeighborSearcher {
 
     public:
-        NeighborSearchUGB() = default;
+        NeighborSearcher() = default;
 
-        ~NeighborSearchUGB() = default;
+        ~NeighborSearcher() = default;
 
         void initialize(float3 scene_lb, float3 scene_size, unsigned total_particle_num, float sph_support_radius);
 
         void update(float3 *device_pos);
 
         void dumpInfo() const;
+
+        void setConfig(const NeighborSearchConfig *config);
 
         uint32_t *getPartIndexDevicePtr() const;
 
@@ -32,8 +35,7 @@ namespace SoSim::NSUGB {
     private:
         double m_mem{0};
         bool m_isInit{false};
-        uint32_t m_blockNum;
-        uint32_t m_threadNum;
+        NeighborSearchConfig *m_config{nullptr};
         ConstParams m_host_cp{};
         DynamicParams m_host_dp{};
 

@@ -14,15 +14,18 @@
 
 namespace SoSim::NSUGB {
 
-    void NeighborSearchUGB::initialize(float3 scene_lb, float3 scene_size, unsigned int total_particle_num,
-                                       float sph_support_radius) {
+    void NeighborSearcher::initialize(float3 scene_lb, float3 scene_size, unsigned int total_particle_num,
+                                      float sph_support_radius) {
+        if (!m_config)
+            return;
+
         m_isInit = true;
 
-        m_host_cp.maxNeighborNum = 35;
-        m_host_cp.totalParticleNum = total_particle_num;
-        m_host_cp.sceneLB = scene_lb;
-        m_host_cp.sceneSize = scene_size;
-        m_host_cp.cellLength = sph_support_radius;
+        m_host_cp.maxNeighborNum = m_config->max_neighbor_num;
+        m_host_cp.totalParticleNum = m_config->total_particle_num;
+        m_host_cp.sceneLB = m_config->scene_lb;
+        m_host_cp.sceneSize = m_config->scene_size;
+        m_host_cp.cellLength = m_config->particle_radius * 4;
 
         m_host_cp.gridSize = make_uint3(
                 static_cast<uint32_t>(std::ceil(m_host_cp.sceneSize.x / m_host_cp.cellLength)),
@@ -64,7 +67,7 @@ namespace SoSim::NSUGB {
 
         cudaMalloc_t((void **) &m_device_cp, sizeof(ConstParams), m_mem);
         cudaMemcpy(m_device_cp, &m_host_cp, sizeof(ConstParams), cudaMemcpyHostToDevice);
-        m_isInit &= cudaGetLastError_t("NeighborSearchUGB::initialize():: init m_device_cp failed!");
+        m_isInit &= cudaGetLastError_t("NeighborSearcher::initialize():: init m_device_cp failed!");
 
         size_t size1 = m_host_cp.totalParticleNum * sizeof(uint32_t);
         size_t size2 = m_host_cp.cellNum * sizeof(uint32_t);
@@ -80,25 +83,17 @@ namespace SoSim::NSUGB {
         cudaMalloc_t((void **) &m_device_dp, sizeof(DynamicParams), m_mem);
         cudaMemcpy(m_device_dp, &m_host_dp, sizeof(DynamicParams), cudaMemcpyHostToDevice);
 
-        int device;
-        cudaGetDevice(&device);
-
-        cudaDeviceProp prop{};
-        cudaGetDeviceProperties(&prop, device);
-
-        m_threadNum = prop.maxThreadsPerBlock;
-        m_blockNum = (m_host_cp.totalParticleNum + m_threadNum - 1) / m_threadNum;
-
-        m_isInit &= cudaGetLastError_t("NeighborSearchUGB::initialize():: init m_device_dp failed!");
+        m_isInit &= cudaGetLastError_t("NeighborSearcher::initialize():: init m_device_dp failed!");
     }
 
-    void NeighborSearchUGB::update(float3 *device_pos) {
-        update_cuda(m_host_cp, m_host_dp, m_device_cp, m_device_dp, m_blockNum, m_threadNum, device_pos);
+    void NeighborSearcher::update(float3 *device_pos) {
+        update_cuda(m_host_cp, m_host_dp, m_device_cp, m_device_dp, m_config->block_num, m_config->thread_num,
+                    device_pos);
 
-        cudaGetLastError_t("NeighborSearchUGB::update() failed.");
+        cudaGetLastError_t("NeighborSearcher::update() failed.");
     }
 
-    void NeighborSearchUGB::destroy() {
+    void NeighborSearcher::destroy() {
         if (m_isInit) {
 
             cudaFree(this->m_host_dp.particleIndices);
@@ -110,23 +105,33 @@ namespace SoSim::NSUGB {
 
             cudaFree(m_device_cp);
             cudaFree(m_device_dp);
-            cudaGetLastError_t("ERROR::NeighborSearchUGB::destroy() failed.");
+            cudaGetLastError_t("ERROR::NeighborSearcher::destroy() failed.");
 
-
+            delete m_config;
+            m_config = nullptr;
             m_device_cp = nullptr;
             m_device_dp = nullptr;
         }
     }
 
-    uint32_t *NeighborSearchUGB::getPartIndexDevicePtr() const {
+    void NeighborSearcher::setConfig(const NeighborSearchConfig *config) {
+        if (!m_config) {
+            m_config = new NeighborSearchConfig;
+            memcpy(m_config, config, sizeof(NeighborSearchConfig));
+        } else {
+            std::cout << "ERROR:: NeighborSearchConfig already setup.\n";
+        }
+    }
+
+    uint32_t *NeighborSearcher::getPartIndexDevicePtr() const {
         return m_host_dp.particleIndices;
     }
 
-    uint32_t *NeighborSearchUGB::getNeighborsDevicePtr() const {
+    uint32_t *NeighborSearcher::getNeighborsDevicePtr() const {
         return m_host_dp.neighbors;
     }
 
-    void NeighborSearchUGB::dumpInfo() const {
+    void NeighborSearcher::dumpInfo() const {
         auto cellNum = m_host_cp.cellNum;
         auto particleNum = m_host_cp.totalParticleNum;
         auto *c_cellStart = new uint32_t[cellNum];

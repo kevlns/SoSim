@@ -6,7 +6,10 @@
 #ifndef SOSIM_OBJECT_HPP
 #define SOSIM_OBJECT_HPP
 
+#include <vector>
 #include <iostream>
+
+#include "Public/Framework/component.hpp"
 
 namespace SoSim {
 
@@ -27,6 +30,7 @@ namespace SoSim {
 
     public:
         uint32_t m_id;
+
     };
 
 }

@@ -6,9 +6,18 @@
 #ifndef SOSIM_COMPONENT_HPP
 #define SOSIM_COMPONENT_HPP
 
+#include <vector_types.h>
+#include <iostream>
+
 namespace SoSim {
 
+    struct Component {
+    };
 
+    struct BaseMoveComponent : Component {
+        float3 pos;
+        float3 vel;
+    };
 
 }
 

@@ -28,7 +28,7 @@
     },
 
     {
-      "mat": "bound",
+      "mat": "rigid",
       "default": {
         "shape": "plane-x",
         "lb": [
@@ -45,7 +45,7 @@
       "source_file": "",
       "m_partRadius": 0.05,
       "density": 1000,
-      "phase": 1,
+      "phase": 2,
       "velStart": [
         0,
         0,

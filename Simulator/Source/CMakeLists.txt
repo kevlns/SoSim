@@ -11,9 +11,8 @@ set(sosim-shared "")
 add_subdirectory(Shared)
 set(SOSIM_SHARED_LIBS ${sosim-shared} PARENT_SCOPE)
 
-add_subdirectory(DFSPH)
-
-add_subdirectory(MSMSPH)
+add_subdirectory(PhysicalSolvers)
+#add_subdirectory(MSMSPH)
 
 #list(LENGTH sosim-shared-libs length)
 #message(${length})

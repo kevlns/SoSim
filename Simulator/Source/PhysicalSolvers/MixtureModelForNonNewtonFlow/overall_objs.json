@@ -1,0 +1,71 @@
+{
+  "unified_particle_radius": 0.08,
+  "objs": [
+    {
+      "id": 1,
+      "model_path": null,
+      "rest_density": 1000,
+      "phase": 1,
+      "is_dynamic": false,
+      "mat": "fluid",
+      "vel_start": [
+        0,
+        0,
+        0
+      ],
+      "default": {
+        "shape": "cube",
+        "lb": [
+          -2,
+          -2,
+          -2
+        ],
+        "size": [
+          4,
+          4,
+          4
+        ],
+        "top_center": [
+          0,
+          0,
+          0
+        ],
+        "height": 0,
+        "area_radius": 0
+      }
+    },
+    {
+      "id": 2,
+      "model_path": null,
+      "rest_density": 1000,
+      "phase": 0,
+      "is_dynamic": false,
+      "mat": "bound",
+      "vel_start": [
+        0,
+        0,
+        0
+      ],
+      "default": {
+        "shape": "plane-x",
+        "lb": [
+          -4,
+          -3,
+          -4
+        ],
+        "size": [
+          8,
+          8,
+          8
+        ],
+        "top_center": [
+          0,
+          0,
+          0
+        ],
+        "height": 0,
+        "area_radius": 0
+      }
+    }
+  ]
+}

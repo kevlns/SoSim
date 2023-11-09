@@ -14,7 +14,7 @@ using namespace SoSim;
 
 void UGBNS_Test() {
 
-    NSUGB::NeighborSearchUGB neighborSearchUgb;
+    NSUGB::NeighborSearcher neighborSearchUgb;
 
     float part_radius = 0.05;
 

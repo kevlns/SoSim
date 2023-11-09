@@ -14,7 +14,7 @@
 
 namespace SoSim {
 
-    using NeighborSearcher = NSUGB::NeighborSearchUGB;
+    using NeighborSearcher = NSUGB::NeighborSearcher;
 
     namespace MSMSPH {
 
@@ -38,7 +38,7 @@ namespace SoSim {
 
             void setConfig(const SolverConfig &config) override;
 
-            void addObject() override;
+            void attachObject() override;
 
 //            void addParticles(const std::string &obj_json) override;
 

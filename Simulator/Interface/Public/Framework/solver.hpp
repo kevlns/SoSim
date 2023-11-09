@@ -9,15 +9,12 @@
 #include <vector_types.h>
 #include <iostream>
 
+#include "Public/Framework/framework_config.hpp"
+#include "Public/Framework/object.hpp"
+
 namespace SoSim {
 
     class Solver {
-    public:
-        struct SolverConfig {
-            double dt{0};
-            double cur_time{0};
-            float3 gravity{0.f, -9.8f, 0.0};
-        };
 
     public:
         Solver() = default;
@@ -32,16 +29,15 @@ namespace SoSim {
 
         virtual void destroy() = 0;
 
-        virtual void setConfig(const SolverConfig &config) = 0;
+        virtual void setSolverConfig(const SolverConfig *config) = 0;
 
-        virtual void addObject() = 0;
+        virtual void attachObject(Object* obj) = 0;
 
-        virtual void addParts(const std::string &obj_json) = 0;
-
-//        virtual void addParticles(const std::string &obj_json) = 0;
+        virtual void addParticles(const std::string &obj_json_path) = 0;
 
     protected:
         virtual void step() = 0;
+
     };
 
 }

@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "Public/Framework/mat.hpp"
+#include "Public/ThirdParty/json/json.hpp"
 
 namespace SoSim {
 
@@ -20,6 +21,9 @@ namespace SoSim {
     extern void genObjFromJson(const std::string &json_path, std::vector<float3> &pos, std::vector<float3> &vel,
                                std::vector<float> &den, std::vector<Material> &mat, std::vector<Phase> &phase,
                                float &radius);
+
+    extern std::vector<float3>
+    gen_pos(const nlohmann::json &config, float r);
 
     extern std::vector<float3>
     generate_cube(float3 cubeLB, float3 cubeSize, float particleRadius);

@@ -1,13 +1,13 @@
 # @author        : Long Shen
-# @date          : 2023/10/11
-# @description   : CMakeList.txt for ...
+# @date          : 2023/10/24
+# @description   : CMakeList.txt for Mixture-SuspensionLiquid model, so called MSMSPH
 # @version       : 1.0
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.11.4)
 
-project(SoSim-DFSPH)
+project(SoSim-MMSPH)
 
-set(TARGET_NAME sosim-dfsph)
+set(TARGET_NAME sosim-mmsph)
 
 FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 
