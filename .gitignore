@@ -14,3 +14,6 @@ cmake-build-debug
 cmake-build-release
 .idea
 .vscode
+
+Simulator/ThirdParty/Public
+Simulator/ThirdParty/Private
