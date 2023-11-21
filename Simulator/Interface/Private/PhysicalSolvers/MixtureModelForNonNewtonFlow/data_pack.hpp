@@ -32,7 +32,10 @@ namespace SoSim::MMSPH {
         float2 *alpha;
         float *density_mix;
         float *density_sph;
+        float *pressure_mix;
+        float *bPart_volume;
         Material *mat;
+        uint8_t *isDynamic;
 
         void destroy() const {
             cudaFree(pos);
@@ -44,7 +47,10 @@ namespace SoSim::MMSPH {
             cudaFree(M_m);
             cudaFree(density_mix);
             cudaFree(density_sph);
+            cudaFree(pressure_mix);
+            cudaFree(bPart_volume);
             cudaFree(mat);
+            cudaFree(isDynamic);
 
             cudaGetLastError_t("ERROR::MMSPH::DynamicParams::destroy() failed.");
         }

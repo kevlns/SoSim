@@ -12,8 +12,8 @@
 namespace SoSim {
 
     struct CudaConfig {
-        uint32_t block_num{0};
-        uint32_t thread_num{0};
+        uint32_t max_block_num_per_processor{0};
+        uint32_t max_thread_num_per_block{0};
     };
 
     struct SceneConfig {
@@ -31,7 +31,7 @@ namespace SoSim {
         float3 gravity{0.f, -9.8f, 0.0};
         float dt{1 / 60.f};
         float cur_sim_time{0.f};
-        float unified_particle_radius{0.05};
+        float unified_particle_radius{0.f};
     };
 
     struct ObjectConfig {

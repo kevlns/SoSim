@@ -14,5 +14,5 @@ void SoSim::Object::detachComponent() {
 }
 
 void SoSim::Object::destroy() {
-
+    std::cout << "Object destructed.\n";
 }

@@ -47,14 +47,14 @@ namespace SoSim::NSUGB {
 
     __host__ void
     ns_resetDevPtr(ConstParams &h_cp, DynamicParams &h_dp) {
-        static size_t size1 = h_cp.cellNum;
-        static size_t size2 = h_cp.totalParticleNum;
-        static size_t size3 = h_cp.totalParticleNum * h_cp.maxNeighborNum;
+        static size_t size1 = h_cp.cellNum * sizeof(uint32_t);
+        static size_t size2 = h_cp.totalParticleNum * sizeof(uint32_t);
+        static size_t size3 = h_cp.totalParticleNum * h_cp.maxNeighborNum * sizeof(uint32_t);
 
-        cudaMemset(h_dp.cellStart, UINT_MAX, size1 * sizeof(uint32_t));
-        cudaMemset(h_dp.cellEnd, UINT_MAX, size1 * sizeof(uint32_t));
-        cudaMemset(h_dp.neighborNum, 0, size2 * sizeof(uint32_t));
-        cudaMemset(h_dp.neighbors, UINT_MAX, size3 * sizeof(uint32_t));
+        cudaMemset(h_dp.cellStart, UINT_MAX, size1);
+        cudaMemset(h_dp.cellEnd, UINT_MAX, size1);
+        cudaMemset(h_dp.neighborNum, 0, size2);
+        cudaMemset(h_dp.neighbors, UINT_MAX, size3);
     }
 
     __global__ void

@@ -29,9 +29,9 @@ namespace SoSim {
 
         virtual void destroy() = 0;
 
-        virtual void setSolverConfig(const SolverConfig *config) = 0;
+        virtual void setSolverConfig(SolverConfig *solverConfig, const SceneConfig *sceneConfig) = 0;
 
-        virtual void attachObject(Object* obj) = 0;
+        virtual void attachObject(const Object *obj) = 0;
 
         virtual void addParticles(const std::string &obj_json_path) = 0;
 

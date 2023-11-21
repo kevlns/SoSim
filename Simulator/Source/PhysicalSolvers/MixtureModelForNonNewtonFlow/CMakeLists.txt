@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.11.4)
 
 project(SoSim-MMSPH)
 
-set(TARGET_NAME sosim-mmsph)
+set(TARGET_NAME sosim-solver-mmsph)
 
 FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 
@@ -15,4 +15,6 @@ add_library(${TARGET_NAME} ${SRC_FILES})
 
 find_package(CUDA REQUIRED)
 target_include_directories(${TARGET_NAME} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${TARGET_NAME} PRIVATE ${CUDA_LIBRARIES} sosim-framework ${sosim-shared})
+target_link_libraries(${TARGET_NAME} PRIVATE ${CUDA_LIBRARIES} sosim-framework-obj sosim-framework-solver ${sosim-shared})
+
+set(current_solver sosim-solver-mmsph PARENT_SCOPE)

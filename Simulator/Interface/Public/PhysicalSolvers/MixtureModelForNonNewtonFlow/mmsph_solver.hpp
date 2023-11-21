@@ -43,9 +43,9 @@ namespace SoSim {
 
             void destroy() override;
 
-            void setSolverConfig(const SolverConfig *config) override;
+            void setSolverConfig(SolverConfig *solverConfig, const SceneConfig *sceneConfig) override;
 
-            void attachObject(Object *obj) override;
+            void attachObject(const Object *obj) override;
 
             void addParticles(const std::string &obj_json_path) override;
 
@@ -54,21 +54,25 @@ namespace SoSim {
 
         private:
             bool m_isInit{false};
+            bool m_isStart{true};
             double m_mem{0};
 
             SolverConfig *m_config{nullptr};
             NeighborSearcher *m_neighborSearcher{nullptr};
-            ConstParams m_host_cp;
-            DynamicParams m_host_dp;
-            ConstParams *m_device_cp;
-            DynamicParams *m_device_dp;
+            ConstParams m_host_cp{};
+            DynamicParams m_host_dp{};
+            ConstParams *m_device_cp{nullptr};
+            DynamicParams *m_device_dp{nullptr};
 
             std::vector<float3> m_host_pos;
             std::vector<float3> m_host_vel;
             std::vector<float2> m_host_phase;
             std::vector<Material> m_host_mat;
-            std::vector<bool> m_host_isDynamic;
+            std::vector<uint8_t> m_host_isDynamic;
 
+            uint32_t m_fluid_particle_num{0};
+            uint32_t m_bound_particle_num{0};
+            uint32_t m_total_particle_num{0};
 
         };
 

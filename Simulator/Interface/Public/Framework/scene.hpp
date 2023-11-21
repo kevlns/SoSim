@@ -7,6 +7,12 @@
 #define SOSIM_SCENE_HPP
 
 #include <iostream>
+#include <vector>
+#include <set>
+
+#include "Public/Framework/solver.hpp"
+#include "Public/Framework/framework_config.hpp"
+#include "Public/PhysicalSolvers/solver_header_list.hpp"
 
 namespace SoSim {
 
@@ -16,18 +22,32 @@ namespace SoSim {
     class Scene {
 
     public:
-        Scene() = default;
+        explicit Scene(const SceneConfig &sceneConfig);
 
         ~Scene() = default;
 
-        void addSolver();
+        Solver *createSolver(SolverInstanceType solverInstance, SolverConfig *solverConfig);
 
-        void removeSolver();
+        void addObject(Object* obj);
+
+        void removeObject(Object *obj);
+
+        void addSolver(Solver *solver);
+
+        void removeSolver(Solver *solver);
 
         void destroy();
 
+        void run();
+
     private:
-        uint32_t m_id;
+        uint32_t m_id{};
+
+        std::set<Solver *> m_solvers;
+
+        std::set<Object *> m_objs;
+
+        SceneConfig *m_config{nullptr};
     };
 
 }

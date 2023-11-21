@@ -7,13 +7,37 @@ cmake_minimum_required(VERSION 3.22)
 
 project(SoSim-Framework)
 
-set(TARGET_NAME sosim-framework)
-
+enable_language(CUDA)
 find_package(CUDA REQUIRED)
+
 FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-add_library(${TARGET_NAME} ${SRC_FILES})
-target_include_directories(${TARGET_NAME} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${TARGET_NAME} PRIVATE ${CUDA_LIBRARIES})
+# object-lib
+set(THIS_TARGET sosim-framework-obj)
+add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/object.cpp)
+target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES})
+LIST(APPEND framework ${THIS_TARGET})
 
-#find_package(CUDA)
+# object-lib
+set(THIS_TARGET sosim-framework-solver)
+add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp)
+target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} sosim-framework-obj)
+LIST(APPEND framework ${THIS_TARGET})
+
+#scene-lib
+set(THIS_TARGET sosim-framework-scene)
+add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/scene.cpp)
+target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} sosim-framework-solver)
+LIST(APPEND framework ${THIS_TARGET})
+
+#simulator-lib
+set(THIS_TARGET sosim-framework-simulator)
+add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/simulator.cpp)
+target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} sosim-framework-scene)
+LIST(APPEND framework ${THIS_TARGET})
+
+set(sosim-framework ${framework} PARENT_SCOPE)

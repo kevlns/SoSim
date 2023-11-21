@@ -288,4 +288,12 @@ namespace SoSim {
         ofs.close();
     }
 
+    extern void write_ply(const std::string &filename, const float3 *d_pos, uint32_t begin, uint32_t end) {
+        auto num = end - begin;
+        std::vector<float3> pos(num);
+        cudaMemcpy(pos.data(), d_pos, num * sizeof(float3), cudaMemcpyDeviceToHost);
+
+        write_ply(filename, pos);
+    }
+
 }

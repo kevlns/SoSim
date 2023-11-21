@@ -5,14 +5,17 @@
 
 include_directories(${SOSIM_INCLUDE_DIR})
 
+set(sosim-framework "")
 add_subdirectory(Framework)
+set(SOSIM_FRAMEWORK_LIBS ${sosim-framework} PARENT_SCOPE)
 
 set(sosim-shared "")
 add_subdirectory(Shared)
 set(SOSIM_SHARED_LIBS ${sosim-shared} PARENT_SCOPE)
 
+set(sosim-solvers "")
 add_subdirectory(PhysicalSolvers)
-#add_subdirectory(MSMSPH)
+set(SOSIM_PHYSICAL_SOLVERS ${sosim-solvers} PARENT_SCOPE)
 
-#list(LENGTH sosim-shared-libs length)
-#message(${length})
+
+target_link_libraries(sosim-framework-scene PUBLIC ${sosim-solvers})

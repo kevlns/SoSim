@@ -11,6 +11,7 @@
 
 namespace SoSim {
 
+
     template<typename ParamPType>
     extern void dump_avg(unsigned int num, ParamPType d_params) {
         if (std::is_same<ParamPType, float *>::value) {
@@ -156,4 +157,5 @@ namespace SoSim {
             throw std::runtime_error("dump_min():: Param type not supported!");
         }
     }
+
 }

@@ -1,10 +1,10 @@
 //@author        : Long Shen
-//@date          : 2023/11/9
+//@date          : 2023/11/21
 //@description   :
 //@version       : 1.0
 
-#ifndef SOSIM_MMSPH_SOLVER_TEST_HPP
-#define SOSIM_MMSPH_SOLVER_TEST_HPP
+#ifndef SOSIM_MMSPH_TEST_HPP
+#define SOSIM_MMSPH_TEST_HPP
 
 #include "Public/Framework/simulator.hpp"
 #include "Public/Framework/scene.hpp"
@@ -12,8 +12,7 @@
 
 using namespace SoSim;
 
-int mmsph_test() {
-
+void test() {
     CudaConfig cudaConfig{};
     int device;
     cudaGetDevice(&device);
@@ -41,8 +40,6 @@ int mmsph_test() {
     Simulator::run();
 
     Simulator::terminate();
-
-    return 0;
 }
 
-#endif //SOSIM_MMSPH_SOLVER_TEST_HPP
+#endif //SOSIM_MMSPH_TEST_HPP

@@ -18,7 +18,7 @@ namespace SoSim::NSUGB {
 
         ~NeighborSearcher() = default;
 
-        void initialize(float3 scene_lb, float3 scene_size, unsigned total_particle_num, float sph_support_radius);
+        void initialize();
 
         void update(float3 *device_pos);
 

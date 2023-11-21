@@ -1,12 +1,13 @@
 {
-  "unified_particle_radius": 0.08,
+  "note": "unified_particle_radius can not fit all value, such as 0.08... don't know why yet...",
+  "unified_particle_radius": 0.05,
   "objs": [
     {
       "id": 1,
       "model_path": null,
       "rest_density": 1000,
       "phase": 1,
-      "is_dynamic": false,
+      "is_dynamic": 0,
       "mat": "fluid",
       "vel_start": [
         0,
@@ -16,14 +17,14 @@
       "default": {
         "shape": "cube",
         "lb": [
+          -1,
           -2,
-          -2,
-          -2
+          -1
         ],
         "size": [
+          2,
           4,
-          4,
-          4
+          2
         ],
         "top_center": [
           0,
@@ -39,7 +40,7 @@
       "model_path": null,
       "rest_density": 1000,
       "phase": 0,
-      "is_dynamic": false,
+      "is_dynamic": 0,
       "mat": "bound",
       "vel_start": [
         0,
@@ -50,12 +51,12 @@
         "shape": "plane-x",
         "lb": [
           -4,
-          -3,
+          -2.2,
           -4
         ],
         "size": [
           8,
-          8,
+          12,
           8
         ],
         "top_center": [

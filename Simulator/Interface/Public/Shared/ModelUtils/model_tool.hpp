@@ -45,6 +45,8 @@ namespace SoSim {
 
     extern void write_ply(const std::string &filename, const std::vector<float3> &points);
 
+    extern void write_ply(const std::string &filename, const float3 *d_pos, uint32_t begin, uint32_t end);
+
 }
 
 #endif //SOSIM_MODEL_TOOL_HPP

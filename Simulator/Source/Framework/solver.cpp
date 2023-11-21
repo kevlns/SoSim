@@ -17,9 +17,9 @@ namespace SoSim {
 
     void Solver::destroy() {}
 
-    void Solver::setSolverConfig(const SoSim::SolverConfig *config) {}
+    void Solver::setSolverConfig(SolverConfig *solverConfig, const SceneConfig *sceneConfig) {}
 
-    void Solver::attachObject(Object *obj) {}
+    void Solver::attachObject(const Object *obj) {}
 
     void Solver::addParticles(const std::string &obj_json_path) {}
 

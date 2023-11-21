@@ -6,8 +6,11 @@
 #ifndef SOSIM_NSUGB_DATA_PACK_HPP
 #define SOSIM_NSUGB_DATA_PACK_HPP
 
+#include <cuda_runtime.h>
 #include <vector_types.h>
 #include <vector>
+
+#include "Public/Shared/CudaUtils/cuda_tool.hpp"
 
 namespace SoSim::NSUGB {
 
@@ -29,6 +32,17 @@ namespace SoSim::NSUGB {
         uint32_t *cellEnd;
         uint32_t *neighborNum;
         uint32_t *neighbors;
+
+        void destroy() const {
+            cudaFree(particleIndices);
+            cudaFree(cellIndices);
+            cudaFree(cellStart);
+            cudaFree(cellEnd);
+            cudaFree(neighborNum);
+            cudaFree(neighbors);
+
+            cudaGetLastError_t("ERROR::NeighborSearcher::DynamicParams destroy() failed.");
+        }
     };
 
 }  // namespace SoSim::NSUGB

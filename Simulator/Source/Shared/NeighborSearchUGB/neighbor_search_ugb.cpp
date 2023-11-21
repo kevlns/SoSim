@@ -14,8 +14,7 @@
 
 namespace SoSim::NSUGB {
 
-    void NeighborSearcher::initialize(float3 scene_lb, float3 scene_size, unsigned int total_particle_num,
-                                      float sph_support_radius) {
+    void NeighborSearcher::initialize() {
         if (!m_config)
             return;
 
@@ -87,6 +86,7 @@ namespace SoSim::NSUGB {
     }
 
     void NeighborSearcher::update(float3 *device_pos) {
+
         update_cuda(m_host_cp, m_host_dp, m_device_cp, m_device_dp, m_config->block_num, m_config->thread_num,
                     device_pos);
 
@@ -96,12 +96,7 @@ namespace SoSim::NSUGB {
     void NeighborSearcher::destroy() {
         if (m_isInit) {
 
-            cudaFree(this->m_host_dp.particleIndices);
-            cudaFree(this->m_host_dp.cellIndices);
-            cudaFree(this->m_host_dp.cellStart);
-            cudaFree(this->m_host_dp.cellEnd);
-            cudaFree(this->m_host_dp.neighborNum);
-            cudaFree(this->m_host_dp.neighbors);
+            m_host_dp.destroy();
 
             cudaFree(m_device_cp);
             cudaFree(m_device_dp);
@@ -111,6 +106,8 @@ namespace SoSim::NSUGB {
             m_config = nullptr;
             m_device_cp = nullptr;
             m_device_dp = nullptr;
+
+            std::cout << "NeighborSearcherUGB destructed.\n";
         }
     }
 
@@ -118,6 +115,7 @@ namespace SoSim::NSUGB {
         if (!m_config) {
             m_config = new NeighborSearchConfig;
             memcpy(m_config, config, sizeof(NeighborSearchConfig));
+            initialize();
         } else {
             std::cout << "ERROR:: NeighborSearchConfig already setup.\n";
         }
