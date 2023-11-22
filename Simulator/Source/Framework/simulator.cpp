@@ -3,6 +3,10 @@
 //@description   :
 //@version       : 1.0
 
+#ifdef USE_SOSIM_GUI
+
+#endif
+
 #include "Public/Framework/simulator.hpp"
 
 namespace SoSim {

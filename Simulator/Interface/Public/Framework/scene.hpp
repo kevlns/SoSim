@@ -12,7 +12,7 @@
 
 #include "Public/Framework/solver.hpp"
 #include "Public/Framework/framework_config.hpp"
-#include "Public/PhysicalSolvers/solver_header_list.hpp"
+#include "Public/PhysicalSolvers/solver_ref.hpp"
 
 namespace SoSim {
 

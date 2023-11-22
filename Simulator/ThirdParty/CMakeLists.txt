@@ -9,7 +9,7 @@ include_directories(${SOSIM_INCLUDE_DIR})
 
 project(SoSim-ThirdParty)
 
-# build glfw-3.3.8 and install the includes
+# build glfw and install the includes
 add_subdirectory(Private/glfw)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Private/glfw/include/GLFW/ DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/GLFW)
 
@@ -30,3 +30,11 @@ file(COPY ${imgui_srcs} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/imgui/src
 # install json includes
 file(GLOB json_headers ${CMAKE_CURRENT_SOURCE_DIR}/Private/json/*.hpp)
 file(COPY ${json_headers} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/json)
+
+# build glm and install the includes
+add_subdirectory(Private/glm)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Private/glm/glm/ DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/glm)
+
+# install glad (opengl3.0 core) WebSite: https://glad.dav1d.de/
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Private/glad/include/ DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/glad)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Private/glad/src/ DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Public/glad/src)

@@ -16,6 +16,7 @@ set(TARGET_NAME SoSim-test-imgui.exe)
 add_executable(${TARGET_NAME} imgui_test.cpp ${imgui_srcs})
 include_directories(${SOSIM_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
 target_link_libraries(${TARGET_NAME} PRIVATE
+        ${CUDA_LIBRARIES}
         ${SOSIM_FRAMEWORK_LIBS}
         ${SOSIM_SHARED_LIBS}
         ${SOSIM_PHYSICAL_SOLVERS}

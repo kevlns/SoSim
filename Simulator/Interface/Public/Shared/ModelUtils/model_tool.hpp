@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "Public/Framework/mat.hpp"
-#include "Public/ThirdParty/json/json.hpp"
+#include "json/json.hpp"
 
 namespace SoSim {
 

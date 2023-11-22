@@ -8,10 +8,10 @@
 #include "Public/PhysicalSolvers/MixtureModelForNonNewtonFlow/mmsph_solver.hpp"
 #include "Private/PhysicalSolvers/MixtureModelForNonNewtonFlow/cuda_api.cuh"
 #include "Public/Shared/NeighborSearchUGB/neighbor_search_config.hpp"
-#include "Public/ThirdParty/json/json.hpp"
 #include "Public/Shared/ModelUtils/model_tool.hpp"
 #include "Public/Shared/Math/helper_math.hpp"
 #include "Public/Shared/Analyzer/params_analysis_helper.hpp"
+#include "json/json.hpp"
 
 namespace SoSim::MMSPH {
 

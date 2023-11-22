@@ -4,7 +4,7 @@
 //@version       : 1.0
 
 #include "Public/Framework/scene.hpp"
-#include "Public/PhysicalSolvers/solver_header_list.hpp"
+#include "Public/PhysicalSolvers/solver_ref.hpp"
 
 namespace SoSim {
 

@@ -1,12 +1,13 @@
-#include <memory>
+//@author        : Long Shen
+//@date          : 2023/11/21
+//@description   :
+//@version       : 1.0
 
-#include "Public/Test/mmsph_solver_test.hpp"
-#include "Public/Test/ugbns_test.hpp"
+#define USE_SOSIM_GUI
+#include "Public/GUI/gui.hpp"
+#include "Public/PhysicalSolvers/solver_ref.hpp"
 
-using namespace SoSim;
 
 int main() {
-    mmsph_test();
-
-//    UGBNS_Test();
+    std::cout << "hello world.\n";
 }

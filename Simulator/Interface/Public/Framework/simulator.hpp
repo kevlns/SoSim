@@ -25,6 +25,11 @@ namespace SoSim {
         static void terminate();
 
     private:
+        void runPure();
+
+        void runGUI();
+
+    private:
         static std::set<Scene *> m_scenes;
 
     };
