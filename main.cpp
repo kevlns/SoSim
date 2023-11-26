@@ -4,10 +4,10 @@
 //@version       : 1.0
 
 #define USE_SOSIM_GUI
-#include "Public/GUI/gui.hpp"
-#include "Public/PhysicalSolvers/solver_ref.hpp"
+#include "Public/Framework/simulator.hpp"
 
+#include "Public/GUI/gui.hpp"
 
 int main() {
-    std::cout << "hello world.\n";
+    SoSim::Simulator::run();
 }

@@ -5,14 +5,18 @@
 
 #include "Public/Framework/object.hpp"
 
-void SoSim::Object::attachComponent() {
+namespace SoSim {
 
-}
+    //void SoSim::Object::attachComponent() {
+//
+//}
+//
+//void SoSim::Object::detachComponent() {
+//
+//}
 
-void SoSim::Object::detachComponent() {
+    void Object::destroy() {}
 
-}
+    void Object::refresh() {}
 
-void SoSim::Object::destroy() {
-    std::cout << "Object destructed.\n";
 }

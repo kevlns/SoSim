@@ -20,6 +20,8 @@ set(SOSIM_SHARED_LIBS "")
 set(SOSIM_FRAMEWORK_LIBS "")
 set(SOSIM_PHYSICAL_SOLVERS "")
 
+cmake_policy(SET CMP0146 OLD)
+
 execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         RESULT_VARIABLE GIT_SUBMOD_RESULT)

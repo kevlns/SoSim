@@ -5,9 +5,9 @@
 
 cmake_minimum_required(VERSION 3.11.4)
 
-project(SoSim-MMSPH)
+project(SoSim-SampleSolver)
 
-set(TARGET_NAME sosim-solver-mmsph)
+set(TARGET_NAME sosim-solver-sample)
 
 FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 

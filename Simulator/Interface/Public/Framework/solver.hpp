@@ -35,6 +35,8 @@ namespace SoSim {
 
         virtual void addParticles(const std::string &obj_json_path) = 0;
 
+//        virtual void addParticles(ParticleObjectConfig)
+
     protected:
         virtual void step() = 0;
 

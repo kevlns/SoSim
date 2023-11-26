@@ -9,7 +9,9 @@ project(SoSim-GUI)
 
 set(TARGET_NAME sosim-gui)
 
-FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
+FILE(GLOB SRC_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 list(APPEND SRC_FILES ${SOSIM_THIRDPARTY_ROOT}/Public/glad/src/glad.c)
 
 FILE(GLOB imgui_srcs ${SOSIM_THIRDPARTY_ROOT}/Public/imgui/src/*.cpp)

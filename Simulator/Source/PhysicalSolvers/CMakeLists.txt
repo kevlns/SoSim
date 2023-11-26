@@ -11,6 +11,8 @@ set(current_solver "")
 add_subdirectory(MixtureModelForNonNewtonFlow)
 list(APPEND solvers ${current_solver})
 
+add_subdirectory(SampleSolver)
+list(APPEND solvers ${current_solver})
 
 #add_subdirectory(NEXT_SOLVER)
 #list(APPEND solvers current_solver)

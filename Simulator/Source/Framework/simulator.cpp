@@ -24,15 +24,29 @@ namespace SoSim {
         }
     }
 
-    void Simulator::run() {
-        // 串行执行
-        for (auto scene: m_scenes)
-            scene->run();
+    void Simulator::run(bool sosim_gui) {
+
+        if (sosim_gui)
+            runGUI();
+        else
+            runPure();
+
     }
 
     void Simulator::terminate() {
         for (auto scene: m_scenes)
             scene->destroy();
+    }
+
+    void Simulator::runPure() {
+//        // 串行执行
+//        for (auto scene: m_scenes)
+//            scene->run();
+        std::cout << "run pure.\n";
+    }
+
+    void Simulator::runGUI() {
+        std::cout << "run gui.\n";
     }
 
     std::set<Scene *> Simulator::m_scenes;

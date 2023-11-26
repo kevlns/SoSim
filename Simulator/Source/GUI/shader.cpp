@@ -3,11 +3,18 @@
 //@description   :
 //@version       : 1.0
 
-#include "Public/GUI/shader.hpp"
+#include <iostream>
+#include <filesystem>
 
-namespace SoSim {
+#include "Public/GUI/shader.hpp"
+#include "glad/glad.h"
+
+namespace SoSim::GUI {
 
     Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+
+        std::string trueVertexPath = "../Shaders/" + std::string(vertexPath);
+
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;

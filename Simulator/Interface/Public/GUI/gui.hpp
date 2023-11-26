@@ -13,12 +13,9 @@
 #include "Public/Framework/scene.hpp"
 #include "Public/Framework/solver.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "GLFW/glfw3.h"
+#include "Private/GUI/gui_header_prefix.hpp"
 
-namespace SoSim {
+namespace SoSim::GUI {
 
     class GUI {
     public:
@@ -28,7 +25,10 @@ namespace SoSim {
 
         void run();
 
+        void terminate();
+
     private:
+        bool m_doRendering{true};
         Camera *m_camera{nullptr};
 
     private:

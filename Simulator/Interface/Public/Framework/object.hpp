@@ -20,13 +20,16 @@ namespace SoSim {
     public:
         Object() = default;
 
-        ~Object() = default;
+        virtual ~Object() = 0;
 
-        void attachComponent();
+        // TODO these two methods
+//        void attachComponent();
+//
+//        void detachComponent();
 
-        void detachComponent();
+        virtual void destroy() = 0;
 
-        void destroy();
+        virtual void refresh() = 0;
 
     public:
         uint32_t m_id;

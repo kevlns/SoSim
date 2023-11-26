@@ -38,6 +38,25 @@ namespace SoSim {
         // TODO
     };
 
+    struct TransformConfig {
+        float3 transform{0, 0, 0};
+        float3 rotate{0, 0, 0};
+        float3 scale{0, 0, 0};
+    };
+
+    struct ParticleObjectConfig {
+        std::string model_file_path;
+        std::string shape;
+        float3 lb{0, 0, 0};
+        float3 size{0, 0, 0};
+        float3 color{1, 1, 1};
+        float height{0};
+        float3 top_center{0, 0, 0};
+        float area_radius{0};
+        float particle_radius{0};
+        TransformConfig t_config{};
+    };
+
 }
 
 #endif //SOSIM_FRAMEWORK_CONFIG_HPP

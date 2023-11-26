@@ -5,7 +5,7 @@
 
 #include "Public/GUI/camera.hpp"
 
-namespace SoSim {
+namespace SoSim::GUI {
 
     Camera::Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
                                                                           MovementSpeed(SPEED),
@@ -42,7 +42,7 @@ namespace SoSim {
             Position += Right * velocity;
     }
 
-    void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) {
+    void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch) {
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 

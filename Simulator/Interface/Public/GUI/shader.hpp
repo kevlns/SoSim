@@ -11,9 +11,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "glad/glad.h"
-
-namespace SoSim {
+namespace SoSim::GUI {
 
     class Shader {
     public:
