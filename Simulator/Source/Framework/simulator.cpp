@@ -3,51 +3,81 @@
 //@description   :
 //@version       : 1.0
 
-#ifdef USE_SOSIM_GUI
-
-#endif
+#include <cuda_runtime.h>
 
 #include "Public/Framework/simulator.hpp"
 
 namespace SoSim {
 
-    Scene *Simulator::createScene(const SceneConfig &sceneConfig) {
-        auto *scene = new Scene(sceneConfig);
-        m_scenes.insert(scene);
-        return scene;
+    Simulator::Simulator() {
+        m_cudaConfig = new CudaConfig;
+
+        int dev;
+        cudaGetDevice(&dev);
+
+        cudaDeviceProp prop{};
+        cudaGetDeviceProperties_v2(&prop, dev);
+
+        m_cudaConfig->max_block_num_per_processor = prop.maxBlocksPerMultiProcessor;
+        m_cudaConfig->max_thread_num_per_block = prop.maxThreadsPerBlock;
+        m_cudaConfig->max_multiprocessor = prop.multiProcessorCount;
+    }
+
+    Simulator::~Simulator() {
+        delete m_cudaConfig;
+        m_cudaConfig = nullptr;
+    }
+
+    void Simulator::addSceneDefault() {
+        auto scene = new Scene(m_cudaConfig);
+        auto sceneConfig = scene->getConfig();
+        m_scene_map[sceneConfig] = scene;
+    }
+
+    void Simulator::addToSceneRemoveList(SceneConfig *sceneConfig) {
+        m_scenes_to_remove.insert(sceneConfig);
+    }
+
+    void Simulator::clearSceneRemoveList() {
+        for (auto sceneConfig: m_scenes_to_remove) {
+            auto scene = m_scene_map[sceneConfig];
+            m_scene_map.erase(sceneConfig);
+            removeScene(scene);
+        }
+        m_scenes_to_remove.clear();
     }
 
     void Simulator::removeScene(Scene *scene) {
-        if (m_scenes.count(scene) != 0) {
-            scene->destroy();
-            m_scenes.erase(scene);
-        }
+        scene->destroy();
+        delete scene;
+        scene = nullptr;
     }
 
-    void Simulator::run(bool sosim_gui) {
+    void Simulator::refresh() {
+        for (auto scene: m_scene_map)
+            scene.second->refresh();
+    }
 
-        if (sosim_gui)
-            runGUI();
-        else
-            runPure();
+    void Simulator::runTimeRange(double t) {
+        for (auto scene: m_scene_map)
+            scene.second->runTimeRange(t);
+    }
 
+    void Simulator::runSingleStep() {
+        for (auto scene: m_scene_map)
+            scene.second->runSingleStep();
     }
 
     void Simulator::terminate() {
-        for (auto scene: m_scenes)
-            scene->destroy();
+        for (auto scene: m_scene_map) {
+            scene.second->destroy();
+            delete scene.second;
+        }
+        m_scene_map.clear();
+        m_scenes_to_remove.clear();
     }
 
-    void Simulator::runPure() {
-//        // 串行执行
-//        for (auto scene: m_scenes)
-//            scene->run();
-        std::cout << "run pure.\n";
+    std::unordered_map<SceneConfig *, Scene *> &Simulator::getSceneMap() {
+        return m_scene_map;
     }
-
-    void Simulator::runGUI() {
-        std::cout << "run gui.\n";
-    }
-
-    std::set<Scene *> Simulator::m_scenes;
 }

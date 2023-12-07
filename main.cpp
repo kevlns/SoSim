@@ -3,11 +3,15 @@
 //@description   :
 //@version       : 1.0
 
-#define USE_SOSIM_GUI
-#include "Public/Framework/simulator.hpp"
-
+//#define GUI_KEEP_SILENT
 #include "Public/GUI/gui.hpp"
 
+using namespace SoSim;
+
 int main() {
-    SoSim::Simulator::run();
+    GUI sosim_editor;
+
+    sosim_editor.run();
+
+    sosim_editor.terminate();
 }

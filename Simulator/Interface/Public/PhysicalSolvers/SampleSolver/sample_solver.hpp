@@ -1,50 +1,54 @@
 //@author        : Long Shen
-//@date          : 2023/11/22
+//@date          : 2023/11/27
 //@description   :
 //@version       : 1.0
 
 #ifndef SOSIM_SAMPLE_SOLVER_HPP
 #define SOSIM_SAMPLE_SOLVER_HPP
 
-#include <vector>
-#include <iostream>
 #include <set>
 
+//#include "Public/Framework/object.hpp"
 #include "Public/Framework/solver.hpp"
-#include "Public/Framework/object.hpp"
+//#include "Public/Framework/framework_config.hpp"
+//#include "Public/Framework/component.hpp"
 
 namespace SoSim {
 
-    namespace SAMPLE {
+    class SampleSolver : public Solver {
+    public:
+        explicit SampleSolver(SceneConfig *sceneConfig, SolverConfig *solverConfig);
 
-        class SampleSolver : public Solver {
+        SampleSolver() = delete;
 
-        public:
-            SampleSolver() = default;
+        ~SampleSolver() override = default;
 
-            ~SampleSolver() override = default;
+        void refresh() override;
 
-            void initialize() override;
+        void runTimeRange(double t) override;
 
-            bool isInitialized() const override;
+        void runSingleStep() override;
 
-            void run() override;
+        void destroy() override;
 
-            void destroy() override;
+        void attachObject(Object *obj) override;
 
-            void setSolverConfig(SolverConfig *solverConfig, const SceneConfig *sceneConfig) override;
+        void removeObject(Object *obj) override;
 
-            void attachObject(const Object *obj) override;
+        SolverConfig *getConfig() override;
 
-            void addParticles(const std::string &obj_json_path) override;
+    private:
+        SolverConfig *m_solverConfig{nullptr};
 
-        protected:
-            void step() override;
+        Object *m_fluid_obj{nullptr};
+        Object *m_bound_obj{nullptr};
+        Object *m_dyRigid_obj{nullptr};
+        Object *m_elastic_obj{nullptr};
 
-        private:
-            std::set<Object *> m_objects;
+        std::set<Object *> m_attached_objects;
 
-        };
-    }
+    };
+
 }
+
 #endif //SOSIM_SAMPLE_SOLVER_HPP

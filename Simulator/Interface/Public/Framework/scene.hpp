@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <unordered_map>
 
 #include "Public/Framework/solver.hpp"
 #include "Public/Framework/framework_config.hpp"
@@ -20,36 +21,43 @@ namespace SoSim {
      * @brief TODO
      */
     class Scene {
-
     public:
-        explicit Scene(const SceneConfig &sceneConfig);
+        Scene(CudaConfig *cudaConfig);
 
-        ~Scene() = default;
+        ~Scene();
 
-        Solver *createSolver(SolverInstanceType solverInstance, SolverConfig *solverConfig);
-
-        void addObject(Object* obj);
+        void addObjectDefault();
 
         void removeObject(Object *obj);
 
-        void addSolver(Solver *solver);
+        void addToObjectRemoveList(ObjectConfig *objectConfig);
 
-        void removeSolver(Solver *solver);
+        void clearObjectRemoveList();
+
+        void removeAllObjects();
+
+        void refresh();
 
         void destroy();
 
-        void run();
+        void runTimeRange(double t);
+
+        void runSingleStep();
+
+        SceneConfig *getConfig();
+
+        std::unordered_map<ObjectConfig *, Object *> &getObjectMap();
 
     private:
-        uint32_t m_id{};
 
-        std::set<Solver *> m_solvers;
+        bool is_start{true};
 
-        std::set<Object *> m_objs;
+        SceneConfig *m_scene_config{nullptr};
 
-        SceneConfig *m_config{nullptr};
+        std::set<ObjectConfig *> m_obj_to_remove;
+
+        std::unordered_map<ObjectConfig *, Object *> m_obj_map;
     };
-
 }
 
 #endif //SOSIM_SCENE_HPP

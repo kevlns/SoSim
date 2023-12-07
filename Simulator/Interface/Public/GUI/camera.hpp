@@ -13,7 +13,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "input_handling.hpp"
 
-namespace SoSim::GUI {
+namespace SoSim {
 
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
     enum CameraMovement : uint8_t {
@@ -70,6 +70,10 @@ namespace SoSim::GUI {
     private:
         // calculates the front vector from the Camera's (updated) Euler Angles
         void updateCameraVectors();
+
+//        const unsigned int SCR_WIDTH{1080};
+//
+//        const unsigned int SCR_HEIGHT{720};
 
     };
 

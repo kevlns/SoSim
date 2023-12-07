@@ -11,7 +11,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "Public/Framework/mat.hpp"
+#include "Public/Framework/enum.hpp"
 #include "json/json.hpp"
 
 namespace SoSim {
@@ -19,7 +19,7 @@ namespace SoSim {
     extern uint32_t loadObjFromFile(const std::string &file_path, std::vector<float3> &pos);
 
     extern void genObjFromJson(const std::string &json_path, std::vector<float3> &pos, std::vector<float3> &vel,
-                               std::vector<float> &den, std::vector<Material> &mat, std::vector<Phase> &phase,
+                               std::vector<float> &den, std::vector<MaterialType> &mat, std::vector<PhaseType> &phase,
                                float &radius);
 
     extern std::vector<float3>

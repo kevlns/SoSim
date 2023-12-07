@@ -11,8 +11,6 @@
 #include "imgui_impl_opengl3.h"
 #include "GLFW/glfw3.h"
 
-#include "Public/GUI/shader.hpp"
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif

@@ -6,34 +6,46 @@
 #ifndef SOSIM_GUI_HPP
 #define SOSIM_GUI_HPP
 
-#include "Public/GUI/camera.hpp"
-#include "Public/GUI/shader.hpp"
-#include "Public/GUI/light.hpp"
 #include "Public/Framework/simulator.hpp"
-#include "Public/Framework/scene.hpp"
-#include "Public/Framework/solver.hpp"
-
+#include "Public/GUI/render.hpp"
 #include "Private/GUI/gui_header_prefix.hpp"
 
-namespace SoSim::GUI {
+
+#ifdef GUI_KEEP_SILENT
+const bool KEEP_SILENT = true;
+#else
+const bool KEEP_SILENT = false;
+#endif
+
+namespace SoSim {
 
     class GUI {
     public:
         GUI();
 
-        ~GUI();
+        ~GUI() = default;
 
-        void run();
+        void run(bool keepSilent = KEEP_SILENT);
 
         void terminate();
 
     private:
-        bool m_doRendering{true};
-        Camera *m_camera{nullptr};
+        void initialize();
+
+        void runPure();
+
+        void runGUI();
 
     private:
-        // opengl context
-        GLFWwindow *m_window{nullptr};
+        bool m_keep_silent{false};
+        Simulator *m_simulator{nullptr};
+        Renderer *m_renderer{nullptr};
+
+    private:
+        // gui resource
+        ImGuiIO m_io;
+        GLFWwindow *m_main_window{nullptr};
+
     };
 
 }

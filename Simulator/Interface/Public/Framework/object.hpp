@@ -8,34 +8,41 @@
 
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 #include "Public/Framework/component.hpp"
+#include "Public/Framework/framework_config.hpp"
 
 namespace SoSim {
-
     /**
      * @breif TODO
      */
     class Object {
     public:
-        Object() = default;
+        Object();
 
-        virtual ~Object() = 0;
+        ~Object();
 
-        // TODO these two methods
-//        void attachComponent();
-//
-//        void detachComponent();
+        void addComponent(const ComponentType &component);
 
-        virtual void destroy() = 0;
+        void removeComponent(const ComponentType &component);
 
-        virtual void refresh() = 0;
+        bool hasComponent(const ComponentType &component) const;
 
-    public:
-        uint32_t m_id;
+        void destroy();
 
+        void refresh();
+
+        Component *getComponent(const ComponentType &component);
+
+        ObjectConfig *getConfig();
+
+    private:
+
+        ObjectConfig *m_config;
+
+        std::unordered_map<ComponentType, Component *> m_components;
     };
-
 }
 
 

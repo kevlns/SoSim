@@ -5,7 +5,7 @@
 
 #include "Public/GUI/camera.hpp"
 
-namespace SoSim::GUI {
+namespace SoSim {
 
     Camera::Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
                                                                           MovementSpeed(SPEED),

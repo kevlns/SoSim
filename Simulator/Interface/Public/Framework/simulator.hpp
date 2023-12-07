@@ -10,7 +10,6 @@
 
 #include "Public/Framework/scene.hpp"
 #include "Public/Framework/framework_config.hpp"
-#include "Public/GUI/gui.hpp"
 
 #ifdef USE_SOSIM_GUI
 const bool SOSIM_GUI = true;
@@ -21,21 +20,35 @@ const bool SOSIM_GUI = false;
 namespace SoSim {
     class Simulator {
     public:
-        static Scene* createScene(const SceneConfig& sceneConfig);
+        Simulator();
 
-        static void removeScene(Scene* scene);
+        ~Simulator();
 
-        static void run(bool sosim_gui = SOSIM_GUI);
+        void addSceneDefault();
 
-        static void terminate();
+        void addToSceneRemoveList(SceneConfig *sceneConfig);
+
+        void clearSceneRemoveList();
+
+        void removeScene(Scene* scene);
+
+        void refresh();
+
+        void runTimeRange(double t);
+
+        void runSingleStep();
+
+        void terminate();
+
+        std::unordered_map<SceneConfig *, Scene *>& getSceneMap();
 
     private:
-        static void runPure();
+        CudaConfig *m_cudaConfig{nullptr};
 
-        static void runGUI();
+        std::set<SceneConfig *> m_scenes_to_remove;
 
-    private:
-        static std::set<Scene *> m_scenes;
+        std::unordered_map<SceneConfig *, Scene *> m_scene_map;
+
     };
 }
 

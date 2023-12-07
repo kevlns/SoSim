@@ -6,15 +6,20 @@
 #ifndef SOSIM_SOLVER_REF_HPP
 #define SOSIM_SOLVER_REF_HPP
 
-#include "Public/PhysicalSolvers/SampleSolver/sample_solver.hpp"
-#include "Public/PhysicalSolvers/MixtureModelForNonNewtonFlow/mmsph_solver.hpp"
-
 namespace SoSim {
 
     enum SolverInstanceType : uint8_t {
+        SOLVER_NONE = 0,
+
         SAMPLE_SOLVER,
-        MMSPH_MMSPHSolver
+        /**
+         *  add your own solver blow
+         */
+
+        SOLVER_BOTTOM
     };
+    static inline const char *solverItems[] = {"None",
+                                               "SampleSolver"};
 
 }
 

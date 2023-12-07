@@ -9,20 +9,22 @@
 
 namespace SoSim {
 
-    void Solver::initialize() {}
+    void Solver::runTimeRange(double t) {
+    }
 
-    bool Solver::isInitialized() const { return false; }
+    void Solver::runSingleStep() {
+    }
 
-    void Solver::run() {}
+    void Solver::destroy() {
+    }
 
-    void Solver::destroy() {}
+    void Solver::attachObject(Object *obj) {
+    }
 
-    void Solver::setSolverConfig(SolverConfig *solverConfig, const SceneConfig *sceneConfig) {}
+    void Solver::removeObject(Object *obj) {
+    }
 
-    void Solver::attachObject(const Object *obj) {}
-
-    void Solver::addParticles(const std::string &obj_json_path) {}
-
-    void Solver::step() {}
-
+    SolverConfig *Solver::getConfig() {
+        return nullptr;
+    }
 }

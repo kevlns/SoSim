@@ -9,11 +9,14 @@
 #include "Public/GUI/shader.hpp"
 #include "glad/glad.h"
 
-namespace SoSim::GUI {
+namespace SoSim {
 
     Shader::Shader(const char *vertexPath, const char *fragmentPath) {
 
-        std::string trueVertexPath = "../Shaders/" + std::string(vertexPath);
+        std::filesystem::path curFilePath = __FILE__;
+
+        std::string vsPath = curFilePath.parent_path().string() + "/Shaders/" + vertexPath;
+        std::string fgPath = curFilePath.parent_path().string() + "/Shaders/" + fragmentPath;
 
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -25,8 +28,8 @@ namespace SoSim::GUI {
         fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try {
             // open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
+            vShaderFile.open(vsPath);
+            fShaderFile.open(fgPath);
             std::stringstream vShaderStream, fShaderStream;
             // read file's buffer contents into streams
             vShaderStream << vShaderFile.rdbuf();
@@ -66,22 +69,6 @@ namespace SoSim::GUI {
         glDeleteShader(fragment);
     }
 
-    void Shader::use() {
-        glUseProgram(ID);
-    }
-
-    void Shader::setBool(const std::string &name, bool value) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int) value);
-    }
-
-    void Shader::setInt(const std::string &name, int value) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
-    }
-
-    void Shader::setFloat(const std::string &name, float value) const {
-        glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
-    }
-
     void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         int success;
         char infoLog[1024];
@@ -102,5 +89,8 @@ namespace SoSim::GUI {
         }
     }
 
+    void Shader::destroy() {
+        glDeleteProgram(ID);
+    }
 
 }

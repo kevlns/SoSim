@@ -21,6 +21,9 @@ add_subdirectory(PhysicalSolvers)
 set(SOSIM_PHYSICAL_SOLVERS ${sosim-solvers} PARENT_SCOPE)
 
 # build gui
+set(sosim-gui "")
 add_subdirectory(GUI)
+set(SOSIM_GUI_LIB ${sosim-gui} PARENT_SCOPE)
 
-target_link_libraries(sosim-framework-scene PUBLIC ${sosim-solvers})
+target_link_libraries(sosim-framework-scene PRIVATE ${sosim-solvers})
+target_link_libraries(sosim-gui PRIVATE ${SOSIM_FRAMEWORK_LIBS} ${sosim-solvers})

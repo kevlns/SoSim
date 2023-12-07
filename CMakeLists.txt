@@ -17,10 +17,9 @@ set(SOSIM_INCLUDE_DIR
         ${SOSIM_THIRDPARTY_ROOT}/Public/imgui
         ${SOSIM_THIRDPARTY_ROOT}/Public/glad)
 set(SOSIM_SHARED_LIBS "")
+set(SOSIM_GUI_LIB "")
 set(SOSIM_FRAMEWORK_LIBS "")
 set(SOSIM_PHYSICAL_SOLVERS "")
-
-cmake_policy(SET CMP0146 OLD)
 
 execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -42,7 +41,7 @@ target_link_libraries(SoSim.exe PRIVATE
         ${SOSIM_FRAMEWORK_LIBS}
         ${SOSIM_SHARED_LIBS}
         ${SOSIM_PHYSICAL_SOLVERS}
-        sosim-gui)
+        ${SOSIM_GUI_LIB})
 
 
 

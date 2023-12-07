@@ -13033,7 +13033,7 @@ nk_font_init(struct nk_font *font, float pixel_height,
 
 /* ---------------------------------------------------------------------------
  *
- *                          DEFAULT FONT
+ *                          SOLVER_NONE FONT
  *
  * ProggyClean.ttf
  * Copyright (c) 2004, 2005 Tristan Grimmer

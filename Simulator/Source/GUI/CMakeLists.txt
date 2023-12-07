@@ -31,3 +31,5 @@ target_link_libraries(${TARGET_NAME} PRIVATE
         OpenGL::GL
         glfw
         glm)
+
+set(sosim-gui ${TARGET_NAME} PARENT_SCOPE)
