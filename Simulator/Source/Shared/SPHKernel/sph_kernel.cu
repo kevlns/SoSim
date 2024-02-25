@@ -8,7 +8,7 @@
 
 namespace SoSim {
 
-    inline __device__ float cubic_value(const float3 &x_ij, float sph_h) {
+    extern inline __device__ float cubic_value(const float3 &x_ij, float sph_h) {
         const float PI = 3.14159265;
         const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(sph_h, 3));
         const float r_norm = length(x_ij);
@@ -30,7 +30,7 @@ namespace SoSim {
         return res;
     }
 
-    inline __device__ float3 cubic_grad(const float3 &x_ij, float sph_h) {
+    extern inline __device__ float3 cubic_grad(const float3 &x_ij, float sph_h) {
         const float PI = 3.14159265;
         const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(sph_h, 3));
 
@@ -52,7 +52,7 @@ namespace SoSim {
         return res;
     }
 
-    inline __device__ float poly6_value(const float3 &x_ij, float sph_h) {
+    extern inline __device__ float poly6_value(const float3 &x_ij, float sph_h) {
         const float PI = 3.14159265;
         const float sigma = 315 / (64 * PI * pow(sph_h, 9));
         const float r = length(x_ij);
@@ -66,7 +66,7 @@ namespace SoSim {
         return res;
     }
 
-    inline __device__ float3 spiky_grad(const float3 &x_ij, float sph_h) {
+    extern inline __device__ float3 spiky_grad(const float3 &x_ij, float sph_h) {
         const float PI = 3.14159265;
         const float sigma = 315 / (64 * PI * pow(sph_h, 9));
         const float r = length(x_ij);

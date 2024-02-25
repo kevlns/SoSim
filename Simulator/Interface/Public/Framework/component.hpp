@@ -11,10 +11,16 @@
 #include <cuda_runtime.h>
 
 #include "enum.hpp"
+#include "Public/Shared/CudaUtils/cuda_tool.hpp"
+#include "Public/Framework/framework_config.hpp"
+#include "Public/Shared/ModelUtils/model_builder.hpp"
+
 
 namespace SoSim {
     struct Component {
         virtual void destroy() = 0;
+
+        virtual void refresh(ObjectConfig *objectConfig) = 0;
 
         virtual ~Component() {};
     };
@@ -27,12 +33,17 @@ namespace SoSim {
         ~BaseMoveComponent() override = default;
 
         void destroy() override {
-            std::cout << "BaseMoveComponent destructed.\n";
+            std::cout << "  BaseMoveComponent destructed.\n";
+        }
+
+        void refresh(ObjectConfig *objectConfig) override {
+            // TODO
+            std::cout << "  BaseMoveComponent refresh.\n";
         }
     };
 
     struct BaseParticleComponent : Component {
-        float3 *pos_cuPtr;
+        float3 *pos_cuPtr{nullptr};
         std::vector<float3> pos;
         std::vector<float3> vel;
         std::vector<float3> acc;
@@ -40,10 +51,23 @@ namespace SoSim {
         ~BaseParticleComponent() override = default;
 
         void destroy() override {
-            if (!pos.empty())
+            if (pos_cuPtr)
                 cudaFree(pos_cuPtr);
 
-            std::cout << "BaseParticleComponent destructed.\n";
+            std::cout << "  BaseParticleComponent destructed.\n";
+        }
+
+        void refresh(ObjectConfig *objectConfig) override {
+            if (pos_cuPtr) {
+                cudaFree(pos_cuPtr);
+                cudaGetLastError_t("Object refresh BaseParticleComponent pos_cuPtr failed.\n");
+            }
+            pos = genFromObjectConfig(objectConfig);
+            cudaMalloc((void **) &pos_cuPtr, pos.size() * sizeof(float3));
+            cudaMemcpy(pos_cuPtr, pos.data(), pos.size() * sizeof(float3), cudaMemcpyHostToDevice);
+            cudaGetLastError_t("Object refresh BaseParticleComponent failed.\n");
+
+            std::cout << "  BaseParticleComponent refresh.\n";
         }
     };
 
@@ -63,7 +87,13 @@ namespace SoSim {
         void destroy() override {
             render_pos_cuPtr = nullptr;
             render_color_cuPtr = nullptr;
-            std::cout << "Particle_GLRenderableComponent destructed.\n";
+            std::cout << "  Particle_GLRenderableComponent destructed.\n";
+        }
+
+        void refresh(ObjectConfig *objectConfig) override {
+            // TODO
+
+            std::cout << "  Particle_GLRenderableComponent refresh.\n";
         }
     };
 

@@ -1,0 +1,3376 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						8,
+						14
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty",
+					"childIndexes" : 
+					[
+						2,
+						6
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty-Debug-37bb83c8ded657ce5430.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Simulator/ThirdParty",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw-Debug-c5c2cee4c5571f0937d9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw",
+					"targetIndexes" : 
+					[
+						0,
+						45
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.src-Debug-34e27544f9f9d9de326b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/src",
+					"targetIndexes" : 
+					[
+						20,
+						46
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/examples",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.examples-Debug-4d9e879125f67d0ef3f2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/examples",
+					"targetIndexes" : 
+					[
+						13,
+						19,
+						22,
+						29,
+						31,
+						33,
+						34,
+						39,
+						47
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/tests",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.tests-Debug-1c707ce553d1a375dc43.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/tests",
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16,
+						17,
+						18,
+						21,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						30,
+						32,
+						40,
+						41,
+						42,
+						43,
+						44,
+						48
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm",
+					"childIndexes" : 
+					[
+						7
+					],
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm-Debug-6bf7108760f66b357d39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm/glm",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm.glm-Debug-0459804bf3367105d82e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm/glm"
+				},
+				{
+					"build" : "Simulator/Source",
+					"childIndexes" : 
+					[
+						9,
+						10,
+						11,
+						13
+					],
+					"jsonFile" : "directory-Simulator.Source-Debug-75885a530f6195c50aa5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source"
+				},
+				{
+					"build" : "Simulator/Source/Framework",
+					"jsonFile" : "directory-Simulator.Source.Framework-Debug-1fdaad97ec0b0e2fa3de.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 4,
+					"source" : "Simulator/Source/Framework",
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"build" : "Simulator/Source/Shared",
+					"jsonFile" : "directory-Simulator.Source.Shared-Debug-1cd0f5277688a9edabcd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "Simulator/Source/Shared",
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers",
+					"childIndexes" : 
+					[
+						12
+					],
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers-Debug-5b3fa8e10e2fd5e3bb27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source/PhysicalSolvers"
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers.SampleSolver-Debug-8e44d42c9809a21ee3a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 6,
+					"source" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"build" : "Simulator/Source/GUI",
+					"jsonFile" : "directory-Simulator.Source.GUI-Debug-6ce66615935ed37902e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 7,
+					"source" : "Simulator/Source/GUI",
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"build" : "Simulator/Test",
+					"childIndexes" : 
+					[
+						15
+					],
+					"jsonFile" : "directory-Simulator.Test-Debug-5c526bdd5e7edbb04d07.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 8,
+					"source" : "Simulator/Test",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"jsonFile" : "directory-Simulator.Test.UnitTest.ImGUI-Test-Debug-0f4ea3a80faca9d2af3b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 9,
+					"source" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						8,
+						11
+					],
+					"name" : "SoSim",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "SoSim-ThirdParty",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "GLFW",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						39,
+						40,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "glm",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "SoSim-Framework",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "SoSim-Shared",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "sosim-sampleSolver",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "SoSim-GUI",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						9
+					],
+					"directoryIndexes" : 
+					[
+						14
+					],
+					"name" : "SoSim-Test",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15
+					],
+					"name" : "SoSim-ImGUI-Test",
+					"parentIndex" : 8,
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-ALL_BUILD-Debug-3afc0c13cc59f4f02f00.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Debug-74851e79a4f425bbff76.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "ALL_BUILD::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-ALL_BUILD-Debug-f413ddf56531bac3b2cf.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@0e56bd7ca164d5911cf7",
+					"jsonFile" : "target-ALL_BUILD-Debug-4eb947411c70a4ae4dfd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "ALL_BUILD::@3378329231a247eeae93",
+					"jsonFile" : "target-ALL_BUILD-Debug-63100ffd278c2e5638b5.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "ALL_BUILD::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-ALL_BUILD-Debug-9b297875198954ab233b.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@9c059f0f5c227293daf2",
+					"jsonFile" : "target-ALL_BUILD-Debug-1029967e93cf5bd01fcb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "ALL_BUILD::@544ca09d6909bb529bb0",
+					"jsonFile" : "target-ALL_BUILD-Debug-629be277843b927790cd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "ALL_BUILD::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-ALL_BUILD-Debug-150fff2748a4ca1d2ffb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "ALL_BUILD::@6e1f63077f7295e24254",
+					"jsonFile" : "target-ALL_BUILD-Debug-2b9c4560df4cdaa6dc68.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SoSim::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SoSim-Debug-f8d58c436ff1c7b77694.json",
+					"name" : "SoSim",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "SoSim.TestImGUI.exe::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-SoSim.TestImGUI.exe-Debug-61b218dc34e31f0a9268.json",
+					"name" : "SoSim.TestImGUI.exe",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Debug-84131d2a66836d068904.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "boing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-boing-Debug-7c4e762ad494656e169a.json",
+					"name" : "boing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "clipboard::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-clipboard-Debug-b06249b06947e52a7f5c.json",
+					"name" : "clipboard",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "cursor::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-cursor-Debug-1f7b424ef3309a3711fc.json",
+					"name" : "cursor",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "empty::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-empty-Debug-8018a5ba021103cf581f.json",
+					"name" : "empty",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "events::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-events-Debug-e6665ada190ec68fa273.json",
+					"name" : "events",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "gamma::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-gamma-Debug-d87a8de675057b65ccc2.json",
+					"name" : "gamma",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "gears::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-gears-Debug-287025d854493d8c0e3e.json",
+					"name" : "gears",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-glfw-Debug-bb721e2eb43ed24035f3.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "glfwinfo::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-glfwinfo-Debug-0c77abf0acae7d73dad1.json",
+					"name" : "glfwinfo",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "heightmap::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-heightmap-Debug-6f27e9b419ac04426608.json",
+					"name" : "heightmap",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "icon::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-icon-Debug-7e07a9b5b4db5895d25f.json",
+					"name" : "icon",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "iconify::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-iconify-Debug-bff1911fd40a8767148a.json",
+					"name" : "iconify",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "inputlag::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-inputlag-Debug-fa0632d3fcc1f1938a02.json",
+					"name" : "inputlag",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "joysticks::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-joysticks-Debug-028d29fa7cc1017668d3.json",
+					"name" : "joysticks",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "monitors::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-monitors-Debug-8d9dfc789de7c4b5cdaa.json",
+					"name" : "monitors",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "msaa::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-msaa-Debug-99bcf9ece6cc3eae950f.json",
+					"name" : "msaa",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "offscreen::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-offscreen-Debug-ee318c460412db51932d.json",
+					"name" : "offscreen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "opacity::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-opacity-Debug-17397b9ac67322cbd101.json",
+					"name" : "opacity",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "particles::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-particles-Debug-45bce57c201c50785267.json",
+					"name" : "particles",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "reopen::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-reopen-Debug-40cbd262c0038f9eb342.json",
+					"name" : "reopen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "sharing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-sharing-Debug-b2ba0f974234925e5434.json",
+					"name" : "sharing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "simple::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-simple-Debug-921280670db746e7affa.json",
+					"name" : "simple",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "sosim_Framework::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-sosim_Framework-Debug-a744512c82c83372bfdc.json",
+					"name" : "sosim_Framework",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "sosim_Gui::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-sosim_Gui-Debug-c6a0fd6511b440031d89.json",
+					"name" : "sosim_Gui",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "sosim_SampleSolver::@3378329231a247eeae93",
+					"jsonFile" : "target-sosim_SampleSolver-Debug-7b15a929b6ab3c690180.json",
+					"name" : "sosim_SampleSolver",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "sosim_Shared::@6e1f63077f7295e24254",
+					"jsonFile" : "target-sosim_Shared-Debug-c5f3b78e61002c6488f9.json",
+					"name" : "sosim_Shared",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "splitview::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-splitview-Debug-77579239ecc348caf202.json",
+					"name" : "splitview",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "tearing::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-tearing-Debug-6649781218d8002573e7.json",
+					"name" : "tearing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "threads::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-threads-Debug-5235b538d05c43c6739f.json",
+					"name" : "threads",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "timeout::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-timeout-Debug-c1546cc6255cdb41d7a5.json",
+					"name" : "timeout",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "title::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-title-Debug-b2e76bd08ffddaf81181.json",
+					"name" : "title",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "triangle-vulkan::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-triangle-vulkan-Debug-65ecea52b723c253a255.json",
+					"name" : "triangle-vulkan",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "uninstall::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-uninstall-Debug-7e239ebfbd958b8b2f27.json",
+					"name" : "uninstall",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "update_mappings::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-update_mappings-Debug-92c7f9091652c07b465f.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "wave::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-wave-Debug-dbd7c46b58f00f60adac.json",
+					"name" : "wave",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "windows::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-windows-Debug-4879e50b5e24cf152912.json",
+					"name" : "windows",
+					"projectIndex" : 2
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						8,
+						14
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty",
+					"childIndexes" : 
+					[
+						2,
+						6
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty-Release-37bb83c8ded657ce5430.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Simulator/ThirdParty",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw-Release-c5c2cee4c5571f0937d9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw",
+					"targetIndexes" : 
+					[
+						0,
+						45
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.src-Release-48aac915f4b7dba6e3c7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/src",
+					"targetIndexes" : 
+					[
+						20,
+						46
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/examples",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.examples-Release-4d9e879125f67d0ef3f2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/examples",
+					"targetIndexes" : 
+					[
+						13,
+						19,
+						22,
+						29,
+						31,
+						33,
+						34,
+						39,
+						47
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/tests",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.tests-Release-1c707ce553d1a375dc43.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/tests",
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16,
+						17,
+						18,
+						21,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						30,
+						32,
+						40,
+						41,
+						42,
+						43,
+						44,
+						48
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm",
+					"childIndexes" : 
+					[
+						7
+					],
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm-Release-6bf7108760f66b357d39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm/glm",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm.glm-Release-0459804bf3367105d82e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm/glm"
+				},
+				{
+					"build" : "Simulator/Source",
+					"childIndexes" : 
+					[
+						9,
+						10,
+						11,
+						13
+					],
+					"jsonFile" : "directory-Simulator.Source-Release-75885a530f6195c50aa5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source"
+				},
+				{
+					"build" : "Simulator/Source/Framework",
+					"jsonFile" : "directory-Simulator.Source.Framework-Release-1fdaad97ec0b0e2fa3de.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 4,
+					"source" : "Simulator/Source/Framework",
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"build" : "Simulator/Source/Shared",
+					"jsonFile" : "directory-Simulator.Source.Shared-Release-1cd0f5277688a9edabcd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "Simulator/Source/Shared",
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers",
+					"childIndexes" : 
+					[
+						12
+					],
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers-Release-5b3fa8e10e2fd5e3bb27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source/PhysicalSolvers"
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers.SampleSolver-Release-8e44d42c9809a21ee3a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 6,
+					"source" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"build" : "Simulator/Source/GUI",
+					"jsonFile" : "directory-Simulator.Source.GUI-Release-6ce66615935ed37902e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 7,
+					"source" : "Simulator/Source/GUI",
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"build" : "Simulator/Test",
+					"childIndexes" : 
+					[
+						15
+					],
+					"jsonFile" : "directory-Simulator.Test-Release-5c526bdd5e7edbb04d07.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 8,
+					"source" : "Simulator/Test",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"jsonFile" : "directory-Simulator.Test.UnitTest.ImGUI-Test-Release-0f4ea3a80faca9d2af3b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 9,
+					"source" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						8,
+						11
+					],
+					"name" : "SoSim",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "SoSim-ThirdParty",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "GLFW",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						39,
+						40,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "glm",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "SoSim-Framework",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "SoSim-Shared",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "sosim-sampleSolver",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "SoSim-GUI",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						9
+					],
+					"directoryIndexes" : 
+					[
+						14
+					],
+					"name" : "SoSim-Test",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15
+					],
+					"name" : "SoSim-ImGUI-Test",
+					"parentIndex" : 8,
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-ALL_BUILD-Release-3afc0c13cc59f4f02f00.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Release-74851e79a4f425bbff76.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "ALL_BUILD::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-ALL_BUILD-Release-f413ddf56531bac3b2cf.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@0e56bd7ca164d5911cf7",
+					"jsonFile" : "target-ALL_BUILD-Release-4eb947411c70a4ae4dfd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "ALL_BUILD::@3378329231a247eeae93",
+					"jsonFile" : "target-ALL_BUILD-Release-63100ffd278c2e5638b5.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "ALL_BUILD::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-ALL_BUILD-Release-9b297875198954ab233b.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@9c059f0f5c227293daf2",
+					"jsonFile" : "target-ALL_BUILD-Release-1029967e93cf5bd01fcb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "ALL_BUILD::@544ca09d6909bb529bb0",
+					"jsonFile" : "target-ALL_BUILD-Release-629be277843b927790cd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "ALL_BUILD::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-ALL_BUILD-Release-150fff2748a4ca1d2ffb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "ALL_BUILD::@6e1f63077f7295e24254",
+					"jsonFile" : "target-ALL_BUILD-Release-2b9c4560df4cdaa6dc68.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SoSim::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SoSim-Release-168a19d7f9bb736408da.json",
+					"name" : "SoSim",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "SoSim.TestImGUI.exe::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-SoSim.TestImGUI.exe-Release-bf1aefceeaa3644e1547.json",
+					"name" : "SoSim.TestImGUI.exe",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Release-84131d2a66836d068904.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "boing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-boing-Release-867a15e04f9c1cd17001.json",
+					"name" : "boing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "clipboard::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-clipboard-Release-5abf631e5b19af0ba02c.json",
+					"name" : "clipboard",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "cursor::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-cursor-Release-6d14fd4260a0290b41ba.json",
+					"name" : "cursor",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "empty::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-empty-Release-941b8d34624367c6600e.json",
+					"name" : "empty",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "events::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-events-Release-67a219f75ecb12701ff9.json",
+					"name" : "events",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "gamma::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-gamma-Release-90b5b0216d3410d07b55.json",
+					"name" : "gamma",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "gears::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-gears-Release-ad25f12b213f725ae59d.json",
+					"name" : "gears",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-glfw-Release-9d2ab70f191819f32038.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "glfwinfo::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-glfwinfo-Release-f2b71813f3a6cdda03fd.json",
+					"name" : "glfwinfo",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "heightmap::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-heightmap-Release-fb140afdb075862b35dc.json",
+					"name" : "heightmap",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "icon::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-icon-Release-3d667cebd9b0f03c4eb6.json",
+					"name" : "icon",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "iconify::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-iconify-Release-adfd3ea9562144684253.json",
+					"name" : "iconify",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "inputlag::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-inputlag-Release-38f9c7498203e5954209.json",
+					"name" : "inputlag",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "joysticks::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-joysticks-Release-64a85fda24176b3326cd.json",
+					"name" : "joysticks",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "monitors::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-monitors-Release-63b28fb548f8bdac166d.json",
+					"name" : "monitors",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "msaa::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-msaa-Release-074ad3e9888f73450df5.json",
+					"name" : "msaa",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "offscreen::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-offscreen-Release-b7aef8e2ef203bc2d7c1.json",
+					"name" : "offscreen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "opacity::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-opacity-Release-d42effa8a4b212c76880.json",
+					"name" : "opacity",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "particles::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-particles-Release-2114521f625bae27b1ff.json",
+					"name" : "particles",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "reopen::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-reopen-Release-8751faea332eeb4981ab.json",
+					"name" : "reopen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "sharing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-sharing-Release-2d6352885648e22ef6ff.json",
+					"name" : "sharing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "simple::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-simple-Release-d9fd1400a96c82ab2515.json",
+					"name" : "simple",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "sosim_Framework::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-sosim_Framework-Release-2ec137d8383eafa5606e.json",
+					"name" : "sosim_Framework",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "sosim_Gui::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-sosim_Gui-Release-ffa17d05661380cdb634.json",
+					"name" : "sosim_Gui",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "sosim_SampleSolver::@3378329231a247eeae93",
+					"jsonFile" : "target-sosim_SampleSolver-Release-935f1fdea8321fc476b9.json",
+					"name" : "sosim_SampleSolver",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "sosim_Shared::@6e1f63077f7295e24254",
+					"jsonFile" : "target-sosim_Shared-Release-18e8a305a9ef64a86f2e.json",
+					"name" : "sosim_Shared",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "splitview::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-splitview-Release-815cb0ca3d4cea91a72f.json",
+					"name" : "splitview",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "tearing::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-tearing-Release-ebedc0d694ece34972bb.json",
+					"name" : "tearing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "threads::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-threads-Release-937abcf73c460e29fc4c.json",
+					"name" : "threads",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "timeout::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-timeout-Release-bc5347ad0d64d0fb87eb.json",
+					"name" : "timeout",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "title::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-title-Release-e73fe909465c89f61331.json",
+					"name" : "title",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "triangle-vulkan::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-triangle-vulkan-Release-cecde5c1c421dbcbd9a2.json",
+					"name" : "triangle-vulkan",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "uninstall::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-uninstall-Release-7e239ebfbd958b8b2f27.json",
+					"name" : "uninstall",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "update_mappings::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-update_mappings-Release-92c7f9091652c07b465f.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "wave::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-wave-Release-c3c6418b5341906fa3b7.json",
+					"name" : "wave",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "windows::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-windows-Release-1d6d1d930bec6e624b2e.json",
+					"name" : "windows",
+					"projectIndex" : 2
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						8,
+						14
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-MinSizeRel-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty",
+					"childIndexes" : 
+					[
+						2,
+						6
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty-MinSizeRel-37bb83c8ded657ce5430.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Simulator/ThirdParty",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw-MinSizeRel-c5c2cee4c5571f0937d9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw",
+					"targetIndexes" : 
+					[
+						0,
+						45
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.src-MinSizeRel-e3e1594a0a4bf24acc6f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/src",
+					"targetIndexes" : 
+					[
+						20,
+						46
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/examples",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.examples-MinSizeRel-4d9e879125f67d0ef3f2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/examples",
+					"targetIndexes" : 
+					[
+						13,
+						19,
+						22,
+						29,
+						31,
+						33,
+						34,
+						39,
+						47
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/tests",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.tests-MinSizeRel-1c707ce553d1a375dc43.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/tests",
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16,
+						17,
+						18,
+						21,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						30,
+						32,
+						40,
+						41,
+						42,
+						43,
+						44,
+						48
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm",
+					"childIndexes" : 
+					[
+						7
+					],
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm-MinSizeRel-6bf7108760f66b357d39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm/glm",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm.glm-MinSizeRel-0459804bf3367105d82e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm/glm"
+				},
+				{
+					"build" : "Simulator/Source",
+					"childIndexes" : 
+					[
+						9,
+						10,
+						11,
+						13
+					],
+					"jsonFile" : "directory-Simulator.Source-MinSizeRel-75885a530f6195c50aa5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source"
+				},
+				{
+					"build" : "Simulator/Source/Framework",
+					"jsonFile" : "directory-Simulator.Source.Framework-MinSizeRel-1fdaad97ec0b0e2fa3de.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 4,
+					"source" : "Simulator/Source/Framework",
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"build" : "Simulator/Source/Shared",
+					"jsonFile" : "directory-Simulator.Source.Shared-MinSizeRel-1cd0f5277688a9edabcd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "Simulator/Source/Shared",
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers",
+					"childIndexes" : 
+					[
+						12
+					],
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers-MinSizeRel-5b3fa8e10e2fd5e3bb27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source/PhysicalSolvers"
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers.SampleSolver-MinSizeRel-8e44d42c9809a21ee3a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 6,
+					"source" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"build" : "Simulator/Source/GUI",
+					"jsonFile" : "directory-Simulator.Source.GUI-MinSizeRel-6ce66615935ed37902e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 7,
+					"source" : "Simulator/Source/GUI",
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"build" : "Simulator/Test",
+					"childIndexes" : 
+					[
+						15
+					],
+					"jsonFile" : "directory-Simulator.Test-MinSizeRel-5c526bdd5e7edbb04d07.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 8,
+					"source" : "Simulator/Test",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"jsonFile" : "directory-Simulator.Test.UnitTest.ImGUI-Test-MinSizeRel-0f4ea3a80faca9d2af3b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 9,
+					"source" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"name" : "MinSizeRel",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						8,
+						11
+					],
+					"name" : "SoSim",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "SoSim-ThirdParty",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "GLFW",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						39,
+						40,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "glm",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "SoSim-Framework",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "SoSim-Shared",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "sosim-sampleSolver",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "SoSim-GUI",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						9
+					],
+					"directoryIndexes" : 
+					[
+						14
+					],
+					"name" : "SoSim-Test",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15
+					],
+					"name" : "SoSim-ImGUI-Test",
+					"parentIndex" : 8,
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-3afc0c13cc59f4f02f00.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-74851e79a4f425bbff76.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "ALL_BUILD::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-f413ddf56531bac3b2cf.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@0e56bd7ca164d5911cf7",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-4eb947411c70a4ae4dfd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "ALL_BUILD::@3378329231a247eeae93",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-63100ffd278c2e5638b5.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "ALL_BUILD::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-9b297875198954ab233b.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@9c059f0f5c227293daf2",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-1029967e93cf5bd01fcb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "ALL_BUILD::@544ca09d6909bb529bb0",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-629be277843b927790cd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "ALL_BUILD::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-150fff2748a4ca1d2ffb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "ALL_BUILD::@6e1f63077f7295e24254",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-2b9c4560df4cdaa6dc68.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SoSim::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SoSim-MinSizeRel-7af294d1ff8e4310b7ec.json",
+					"name" : "SoSim",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "SoSim.TestImGUI.exe::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-SoSim.TestImGUI.exe-MinSizeRel-ee64a4827a4fb5275e13.json",
+					"name" : "SoSim.TestImGUI.exe",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-MinSizeRel-84131d2a66836d068904.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "boing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-boing-MinSizeRel-b04edd1a197994635e57.json",
+					"name" : "boing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "clipboard::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-clipboard-MinSizeRel-909959403d68d8fee675.json",
+					"name" : "clipboard",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "cursor::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-cursor-MinSizeRel-bac11a9ef7674ddccf82.json",
+					"name" : "cursor",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "empty::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-empty-MinSizeRel-3417bbde0248c260e8f7.json",
+					"name" : "empty",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "events::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-events-MinSizeRel-25f61a1b125d6af55dec.json",
+					"name" : "events",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "gamma::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-gamma-MinSizeRel-304e634e8af57f35a604.json",
+					"name" : "gamma",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "gears::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-gears-MinSizeRel-b84a4ca9b301358bc8c1.json",
+					"name" : "gears",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-glfw-MinSizeRel-7769dd4d257e439bc9ab.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "glfwinfo::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-glfwinfo-MinSizeRel-afd371e874482c30b04e.json",
+					"name" : "glfwinfo",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "heightmap::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-heightmap-MinSizeRel-10d278a6323a752ab436.json",
+					"name" : "heightmap",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "icon::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-icon-MinSizeRel-2fca0f4afd01e26c1875.json",
+					"name" : "icon",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "iconify::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-iconify-MinSizeRel-a5f261bd3f3166df54c8.json",
+					"name" : "iconify",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "inputlag::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-inputlag-MinSizeRel-9115fbd8fdf374f9450b.json",
+					"name" : "inputlag",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "joysticks::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-joysticks-MinSizeRel-102336c6ec1e19ef5e4e.json",
+					"name" : "joysticks",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "monitors::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-monitors-MinSizeRel-6726ec6849853f70bb2c.json",
+					"name" : "monitors",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "msaa::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-msaa-MinSizeRel-629c7d6388c6d8527786.json",
+					"name" : "msaa",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "offscreen::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-offscreen-MinSizeRel-dcec5c656decfab67517.json",
+					"name" : "offscreen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "opacity::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-opacity-MinSizeRel-80b1eb3acad91a5c3e8c.json",
+					"name" : "opacity",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "particles::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-particles-MinSizeRel-95fbb117b6277cd20ab7.json",
+					"name" : "particles",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "reopen::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-reopen-MinSizeRel-8b2a72a9f2d353ce43f0.json",
+					"name" : "reopen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "sharing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-sharing-MinSizeRel-0616d381a188785e7ba7.json",
+					"name" : "sharing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "simple::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-simple-MinSizeRel-0abef84a6bec76f51557.json",
+					"name" : "simple",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "sosim_Framework::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-sosim_Framework-MinSizeRel-59232144c970014fa1f1.json",
+					"name" : "sosim_Framework",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "sosim_Gui::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-sosim_Gui-MinSizeRel-84412a508c9c052de342.json",
+					"name" : "sosim_Gui",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "sosim_SampleSolver::@3378329231a247eeae93",
+					"jsonFile" : "target-sosim_SampleSolver-MinSizeRel-9bfdcaefc8835540d9f8.json",
+					"name" : "sosim_SampleSolver",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "sosim_Shared::@6e1f63077f7295e24254",
+					"jsonFile" : "target-sosim_Shared-MinSizeRel-c9a460d1e5a86e869237.json",
+					"name" : "sosim_Shared",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "splitview::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-splitview-MinSizeRel-f3c3ddc8c8234cff96cf.json",
+					"name" : "splitview",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "tearing::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-tearing-MinSizeRel-4f2a970e6d7624c503aa.json",
+					"name" : "tearing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "threads::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-threads-MinSizeRel-f667961af5dbb5736e6c.json",
+					"name" : "threads",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "timeout::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-timeout-MinSizeRel-593fa290a73f595bd4a2.json",
+					"name" : "timeout",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "title::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-title-MinSizeRel-11d004829c248a508628.json",
+					"name" : "title",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "triangle-vulkan::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-triangle-vulkan-MinSizeRel-7e70371c72ce9d056884.json",
+					"name" : "triangle-vulkan",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "uninstall::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-uninstall-MinSizeRel-7e239ebfbd958b8b2f27.json",
+					"name" : "uninstall",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "update_mappings::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-update_mappings-MinSizeRel-92c7f9091652c07b465f.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "wave::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-wave-MinSizeRel-e4b391dd98ee127ab471.json",
+					"name" : "wave",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "windows::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-windows-MinSizeRel-4f40520ca586bcdcdab7.json",
+					"name" : "windows",
+					"projectIndex" : 2
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						8,
+						14
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty",
+					"childIndexes" : 
+					[
+						2,
+						6
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty-RelWithDebInfo-37bb83c8ded657ce5430.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Simulator/ThirdParty",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw-RelWithDebInfo-c5c2cee4c5571f0937d9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw",
+					"targetIndexes" : 
+					[
+						0,
+						45
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.src-RelWithDebInfo-9c11d973769d7cc32369.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/src",
+					"targetIndexes" : 
+					[
+						20,
+						46
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/examples",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.examples-RelWithDebInfo-4d9e879125f67d0ef3f2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/examples",
+					"targetIndexes" : 
+					[
+						13,
+						19,
+						22,
+						29,
+						31,
+						33,
+						34,
+						39,
+						47
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glfw/tests",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glfw.tests-RelWithDebInfo-1c707ce553d1a375dc43.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "Simulator/ThirdParty/Private/glfw/tests",
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16,
+						17,
+						18,
+						21,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						30,
+						32,
+						40,
+						41,
+						42,
+						43,
+						44,
+						48
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm",
+					"childIndexes" : 
+					[
+						7
+					],
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm-RelWithDebInfo-6bf7108760f66b357d39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "Simulator/ThirdParty/Private/glm/glm",
+					"jsonFile" : "directory-Simulator.ThirdParty.Private.glm.glm-RelWithDebInfo-0459804bf3367105d82e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "Simulator/ThirdParty/Private/glm/glm"
+				},
+				{
+					"build" : "Simulator/Source",
+					"childIndexes" : 
+					[
+						9,
+						10,
+						11,
+						13
+					],
+					"jsonFile" : "directory-Simulator.Source-RelWithDebInfo-75885a530f6195c50aa5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source"
+				},
+				{
+					"build" : "Simulator/Source/Framework",
+					"jsonFile" : "directory-Simulator.Source.Framework-RelWithDebInfo-1fdaad97ec0b0e2fa3de.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 4,
+					"source" : "Simulator/Source/Framework",
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"build" : "Simulator/Source/Shared",
+					"jsonFile" : "directory-Simulator.Source.Shared-RelWithDebInfo-1cd0f5277688a9edabcd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 5,
+					"source" : "Simulator/Source/Shared",
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers",
+					"childIndexes" : 
+					[
+						12
+					],
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers-RelWithDebInfo-5b3fa8e10e2fd5e3bb27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 0,
+					"source" : "Simulator/Source/PhysicalSolvers"
+				},
+				{
+					"build" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"jsonFile" : "directory-Simulator.Source.PhysicalSolvers.SampleSolver-RelWithDebInfo-8e44d42c9809a21ee3a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 6,
+					"source" : "Simulator/Source/PhysicalSolvers/SampleSolver",
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"build" : "Simulator/Source/GUI",
+					"jsonFile" : "directory-Simulator.Source.GUI-RelWithDebInfo-6ce66615935ed37902e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 7,
+					"source" : "Simulator/Source/GUI",
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"build" : "Simulator/Test",
+					"childIndexes" : 
+					[
+						15
+					],
+					"jsonFile" : "directory-Simulator.Test-RelWithDebInfo-5c526bdd5e7edbb04d07.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 8,
+					"source" : "Simulator/Test",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"jsonFile" : "directory-Simulator.Test.UnitTest.ImGUI-Test-RelWithDebInfo-0f4ea3a80faca9d2af3b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11.4"
+					},
+					"parentIndex" : 14,
+					"projectIndex" : 9,
+					"source" : "Simulator/Test/UnitTest/ImGUI-Test",
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						8,
+						11
+					],
+					"name" : "SoSim",
+					"targetIndexes" : 
+					[
+						1,
+						10,
+						12
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "SoSim-ThirdParty",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "GLFW",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						39,
+						40,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "glm",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "SoSim-Framework",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						35
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "SoSim-Shared",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "sosim-sampleSolver",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						37
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "SoSim-GUI",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						8,
+						36
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						9
+					],
+					"directoryIndexes" : 
+					[
+						14
+					],
+					"name" : "SoSim-Test",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15
+					],
+					"name" : "SoSim-ImGUI-Test",
+					"parentIndex" : 8,
+					"targetIndexes" : 
+					[
+						5,
+						11
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-3afc0c13cc59f4f02f00.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-74851e79a4f425bbff76.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "ALL_BUILD::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-f413ddf56531bac3b2cf.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@0e56bd7ca164d5911cf7",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-4eb947411c70a4ae4dfd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "ALL_BUILD::@3378329231a247eeae93",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-63100ffd278c2e5638b5.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "ALL_BUILD::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-9b297875198954ab233b.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@9c059f0f5c227293daf2",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-1029967e93cf5bd01fcb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "ALL_BUILD::@544ca09d6909bb529bb0",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-629be277843b927790cd.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "ALL_BUILD::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-150fff2748a4ca1d2ffb.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "ALL_BUILD::@6e1f63077f7295e24254",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-2b9c4560df4cdaa6dc68.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SoSim::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SoSim-RelWithDebInfo-ad795dec28b176cf96ce.json",
+					"name" : "SoSim",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "SoSim.TestImGUI.exe::@bf6f5c4109fb2bc7de42",
+					"jsonFile" : "target-SoSim.TestImGUI.exe-RelWithDebInfo-2110772c638428f8daa5.json",
+					"name" : "SoSim.TestImGUI.exe",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-RelWithDebInfo-84131d2a66836d068904.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "boing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-boing-RelWithDebInfo-fb3804b98a01a2f0b3f7.json",
+					"name" : "boing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "clipboard::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-clipboard-RelWithDebInfo-c6c68613475968b72bf9.json",
+					"name" : "clipboard",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "cursor::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-cursor-RelWithDebInfo-8ea3a6df15386820376e.json",
+					"name" : "cursor",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "empty::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-empty-RelWithDebInfo-4919040d4234270151d4.json",
+					"name" : "empty",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "events::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-events-RelWithDebInfo-8510fafd73a6a3f13ece.json",
+					"name" : "events",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "gamma::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-gamma-RelWithDebInfo-fbb09ee76de5b94c5f6d.json",
+					"name" : "gamma",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "gears::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-gears-RelWithDebInfo-36f49208cd7ccbd29b55.json",
+					"name" : "gears",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-glfw-RelWithDebInfo-8cfbb3a1dcfefea81172.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "glfwinfo::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-glfwinfo-RelWithDebInfo-80b90333aa60924a4029.json",
+					"name" : "glfwinfo",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "heightmap::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-heightmap-RelWithDebInfo-833e3e492da5200aa386.json",
+					"name" : "heightmap",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "icon::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-icon-RelWithDebInfo-b941c52a86d5440c8bbb.json",
+					"name" : "icon",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "iconify::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-iconify-RelWithDebInfo-8debf595ae025968332d.json",
+					"name" : "iconify",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "inputlag::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-inputlag-RelWithDebInfo-6709a4d3d618ae1803f8.json",
+					"name" : "inputlag",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "joysticks::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-joysticks-RelWithDebInfo-4a244efbcf4b7493f081.json",
+					"name" : "joysticks",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "monitors::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-monitors-RelWithDebInfo-6dee0352f4f40057c69e.json",
+					"name" : "monitors",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "msaa::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-msaa-RelWithDebInfo-b0635fda57a45ec7269e.json",
+					"name" : "msaa",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "offscreen::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-offscreen-RelWithDebInfo-4f900976fa98ff689a1f.json",
+					"name" : "offscreen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "opacity::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-opacity-RelWithDebInfo-99215c3b750260abe467.json",
+					"name" : "opacity",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "particles::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-particles-RelWithDebInfo-3961a1f60caae61b44dd.json",
+					"name" : "particles",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "reopen::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-reopen-RelWithDebInfo-a464e4a509b2ae1e12d4.json",
+					"name" : "reopen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "sharing::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-sharing-RelWithDebInfo-b48e3da53482ac32e16f.json",
+					"name" : "sharing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "simple::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-simple-RelWithDebInfo-03bb25ac126df28ea7e7.json",
+					"name" : "simple",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "sosim_Framework::@6e3173f3f76f40afb56a",
+					"jsonFile" : "target-sosim_Framework-RelWithDebInfo-470f4bedf2a569798951.json",
+					"name" : "sosim_Framework",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "sosim_Gui::@55857b8d3b94be8d6e00",
+					"jsonFile" : "target-sosim_Gui-RelWithDebInfo-54c4a52450c53bffcfeb.json",
+					"name" : "sosim_Gui",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "sosim_SampleSolver::@3378329231a247eeae93",
+					"jsonFile" : "target-sosim_SampleSolver-RelWithDebInfo-aeb9abd1b4df76caccc6.json",
+					"name" : "sosim_SampleSolver",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "sosim_Shared::@6e1f63077f7295e24254",
+					"jsonFile" : "target-sosim_Shared-RelWithDebInfo-3532b152a8f1bf2bbbcc.json",
+					"name" : "sosim_Shared",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "splitview::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-splitview-RelWithDebInfo-b623eebd4e4fcd023cff.json",
+					"name" : "splitview",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "tearing::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-tearing-RelWithDebInfo-8dd6def7b257441e4519.json",
+					"name" : "tearing",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "threads::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-threads-RelWithDebInfo-4792de675642a7027205.json",
+					"name" : "threads",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "timeout::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-timeout-RelWithDebInfo-8df1563c9c360a1bcba8.json",
+					"name" : "timeout",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "title::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-title-RelWithDebInfo-061714121a0b5d3033fb.json",
+					"name" : "title",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "triangle-vulkan::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-triangle-vulkan-RelWithDebInfo-1f6cf34b44376cafdbe2.json",
+					"name" : "triangle-vulkan",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "uninstall::@51371a2cb4cc669668ef",
+					"jsonFile" : "target-uninstall-RelWithDebInfo-7e239ebfbd958b8b2f27.json",
+					"name" : "uninstall",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "update_mappings::@b320e2e31b7083875ad4",
+					"jsonFile" : "target-update_mappings-RelWithDebInfo-92c7f9091652c07b465f.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "wave::@c9ab94320913dc11c9d7",
+					"jsonFile" : "target-wave-RelWithDebInfo-7cc2cd8f7ed00bd5e745.json",
+					"name" : "wave",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "windows::@a807eb4bd989398f9c97",
+					"jsonFile" : "target-windows-RelWithDebInfo-b6474020fe99465a7c03.json",
+					"name" : "windows",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/Projects/SoSim/build",
+		"source" : "E:/Projects/SoSim"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

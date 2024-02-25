@@ -1,0 +1,10 @@
+^E:\PROJECTS\SOSIM\BUILD\CMAKEFILES\FF2DF1795C0C5175A8A498B663612897\GENERATE.STAMP.RULE
+setlocal
+"D:\JetBrains.apps\CLion 2023.1.5\bin\cmake\win\x64\bin\cmake.exe" -SE:/Projects/SoSim -BE:/Projects/SoSim/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/Projects/SoSim/build/SoSim.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

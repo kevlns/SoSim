@@ -8,28 +8,38 @@
 
 #include "Public/Shared/NeighborSearchUGB/neighbor_search_config.hpp"
 #include "Private/Shared/NeighborSearchUGB/data_pack.hpp"
+#include "Private/BuildSystem/macro_helper.hpp"
 
 namespace SoSim::NSUGB {
 
     class NeighborSearcher {
 
     public:
+        SOSIM_API
         NeighborSearcher() = default;
 
+        SOSIM_API
         ~NeighborSearcher() = default;
 
+        SOSIM_API
         void initialize();
 
+        SOSIM_API
         void update(float3 *device_pos);
 
+        SOSIM_API
         void dumpInfo() const;
 
+        SOSIM_API
         void setConfig(const NeighborSearchConfig *config);
 
+        SOSIM_API
         uint32_t *getPartIndexDevicePtr() const;
 
+        SOSIM_API
         uint32_t *getNeighborsDevicePtr() const;
 
+        SOSIM_API
         void destroy();
 
     private:

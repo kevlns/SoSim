@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\Projects\SoSim\build\CMakeFiles\2c71df701a77ba59db9791c5520dace7\update_mappings.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="E:\Projects\SoSim\Simulator\ThirdParty\Private\glfw\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\Projects\SoSim\Simulator\ThirdParty\Private\glfw\src\mappings.h.in">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="E:\Projects\SoSim\Simulator\ThirdParty\Private\glfw\CMake\GenerateMappings.cmake" />
+    <None Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\src\CMakeFiles\update_mappings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D9BF16B0-B035-3233-8B38-CB1214A69BBB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{7DCB5CBB-CDD6-3E24-BAD7-56D90A5DCD02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -68,14 +68,14 @@ namespace SoSim {
         MaterialType mat;
         PhaseType phase;
         std::set<ComponentType> components;
-        float3 lb{0, 0, 0};
-        float3 size{0, 0, 0};
+        float3 lb{-1, -1, -1};
+        float3 size{2, 2, 2};
         float3 color{1, 1, 1};
-        float height{0};
-        float3 top_center{0, 0, 0};
-        float area_radius{0};
+        float height{2};
+        float3 top_center{0, 1, 0};
+        float area_radius{2};
         int particle_layer_num{2};
-        float particle_radius{0};
+        float particle_radius{0.05};
         TransformConfig t_config{};
 
         // for gui

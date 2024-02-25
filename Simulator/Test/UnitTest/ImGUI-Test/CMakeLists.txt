@@ -12,13 +12,13 @@ find_package(OpenGL REQUIRED)
 
 file(GLOB imgui_srcs ${SOSIM_THIRDPARTY_ROOT}/Public/imgui/src/*.cpp)
 
-set(TARGET_NAME SoSim-test-imgui.exe)
+set(TARGET_NAME SoSim.TestImGUI.exe)
 add_executable(${TARGET_NAME} imgui_test.cpp ${imgui_srcs})
 include_directories(${SOSIM_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
 target_link_libraries(${TARGET_NAME} PRIVATE
         ${CUDA_LIBRARIES}
-        ${SOSIM_FRAMEWORK_LIBS}
-        ${SOSIM_SHARED_LIBS}
+        ${SOSIM_FRAMEWORK_LIB}
+        ${SOSIM_SHARED_LIB}
         ${SOSIM_PHYSICAL_SOLVERS}
         glfw
         OpenGL::GL)

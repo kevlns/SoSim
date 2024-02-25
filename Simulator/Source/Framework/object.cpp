@@ -4,7 +4,6 @@
 //@version       : 1.0
 
 #include "Public/Framework/object.hpp"
-#include "Public/Shared/ModelUtils/model_builder.hpp"
 
 namespace SoSim {
 
@@ -38,22 +37,8 @@ namespace SoSim {
     void Object::refresh() {
         std::cout << "Object refresh.\n";
 
-        // TODO generate particles
-        // TODO only particle component supported yet!
-        if (hasComponent(BASE_PARTICLE_COMPONENT)) {
-            BaseParticleComponent *particleComponent = static_cast<BaseParticleComponent *>(getComponent(
-                    BASE_PARTICLE_COMPONENT));
-
-            if (particleComponent->pos_cuPtr)
-                cudaFree(particleComponent->pos_cuPtr);
-            particleComponent->pos = genFromObjectConfig(m_config);
-            cudaMalloc((void **) &particleComponent->pos_cuPtr, particleComponent->pos.size() * sizeof(float3));
-            cudaMemcpy(particleComponent->pos_cuPtr, particleComponent->pos.data(),
-                       particleComponent->pos.size() * sizeof(float3), cudaMemcpyHostToDevice);
-        }
-
-        // if has other component
-        // ...
+        for (auto &component: m_components)
+            component.second->refresh(m_config);
     }
 
     void Object::addComponent(const ComponentType &component) {

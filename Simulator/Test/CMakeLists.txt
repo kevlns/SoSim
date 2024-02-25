@@ -18,8 +18,8 @@ add_subdirectory(UnitTest/ImGUI-Test)
 #
 #include_directories(${SOSIM_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
 #target_link_libraries(${TARGET_NAME} PRIVATE
-#        ${SOSIM_FRAMEWORK_LIBS}
-#        ${SOSIM_SHARED_LIBS}
+#        ${SOSIM_FRAMEWORK_LIB}
+#        ${SOSIM_SHARED_LIB}
 #        ${SOSIM_PHYSICAL_SOLVERS})
 #
 #target_link_libraries(${TARGET_NAME} PRIVATE

@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BBB672C2-8519-32EF-AADA-B1118AC9F2BF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.2.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\Projects\SoSim\Simulator\Interface;E:\Projects\SoSim\Simulator\ThirdParty\Public;E:\Projects\SoSim\Simulator\ThirdParty\Public\imgui;E:\Projects\SoSim\Simulator\ThirdParty\Public\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\Projects\SoSim\Simulator\Interface;E:\Projects\SoSim\Simulator\ThirdParty\Public;E:\Projects\SoSim\Simulator\ThirdParty\Public\imgui;E:\Projects\SoSim\Simulator\ThirdParty\Public\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\Projects\SoSim\Simulator\Interface;E:\Projects\SoSim\Simulator\ThirdParty\Public;E:\Projects\SoSim\Simulator\ThirdParty\Public\imgui;E:\Projects\SoSim\Simulator\ThirdParty\Public\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\Projects\SoSim\Simulator\Interface;E:\Projects\SoSim\Simulator\ThirdParty\Public;E:\Projects\SoSim\Simulator\ThirdParty\Public\imgui;E:\Projects\SoSim\Simulator\ThirdParty\Public\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\Projects\SoSim\Simulator\ThirdParty\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/Projects/SoSim/Simulator/ThirdParty/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\JetBrains.apps\CLion 2023.1.5\bin\cmake\win\x64\bin\cmake.exe" -SE:/Projects/SoSim -BE:/Projects/SoSim/build --check-stamp-file E:/Projects/SoSim/build/Simulator/ThirdParty/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Projects\SoSim\build\Simulator\ThirdParty\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/Projects/SoSim/Simulator/ThirdParty/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\JetBrains.apps\CLion 2023.1.5\bin\cmake\win\x64\bin\cmake.exe" -SE:/Projects/SoSim -BE:/Projects/SoSim/build --check-stamp-file E:/Projects/SoSim/build/Simulator/ThirdParty/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Projects\SoSim\build\Simulator\ThirdParty\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/Projects/SoSim/Simulator/ThirdParty/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\JetBrains.apps\CLion 2023.1.5\bin\cmake\win\x64\bin\cmake.exe" -SE:/Projects/SoSim -BE:/Projects/SoSim/build --check-stamp-file E:/Projects/SoSim/build/Simulator/ThirdParty/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Projects\SoSim\build\Simulator\ThirdParty\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/Projects/SoSim/Simulator/ThirdParty/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\JetBrains.apps\CLion 2023.1.5\bin\cmake\win\x64\bin\cmake.exe" -SE:/Projects/SoSim -BE:/Projects/SoSim/build --check-stamp-file E:/Projects/SoSim/build/Simulator/ThirdParty/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Projects\SoSim\build\Simulator\ThirdParty\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\Projects\SoSim\build\ZERO_CHECK.vcxproj">
+      <Project>{CB0BE1AC-6EFC-373D-9606-9D42BA1C171B}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\boing.vcxproj">
+      <Project>{9E4728E0-4430-3DF4-A75B-223B1E43DFD0}</Project>
+      <Name>boing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\clipboard.vcxproj">
+      <Project>{8D29EE01-8C72-3B80-8BDE-E0FDC43B7345}</Project>
+      <Name>clipboard</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\cursor.vcxproj">
+      <Project>{E2C8072F-5B85-3592-839A-5ED9BD86FAFA}</Project>
+      <Name>cursor</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\empty.vcxproj">
+      <Project>{57A33F30-ECE2-3A04-9E5D-F9EBBD07C187}</Project>
+      <Name>empty</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\events.vcxproj">
+      <Project>{4F4319FB-FDA2-3092-A829-0CF94C38CB8C}</Project>
+      <Name>events</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\gamma.vcxproj">
+      <Project>{8E19B2A9-C097-3AC2-8DDE-DA7AC6EDE5F3}</Project>
+      <Name>gamma</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\gears.vcxproj">
+      <Project>{ED202A1B-2B6A-3DF3-8D67-B9509D90ACA0}</Project>
+      <Name>gears</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\src\glfw.vcxproj">
+      <Project>{B35008C2-F4CE-3EA1-A1FA-0CF34F3305AC}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\glfwinfo.vcxproj">
+      <Project>{09771058-56F8-34D1-B5C9-2827EDF7C730}</Project>
+      <Name>glfwinfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\heightmap.vcxproj">
+      <Project>{32D13C5B-9DDE-3655-8853-162252E1D726}</Project>
+      <Name>heightmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\icon.vcxproj">
+      <Project>{43F21726-93FB-3169-A222-67F535BFE3EC}</Project>
+      <Name>icon</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\iconify.vcxproj">
+      <Project>{72E03920-2C57-3C2E-89C5-65E2157F7EB9}</Project>
+      <Name>iconify</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\inputlag.vcxproj">
+      <Project>{DF91B12B-2088-352D-BFE9-B8C5BF97EDF0}</Project>
+      <Name>inputlag</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\joysticks.vcxproj">
+      <Project>{4696C0AA-0B3B-3AF0-9A78-9F0C150CC042}</Project>
+      <Name>joysticks</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\monitors.vcxproj">
+      <Project>{E5E72891-4D2E-3B07-8CE4-A119B6F79FFA}</Project>
+      <Name>monitors</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\msaa.vcxproj">
+      <Project>{F772C24C-1942-3811-8804-B3564C2E96BE}</Project>
+      <Name>msaa</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\offscreen.vcxproj">
+      <Project>{A94A3188-D0E9-380D-838F-F9F835703140}</Project>
+      <Name>offscreen</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\opacity.vcxproj">
+      <Project>{F2B0DEC3-153F-3722-BE16-933794C4D423}</Project>
+      <Name>opacity</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\particles.vcxproj">
+      <Project>{D454F1CD-A449-363C-A5F5-BB0678276443}</Project>
+      <Name>particles</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\reopen.vcxproj">
+      <Project>{DBF9EC23-F06E-3372-834A-FC97E4BEB04D}</Project>
+      <Name>reopen</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\sharing.vcxproj">
+      <Project>{9844B182-0E01-37F0-A186-A18A963999F5}</Project>
+      <Name>sharing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\simple.vcxproj">
+      <Project>{5731BAFD-CBB3-3760-A1A2-F3EDEDD70B6A}</Project>
+      <Name>simple</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\splitview.vcxproj">
+      <Project>{42AC2DDA-548B-3212-B48D-98FD53E28016}</Project>
+      <Name>splitview</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\tearing.vcxproj">
+      <Project>{1E2D0532-5F32-3A28-B6B6-D2F6249B413B}</Project>
+      <Name>tearing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\threads.vcxproj">
+      <Project>{B8BD4826-B85F-3503-998F-D626D99713E3}</Project>
+      <Name>threads</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\timeout.vcxproj">
+      <Project>{E293F34A-8D3D-39AB-9C2B-97B0BF3D78EA}</Project>
+      <Name>timeout</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\title.vcxproj">
+      <Project>{E7F5AFAC-A9CF-3E25-9743-1663EAF0C310}</Project>
+      <Name>title</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\triangle-vulkan.vcxproj">
+      <Project>{B8D06B28-E7B3-396E-9CF6-3D8FC36BCD2C}</Project>
+      <Name>triangle-vulkan</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\examples\wave.vcxproj">
+      <Project>{B61855F5-7EA1-3EB1-BDDB-B444D02E1B43}</Project>
+      <Name>wave</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Projects\SoSim\build\Simulator\ThirdParty\Private\glfw\tests\windows.vcxproj">
+      <Project>{8B50ADAE-B215-3914-8D3E-5C118FD2D093}</Project>
+      <Name>windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.2.targets" />
+  </ImportGroup>
+</Project>

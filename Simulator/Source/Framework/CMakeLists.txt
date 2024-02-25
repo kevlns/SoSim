@@ -9,34 +9,10 @@ project(SoSim-Framework)
 
 find_package(CUDA REQUIRED)
 
-
-# object-lib
-set(THIS_TARGET sosim-framework-obj)
-FILE(GLOB OBJ_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/SubObjects/*.cpp)
-add_library(${THIS_TARGET} ${OBJ_SRC_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/object.cpp)
+set(THIS_TARGET sosim_Framework)
+FILE(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c*)
+add_library(${THIS_TARGET} ${SRC_FILES})
 target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_SHARED_LIBS})
-LIST(APPEND framework ${THIS_TARGET})
+target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_SHARED_LIB})
 
-# solver-lib
-set(THIS_TARGET sosim-framework-solver)
-add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp)
-target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_SHARED_LIBS} ${framework})
-LIST(APPEND framework ${THIS_TARGET})
-
-#scene-lib
-set(THIS_TARGET sosim-framework-scene)
-add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/scene.cpp)
-target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_SHARED_LIBS} ${framework})
-LIST(APPEND framework ${THIS_TARGET})
-
-#simulator-lib
-set(THIS_TARGET sosim-framework-simulator)
-add_library(${THIS_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/simulator.cpp)
-target_include_directories(${THIS_TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${THIS_TARGET} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_SHARED_LIBS} ${framework})
-LIST(APPEND framework ${THIS_TARGET})
-
-set(sosim-framework ${framework} PARENT_SCOPE)
+set(SOSIM_FRAMEWORK_LIB ${THIS_TARGET} CACHE STRING "SoSim add framework lib." FORCE)

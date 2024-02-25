@@ -1,0 +1,127 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"Simulator/ThirdParty/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "boing::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "glfw::@b320e2e31b7083875ad4"
+		},
+		{
+			"id" : "particles::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "sharing::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "offscreen::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "clipboard::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "wave::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "gears::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "heightmap::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "splitview::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "simple::@c9ab94320913dc11c9d7"
+		},
+		{
+			"id" : "glfwinfo::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "inputlag::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "tearing::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "events::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "opacity::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "timeout::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "joysticks::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "windows::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "icon::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "gamma::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "reopen::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "empty::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "msaa::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "cursor::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "title::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "monitors::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "threads::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "triangle-vulkan::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "iconify::@a807eb4bd989398f9c97"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "CMakePredefinedTargets"
+	},
+	"id" : "ALL_BUILD::@0e56bd7ca164d5911cf7",
+	"isGeneratorProvided" : true,
+	"name" : "ALL_BUILD",
+	"paths" : 
+	{
+		"build" : "Simulator/ThirdParty",
+		"source" : "Simulator/ThirdParty"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

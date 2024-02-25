@@ -13,9 +13,10 @@ FILE(GLOB SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 
-set(TARGET_NAME sosim-solver-sample)
+set(TARGET_NAME sosim_SampleSolver)
 add_library(${TARGET_NAME} ${SRC_FILES})
 include_directories(${SOSIM_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
-target_link_libraries(${TARGET_NAME} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_FRAMEWORK_LIBS} ${SOSIM_SHARED_LIBS})
+target_link_libraries(${TARGET_NAME} PRIVATE ${CUDA_LIBRARIES} ${SOSIM_FRAMEWORK_LIB} ${SOSIM_SHARED_LIB})
 
-set(current_solver ${TARGET_NAME} PARENT_SCOPE)
+set(SOSIM_PHYSICAL_SOLVERS ${SOSIM_PHYSICAL_SOLVERS} ${TARGET_NAME} CACHE STRING "SoSim add this solver lib." FORCE)
+

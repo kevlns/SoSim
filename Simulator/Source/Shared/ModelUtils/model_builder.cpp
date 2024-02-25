@@ -8,6 +8,10 @@
 
 namespace SoSim {
 
+    extern void handleTransformer(std::vector<float3> &src_pos, const ObjectConfig *objectConfig) {
+        // TODO
+    }
+
     extern std::vector<float3> genParticleCube(const ObjectConfig *object_config) {
         std::vector<float3> pos;
 

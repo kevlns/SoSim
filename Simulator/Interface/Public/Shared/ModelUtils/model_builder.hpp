@@ -11,19 +11,29 @@
 #include <vector_types.h>
 
 #include "Public/Framework/framework_config.hpp"
+#include "Private/BuildSystem/macro_helper.hpp"
 
 namespace SoSim {
 
+    SOSIM_API
     extern std::vector<float3> genFromObjectConfig(const ObjectConfig *objectConfig);
 
+    SOSIM_API
+    extern void handleTransformer(std::vector<float3>& src_pos, const ObjectConfig *objectConfig);
+
+    SOSIM_API
     extern std::vector<float3> genParticleCube(const ObjectConfig *object_config);
 
+    SOSIM_API
     extern std::vector<float3> genParticleBox(const ObjectConfig *object_config);
 
+    SOSIM_API
     extern std::vector<float3> genParticlePlaneX(const ObjectConfig *object_config);
 
+    SOSIM_API
     extern std::vector<float3> genParticlePlaneZ(const ObjectConfig *object_config);
 
+    SOSIM_API
     extern std::vector<float3> genParticleCylinder(const ObjectConfig *object_config);
 
 }

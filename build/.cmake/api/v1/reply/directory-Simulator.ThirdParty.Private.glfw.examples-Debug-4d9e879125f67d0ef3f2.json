@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "Simulator/ThirdParty/Private/glfw/examples",
+		"source" : "Simulator/ThirdParty/Private/glfw/examples"
+	}
+}
