@@ -1,0 +1,741 @@
+//
+// Created by ADMIN on 2024/3/5.
+//
+
+#ifndef SOSIM_DATA_TYPE_HPP
+#define SOSIM_DATA_TYPE_HPP
+
+#include <cuda_runtime.h>
+#include <iostream>
+
+namespace SoSim {
+
+
+    struct Mat33f {
+        float r0_0{0};
+        float r0_1{0};
+        float r0_2{0};
+        float r1_0{0};
+        float r1_1{0};
+        float r1_2{0};
+        float r2_0{0};
+        float r2_1{0};
+        float r2_2{0};
+
+        __host__ __device__
+
+        void operator*=(const float n) {
+            this->r0_0 *= n;
+            this->r0_1 *= n;
+            this->r0_2 *= n;
+
+            this->r1_0 *= n;
+            this->r1_1 *= n;
+            this->r1_2 *= n;
+
+            this->r2_0 *= n;
+            this->r2_1 *= n;
+            this->r2_2 *= n;
+        }
+
+        __host__ __device__
+
+        void operator/=(const float n) {
+            this->r0_0 /= n;
+            this->r0_1 /= n;
+            this->r0_2 /= n;
+
+            this->r1_0 /= n;
+            this->r1_1 /= n;
+            this->r1_2 /= n;
+
+            this->r2_0 /= n;
+            this->r2_1 /= n;
+            this->r2_2 /= n;
+        }
+
+        __host__ __device__
+
+        void operator+=(const Mat33f &rhs) {
+            this->r0_0 += rhs.r0_0;
+            this->r0_1 += rhs.r0_1;
+            this->r0_2 += rhs.r0_2;
+
+            this->r1_0 += rhs.r1_0;
+            this->r1_1 += rhs.r1_1;
+            this->r1_2 += rhs.r1_2;
+
+            this->r2_0 += rhs.r2_0;
+            this->r2_1 += rhs.r2_1;
+            this->r2_2 += rhs.r2_2;
+        }
+
+        __host__ __device__
+
+        void operator-=(const Mat33f &rhs) {
+            this->r0_0 -= rhs.r0_0;
+            this->r0_1 -= rhs.r0_1;
+            this->r0_2 -= rhs.r0_2;
+
+            this->r1_0 -= rhs.r1_0;
+            this->r1_1 -= rhs.r1_1;
+            this->r1_2 -= rhs.r1_2;
+
+            this->r2_0 -= rhs.r2_0;
+            this->r2_1 -= rhs.r2_1;
+            this->r2_2 -= rhs.r2_2;
+        }
+
+        __host__ __device__
+
+        float trace() const {
+            return r0_0 + r1_1 + r2_2;
+        }
+
+        __host__ __device__
+
+        Mat33f transpose() {
+            return {r0_0, r1_0, r2_0,
+                    r0_1, r1_1, r2_1,
+                    r0_2, r1_2, r2_2};
+        }
+
+        __host__ __device__
+
+        static Mat33f eye() {
+            return {1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1};
+        }
+    };
+
+    struct Mat22f {
+        float r0_0{0};
+        float r0_1{0};
+        float r1_0{0};
+        float r1_1{0};
+
+        Mat22f operator*(const Mat22f &rhs) const {
+            float _r0_0 = this->r0_0 * rhs.r0_0 + this->r0_1 * rhs.r1_0;
+            float _r0_1 = this->r0_0 * rhs.r0_1 + this->r0_1 * rhs.r1_1;
+
+            float _r1_0 = this->r1_0 * rhs.r0_0 + this->r1_1 * rhs.r1_0;
+            float _r1_1 = this->r1_0 * rhs.r0_1 + this->r1_1 * rhs.r1_1;
+
+            return {_r0_0, _r0_1,
+                    _r1_0, _r1_1};
+        }
+
+        Mat22f operator*(const float n) const {
+            float _r0_0 = this->r0_0 * n;
+            float _r0_1 = this->r0_1 * n;
+
+            float _r1_0 = this->r1_0 * n;
+            float _r1_1 = this->r1_1 * n;
+
+
+            return {_r0_0, _r0_1,
+                    _r1_0, _r1_1};
+        }
+
+        Mat22f operator/(const float n) const {
+            float _r0_0 = this->r0_0 / n;
+            float _r0_1 = this->r0_1 / n;
+
+            float _r1_0 = this->r1_0 / n;
+            float _r1_1 = this->r1_1 / n;
+
+
+            return {_r0_0, _r0_1,
+                    _r1_0, _r1_1};
+        }
+
+        Mat22f operator+(const Mat22f &rhs) const {
+            float _r0_0 = this->r0_0 + rhs.r0_0;
+            float _r0_1 = this->r0_1 + rhs.r0_1;
+
+            float _r1_0 = this->r1_0 + rhs.r1_0;
+            float _r1_1 = this->r1_1 + rhs.r1_1;
+
+            return {_r0_0, _r0_1,
+                    _r1_0, _r1_1};
+        }
+
+        Mat22f operator-(const Mat22f &rhs) const {
+            float _r0_0 = this->r0_0 - rhs.r0_0;
+            float _r0_1 = this->r0_1 - rhs.r0_1;
+
+            float _r1_0 = this->r1_0 - rhs.r1_0;
+            float _r1_1 = this->r1_1 - rhs.r1_1;
+
+            return {_r0_0, _r0_1,
+                    _r1_0, _r1_1};
+        }
+
+        void operator*=(const Mat22f &rhs) {
+            float _r0_0 = this->r0_0 * rhs.r0_0 + this->r0_1 * rhs.r1_0;
+            float _r0_1 = this->r0_0 * rhs.r0_1 + this->r0_1 * rhs.r1_1;
+
+            float _r1_0 = this->r1_0 * rhs.r0_0 + this->r1_1 * rhs.r1_0;
+            float _r1_1 = this->r1_0 * rhs.r0_1 + this->r1_1 * rhs.r1_1;
+
+            this->r0_0 = _r0_0;
+            this->r0_1 = _r0_1;
+            this->r1_0 = _r1_0;
+            this->r1_1 = _r1_1;
+        }
+
+        void operator*=(const float n) {
+            this->r0_0 *= n;
+            this->r0_1 *= n;
+
+            this->r1_0 *= n;
+            this->r1_1 *= n;
+        }
+
+        void operator/=(const float n) {
+            this->r0_0 /= n;
+            this->r0_1 /= n;
+
+            this->r1_0 /= n;
+            this->r1_1 /= n;
+        }
+
+        void operator+=(const Mat22f &rhs) {
+            this->r0_0 += rhs.r0_0;
+            this->r0_1 += rhs.r0_1;
+
+            this->r1_0 += rhs.r1_0;
+            this->r1_1 += rhs.r1_1;
+        }
+
+        void operator-=(const Mat22f &rhs) {
+            this->r0_0 -= rhs.r0_0;
+            this->r0_1 -= rhs.r0_1;
+
+            this->r1_0 -= rhs.r1_0;
+            this->r1_1 -= rhs.r1_1;
+        }
+
+        float trace() const {
+            return r0_0 + r1_1;
+        }
+
+        Mat22f transpose() {
+            return {r0_0, r1_0,
+                    r0_1, r1_1};
+        }
+
+        static Mat33f eye() {
+            return {1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1};
+        }
+    };
+
+    struct Vec2f {
+        float x{0};
+        float y{0};
+
+        __host__ __device__
+
+        inline float length() const {
+            return sqrtf(x * x + y * y);
+        }
+    };
+
+    struct Vec3f {
+        float x{0};
+        float y{0};
+        float z{0};
+
+        __host__ __device__
+
+        Vec3f(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+
+        __host__ __device__
+
+        inline float length() const {
+            return sqrtf(x * x + y * y + z * z);
+        }
+    };
+
+    struct Vec3i {
+        int x{0};
+        int y{0};
+        int z{0};
+    };
+
+    struct Vec3ui {
+        unsigned x{0};
+        unsigned y{0};
+        unsigned z{0};
+    };
+
+    inline std::ostream &operator<<(std::ostream &out, const Mat33f &mat) {
+        out << "[" << mat.r0_0 << " " << mat.r0_1 << " " << mat.r0_2 << "\n"
+            << mat.r1_0 << " " << mat.r1_1 << " " << mat.r1_2 << "\n"
+            << mat.r2_0 << " " << mat.r2_1 << " " << mat.r2_2 << "]\n";
+        return out;
+    }
+
+    inline std::ostream &operator<<(std::ostream &out, const Vec3f &vec) {
+        out << "[" << vec.x << " " << vec.y << " " << vec.z << "]\n";
+        return out;
+    }
+
+// math operating
+
+// Mat33
+    __host__ __device__
+
+    inline Mat33f operator+(const Mat33f &lhs, const Mat33f &rhs) {
+        float _r0_0 = lhs.r0_0 + rhs.r0_0;
+        float _r0_1 = lhs.r0_1 + rhs.r0_1;
+        float _r0_2 = lhs.r0_2 + rhs.r0_2;
+
+        float _r1_0 = lhs.r1_0 + rhs.r1_0;
+        float _r1_1 = lhs.r1_1 + rhs.r1_1;
+        float _r1_2 = lhs.r1_2 + rhs.r1_2;
+
+        float _r2_0 = lhs.r2_0 + rhs.r2_0;
+        float _r2_1 = lhs.r2_1 + rhs.r2_1;
+        float _r2_2 = lhs.r2_2 + rhs.r2_2;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator-(const Mat33f &lhs, const Mat33f &rhs) {
+        float _r0_0 = lhs.r0_0 - rhs.r0_0;
+        float _r0_1 = lhs.r0_1 - rhs.r0_1;
+        float _r0_2 = lhs.r0_2 - rhs.r0_2;
+
+        float _r1_0 = lhs.r1_0 - rhs.r1_0;
+        float _r1_1 = lhs.r1_1 - rhs.r1_1;
+        float _r1_2 = lhs.r1_2 - rhs.r1_2;
+
+        float _r2_0 = lhs.r2_0 - rhs.r2_0;
+        float _r2_1 = lhs.r2_1 - rhs.r2_1;
+        float _r2_2 = lhs.r2_2 - rhs.r2_2;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator*(const Mat33f &lhs, const Mat33f &rhs) {
+        float _r0_0 = lhs.r0_0 * rhs.r0_0 + lhs.r0_1 * rhs.r1_0 + lhs.r0_2 * rhs.r2_0;
+        float _r0_1 = lhs.r0_0 * rhs.r0_1 + lhs.r0_1 * rhs.r1_1 + lhs.r0_2 * rhs.r2_1;
+        float _r0_2 = lhs.r0_0 * rhs.r0_2 + lhs.r0_1 * rhs.r1_2 + lhs.r0_2 * rhs.r2_2;
+
+        float _r1_0 = lhs.r1_0 * rhs.r0_0 + lhs.r1_1 * rhs.r1_0 + lhs.r1_2 * rhs.r2_0;
+        float _r1_1 = lhs.r1_0 * rhs.r0_1 + lhs.r1_1 * rhs.r1_1 + lhs.r1_2 * rhs.r2_1;
+        float _r1_2 = lhs.r1_0 * rhs.r0_2 + lhs.r1_1 * rhs.r1_2 + lhs.r1_2 * rhs.r2_2;
+
+        float _r2_0 = lhs.r2_0 * rhs.r0_0 + lhs.r2_1 * rhs.r1_0 + lhs.r2_2 * rhs.r2_0;
+        float _r2_1 = lhs.r2_0 * rhs.r0_1 + lhs.r2_1 * rhs.r1_1 + lhs.r2_2 * rhs.r2_1;
+        float _r2_2 = lhs.r2_0 * rhs.r0_2 + lhs.r2_1 * rhs.r1_2 + lhs.r2_2 * rhs.r2_2;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator*(const Vec3f &lhs, const Vec3f &rhs) {
+        float _r0_0 = lhs.x * rhs.x;
+        float _r0_1 = lhs.x * rhs.y;
+        float _r0_2 = lhs.x * rhs.z;
+
+        float _r1_0 = lhs.y * rhs.x;
+        float _r1_1 = lhs.y * rhs.y;
+        float _r1_2 = lhs.y * rhs.z;
+
+        float _r2_0 = lhs.z * rhs.x;
+        float _r2_1 = lhs.z * rhs.y;
+        float _r2_2 = lhs.z * rhs.z;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator*(const Mat33f &lhs, float n) {
+        float _r0_0 = lhs.r0_0 * n;
+        float _r0_1 = lhs.r0_1 * n;
+        float _r0_2 = lhs.r0_2 * n;
+
+        float _r1_0 = lhs.r1_0 * n;
+        float _r1_1 = lhs.r1_1 * n;
+        float _r1_2 = lhs.r1_2 * n;
+
+        float _r2_0 = lhs.r2_0 * n;
+        float _r2_1 = lhs.r2_1 * n;
+        float _r2_2 = lhs.r2_2 * n;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator*(float n, const Mat33f &rhs) {
+        return rhs * n;
+    }
+
+    __host__ __device__
+
+    inline Mat33f operator/(const Mat33f &lhs, const float n) {
+        float _r0_0 = lhs.r0_0 / n;
+        float _r0_1 = lhs.r0_1 / n;
+        float _r0_2 = lhs.r0_2 / n;
+
+        float _r1_0 = lhs.r1_0 / n;
+        float _r1_1 = lhs.r1_1 / n;
+        float _r1_2 = lhs.r1_2 / n;
+
+        float _r2_0 = lhs.r2_0 / n;
+        float _r2_1 = lhs.r2_1 / n;
+        float _r2_2 = lhs.r2_2 / n;
+
+        return {_r0_0, _r0_1, _r0_2,
+                _r1_0, _r1_1, _r1_2,
+                _r2_0, _r2_1, _r2_2};
+    }
+
+// Vec2f
+    __host__ __device__
+
+    inline Vec2f operator+(const Vec2f &lhs, const Vec2f &rhs) {
+        return {lhs.x + rhs.x, lhs.y + rhs.y};
+    }
+
+    __host__ __device__
+
+    inline Vec2f operator-(const Vec2f &lhs, const Vec2f &rhs) {
+        return {lhs.x - rhs.x, lhs.y - rhs.y};
+    }
+
+    __host__ __device__
+
+    inline Vec2f operator*(const Vec2f &vec, float n) {
+        return {vec.x * n, vec.y * n};
+    }
+
+    __host__ __device__
+
+    inline Vec2f operator*(float n, const Vec2f &vec) {
+        return vec * n;
+    }
+
+    __host__ __device__
+
+    inline Vec2f operator/(const Vec2f &vec, float n) {
+        return {vec.x / n, vec.y / n};
+    }
+
+    __host__ __device__
+
+    inline Vec2f operator*(const Mat22f &lhs, const Vec2f &rhs) {
+        float _x = lhs.r0_0 * rhs.x + lhs.r0_1 * rhs.y;
+        float _y = lhs.r1_0 * rhs.x + lhs.r1_1 * rhs.y;
+        return {_x, _y};
+    }
+
+    __host__ __device__
+
+    inline void operator+=(Vec2f &lhs, const Vec2f &rhs) {
+        lhs.x += rhs.x;
+        lhs.y += rhs.y;
+    }
+
+    __host__ __device__
+
+    inline void operator-=(Vec2f &lhs, const Vec2f &rhs) {
+        lhs.x -= rhs.x;
+        lhs.y -= rhs.y;
+    }
+
+    __host__ __device__
+
+    inline void operator*=(Vec2f &lhs, float n) {
+        lhs.x *= n;
+        lhs.y *= n;
+    }
+
+    __host__ __device__
+
+    inline void operator/=(Vec2f &lhs, float n) {
+        lhs.x /= n;
+        lhs.y /= n;
+    }
+
+    __host__ __device__
+
+    inline float dot(const Vec2f &lhs, const Vec2f &rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y;
+    }
+
+// Vec3f
+    __host__ __device__
+
+    inline Vec3f operator+(const Vec3f &lhs, const Vec3f &rhs) {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator-(const Vec3f &lhs, const Vec3f &rhs) {
+        return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator*(const Vec3f &vec, float n) {
+        return {vec.x * n, vec.y * n, vec.z * n};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator*(float n, const Vec3f &vec) {
+        return vec * n;
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator/(const Vec3f &vec, float n) {
+        return {vec.x / n, vec.y / n, vec.z / n};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator*(const Mat33f &lhs, const Vec3f &rhs) {
+        float _x = lhs.r0_0 * rhs.x + lhs.r0_1 * rhs.y + lhs.r0_2 * rhs.z;
+        float _y = lhs.r1_0 * rhs.x + lhs.r1_1 * rhs.y + lhs.r1_2 * rhs.z;
+        float _z = lhs.r2_0 * rhs.x + lhs.r2_1 * rhs.y + lhs.r2_2 * rhs.z;
+        return {_x, _y, _z};
+    }
+
+    __host__ __device__
+
+    inline void operator+=(Vec3f &lhs, const Vec3f &rhs) {
+        lhs.x += rhs.x;
+        lhs.y += rhs.y;
+        lhs.z += rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator-=(Vec3f &lhs, const Vec3f &rhs) {
+        lhs.x -= rhs.x;
+        lhs.y -= rhs.y;
+        lhs.z -= rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator*=(Vec3f &lhs, float n) {
+        lhs.x *= n;
+        lhs.y *= n;
+        lhs.z *= n;
+    }
+
+    __host__ __device__
+
+    inline void operator/=(Vec3f &lhs, float n) {
+        lhs.x /= n;
+        lhs.y /= n;
+        lhs.z /= n;
+    }
+
+    __host__ __device__
+
+    inline float dot(const Vec3f &lhs, const Vec3f &rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+    }
+
+    __host__ __device__
+
+    inline float dot(const Mat33f &lhs, const Mat33f &rhs) {
+        return lhs.r0_0 * rhs.r0_0 + lhs.r0_1 * rhs.r0_1 + lhs.r0_2 * rhs.r0_2 +
+               lhs.r1_0 * rhs.r1_0 + lhs.r1_1 * rhs.r1_1 + lhs.r1_2 * rhs.r1_2 +
+               lhs.r2_0 * rhs.r2_0 + lhs.r2_1 * rhs.r2_1 + lhs.r2_2 * rhs.r2_2;
+    }
+
+// Vec3i
+    __host__ __device__
+
+    inline Vec3i operator+(const Vec3i &lhs, const Vec3i &rhs) {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3i operator-(const Vec3i &lhs, const Vec3i &rhs) {
+        return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3i operator*(const Vec3i &vec, int n) {
+        return {vec.x * n, vec.y * n};
+    }
+
+    __host__ __device__
+
+    inline Vec3i operator*(int n, const Vec3i &vec) {
+        return vec * n;
+    }
+
+    __host__ __device__
+
+    inline Vec3i operator/(const Vec3i &vec, int n) {
+        return {vec.x / n, vec.y / n, vec.z / n};
+    }
+
+    __host__ __device__
+
+    inline void operator+=(Vec3i &lhs, const Vec3i &rhs) {
+        lhs.x += rhs.x;
+        lhs.y += rhs.y;
+        lhs.z += rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator-=(Vec3i &lhs, const Vec3i &rhs) {
+        lhs.x -= rhs.x;
+        lhs.y -= rhs.y;
+        lhs.z -= rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator*=(Vec3i &lhs, float n) {
+        lhs.x *= n;
+        lhs.y *= n;
+        lhs.z *= n;
+    }
+
+    __host__ __device__
+
+    inline void operator/=(Vec3i &lhs, float n) {
+        lhs.x /= n;
+        lhs.y /= n;
+        lhs.z /= n;
+    }
+
+    __host__ __device__
+
+    inline int dot(const Vec3i &lhs, const Vec3i &rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+    }
+
+// Vec3ui
+    __host__ __device__
+
+    inline Vec3ui operator+(const Vec3ui &lhs, const Vec3ui &rhs) {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3ui operator-(const Vec3ui &lhs, const Vec3ui &rhs) {
+        return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3ui operator*(const Vec3ui &vec, int n) {
+        return {vec.x * n, vec.y * n};
+    }
+
+    __host__ __device__
+
+    inline Vec3ui operator*(int n, const Vec3ui &vec) {
+        return vec * n;
+    }
+
+    __host__ __device__
+
+    inline Vec3ui operator/(const Vec3ui &vec, int n) {
+        return {vec.x / n, vec.y / n, vec.z / n};
+    }
+
+    __host__ __device__
+
+    inline void operator+=(Vec3ui &lhs, const Vec3ui &rhs) {
+        lhs.x += rhs.x;
+        lhs.y += rhs.y;
+        lhs.z += rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator-=(Vec3ui &lhs, const Vec3ui &rhs) {
+        lhs.x -= rhs.x;
+        lhs.y -= rhs.y;
+        lhs.z -= rhs.z;
+    }
+
+    __host__ __device__
+
+    inline void operator*=(Vec3ui &lhs, float n) {
+        lhs.x *= n;
+        lhs.y *= n;
+        lhs.z *= n;
+    }
+
+    __host__ __device__
+
+    inline void operator/=(Vec3ui &lhs, float n) {
+        lhs.x /= n;
+        lhs.y /= n;
+        lhs.z /= n;
+    }
+
+    __host__ __device__
+
+    inline int dot(const Vec3ui &lhs, const Vec3ui &rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+    }
+
+// Vec* ops
+    __host__ __device__
+
+    inline Vec3f operator+(const Vec3f &lhs, const Vec3i &rhs) {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator-(const Vec3f &lhs, const Vec3i &rhs) {
+        return {lhs.x - static_cast<float>(rhs.x), lhs.y - static_cast<float>(rhs.y),
+                lhs.z - static_cast<float>(rhs.z)};
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator+(const Vec3i &lhs, const Vec3f &rhs) {
+        return rhs + lhs;
+    }
+
+    __host__ __device__
+
+    inline Vec3f operator-(const Vec3i &lhs, const Vec3f &rhs) {
+        return {static_cast<float>(lhs.x) - rhs.x, static_cast<float>(lhs.y) - rhs.y,
+                static_cast<float>(lhs.z) - rhs.z};
+    }
+}
+
+#endif //SOSIM_DATA_TYPE_HPP

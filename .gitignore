@@ -15,4 +15,4 @@ cmake-build-release
 .idea
 .vscode
 
-Simulator/ThirdParty/Public
+.gitmodules
