@@ -5,8 +5,9 @@
 
 namespace SoSim {
 
-    __host__ __device__ inline float
-    cubic_value(const float r_norm, const float h) {
+    __device__ float
+    cubic_value(const Vec3f &r, float h) {
+        float r_norm = r.length();
         const float PI = 3.14159265;
         const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(h, 3));
 
@@ -27,8 +28,8 @@ namespace SoSim {
         return res;
     }
 
-    __host__ __device__ inline Vec3f
-    cubic_gradient(const Vec3f &r, const float h) {
+    __device__ Vec3f
+    cubic_gradient(const Vec3f &r, float h) {
         const float PI = 3.14159265;
         const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(h, 3));
 
