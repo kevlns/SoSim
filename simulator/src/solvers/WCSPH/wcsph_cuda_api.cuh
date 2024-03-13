@@ -1,0 +1,8 @@
+//
+// Created by ADMIN on 2024/3/14.
+//
+
+#ifndef SOSIM_WCSPH_CUDA_API_CUH
+#define SOSIM_WCSPH_CUDA_API_CUH
+
+#endif //SOSIM_WCSPH_CUDA_API_CUH

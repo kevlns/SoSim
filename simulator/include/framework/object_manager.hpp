@@ -12,14 +12,17 @@
 namespace SoSim {
     class ObjectManager {
     public:
-        Object *createObject();
+        ~ObjectManager();
 
-        void removeObject(Object *object);
+        std::shared_ptr<Object> createObject();
 
+        void removeObject(std::shared_ptr<Object> object);
+
+    private:
         void destroy();
 
     private:
-        std::set<Object *> m_all_objects;
+        std::set<std::shared_ptr<Object>> m_objects;
         unsigned m_hash_counter{0};
     };
 }

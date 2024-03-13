@@ -9,20 +9,21 @@
 
 // solvers includes
 #include "solvers/DFSPH/dfsph_solver.hpp"
+#include "solvers/WCSPH/wcsph_solver.hpp"
 
 namespace SoSim {
 
     class SolverManager {
     public:
+        ~SolverManager();
+
         template<class SolverType>
-        Solver *createSolver();
+        std::shared_ptr<Solver> createSolver();
 
-        void removeSolver(Solver *solver);
-
-        void destroy();
+        void removeSolver(std::shared_ptr<Solver> solver);
 
     private:
-        std::set<Solver *> m_solvers;
+        std::set<std::shared_ptr<Solver>> m_solvers;
     };
 
 }

@@ -13,17 +13,25 @@
 
 namespace SoSim {
 
+    struct SolverConfig {
+        virtual ~SolverConfig() = default;
+
+        float dt;
+        float cur_sim_time;
+        Vec3f gravity;
+    };
+
     class Solver {
     public:
         virtual ~Solver() = default;
 
-        virtual void attachObject(Object *object) = 0;
+        virtual std::shared_ptr<SolverConfig> getConfig() = 0;
 
-        virtual void detachObject(Object *object) = 0;
+        virtual void attachObject(std::shared_ptr<Object> object) = 0;
+
+        virtual void detachObject(std::shared_ptr<Object> object) = 0;
 
         virtual bool initialize() = 0;
-
-        virtual void destroy() = 0;
 
         virtual void run(float total_time) = 0;
 
@@ -31,7 +39,7 @@ namespace SoSim {
         virtual void step() = 0;
 
     private:
-        std::set<Object *> m_objects;
+        std::set<std::shared_ptr<Object>> m_objects;
     };
 
 

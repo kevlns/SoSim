@@ -21,15 +21,8 @@ file(GLOB FRAMEWORK_SRC
 add_library(sosim-framework ${FRAMEWORK_HEADERS} ${FRAMEWORK_SRC})
 target_link_libraries(sosim-framework PUBLIC sosim-libs)
 
-# TODO build solvers dll
-file(GLOB DFSPH_HEADERS
-        ${SOSIM_SIMULATOR_ROOT}/include/solvers/DFSPH/*.hpp)
-file(GLOB DFSPH_SRC
-        solvers/DFSPH/*.cpp
-        solvers/DFSPH/*.cuh
-        solvers/DFSPH/*.cu)
-add_library(sosim-dfsph ${DFSPH_HEADERS} ${DFSPH_SRC})
-target_link_libraries(sosim-dfsph PUBLIC sosim-framework)
+set(SOSIM_SOLVER_LIBS "")
+add_subdirectory(solvers)
 
 # TODO build runtime lib/dll
 file(GLOB RT_HEADERS
@@ -39,4 +32,4 @@ file(GLOB RT_SRC
         framework/object_manager.cpp
         framework/solver_manager.cpp)
 add_library(sosim-rt ${RT_HEADERS} ${RT_SRC})
-target_link_libraries(sosim-rt PRIVATE sosim-dfsph)
+target_link_libraries(sosim-rt PUBLIC ${SOSIM_SOLVER_LIBS})

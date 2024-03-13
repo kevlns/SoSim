@@ -18,7 +18,8 @@ namespace SoSim {
         // common
         float particle_radius;
         std::optional<Material> particle_mat;
-        Vec3f vel_start{0,0,0};
+        Vec3f vel_start{0, 0, 0};
+        std::string name;
 
         /* default building */
         std::optional<std::string> shape;
@@ -48,19 +49,17 @@ namespace SoSim {
     public:
         Object(unsigned id);
 
-        void setConfig(ParticleObjectConfig* config);
+        ~Object();
 
         std::vector<Vec3f> &getParticles();
 
-        ParticleObjectConfig* getParticleObjectConfig();
+        std::shared_ptr<ParticleObjectConfig> getParticleObjectConfig();
 
         unsigned getParticleNum() const;
 
         void update();
 
-        void destroy();
-
-        void rename(std::string new_name);
+        void setName(std::string new_name);
 
         std::string getName() const;
 
@@ -69,12 +68,15 @@ namespace SoSim {
     private:
         void createParticleObject();
 
+        void destroy();
+
     private:
-        std::string m_name;
         unsigned m_id;
-        std::optional<ParticleObjectConfig*> m_particleObjectConfig;
+        std::shared_ptr<ParticleObjectConfig> m_particleObjectConfig;
         std::vector<Vec3f> m_particles;
-        Vec3f *m_particles_renderBuffer{nullptr};
+
+        // TODO design component system to handle rendering
+//        Vec3f *m_particles_renderBuffer{nullptr};
     };
 
 }

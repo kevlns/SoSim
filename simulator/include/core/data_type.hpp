@@ -275,12 +275,12 @@ namespace SoSim {
     inline std::ostream &operator<<(std::ostream &out, const Mat33f &mat) {
         out << "[" << mat.r0_0 << " " << mat.r0_1 << " " << mat.r0_2 << "\n"
             << mat.r1_0 << " " << mat.r1_1 << " " << mat.r1_2 << "\n"
-            << mat.r2_0 << " " << mat.r2_1 << " " << mat.r2_2 << "]\n";
+            << mat.r2_0 << " " << mat.r2_1 << " " << mat.r2_2 << "]";
         return out;
     }
 
     inline std::ostream &operator<<(std::ostream &out, const Vec3f &vec) {
-        out << "[" << vec.x << " " << vec.y << " " << vec.z << "]\n";
+        out << "[" << vec.x << " " << vec.y << " " << vec.z << "]";
         return out;
     }
 
@@ -488,6 +488,16 @@ namespace SoSim {
 
 // Vec3f
     __host__ __device__
+    inline bool operator>(const Vec3f &lhs, const Vec3f &rhs) {
+        return lhs.length() > rhs.length();
+    }
+
+    __host__ __device__
+    inline bool operator<(const Vec3f &lhs, const Vec3f &rhs) {
+        return lhs.length() < rhs.length();
+    }
+
+    __host__ __device__
 
     inline Vec3f operator+(const Vec3f &lhs, const Vec3f &rhs) {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
@@ -524,6 +534,14 @@ namespace SoSim {
         float _y = lhs.r1_0 * rhs.x + lhs.r1_1 * rhs.y + lhs.r1_2 * rhs.z;
         float _z = lhs.r2_0 * rhs.x + lhs.r2_1 * rhs.y + lhs.r2_2 * rhs.z;
         return {_x, _y, _z};
+    }
+
+    __host__ __device__
+
+    inline bool operator==(Vec3f &lhs, const Vec3f &rhs) {
+        return lhs.x == rhs.x &&
+               lhs.y == rhs.y &&
+               lhs.z == rhs.z;
     }
 
     __host__ __device__

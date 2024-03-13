@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <memory>
 
 #include "framework/object.hpp"
 #include "libs/ModelL/model_loader.hpp"
@@ -11,33 +12,36 @@ namespace SoSim {
 
     Object::Object(unsigned int id) {
         m_id = id;
-        m_name = "obj_" + std::to_string(m_id);
+        m_particleObjectConfig = std::make_shared<ParticleObjectConfig>();
+        m_particleObjectConfig->name = "obj_" + std::to_string(m_id);
+
+        std::cout << "Create an object.\n";
     }
 
-    void Object::setConfig(ParticleObjectConfig *config) {
-        m_particleObjectConfig = config;
+    Object::~Object() {
+        destroy();
     }
 
     void Object::createParticleObject() {
-        if (m_particleObjectConfig.value()->shape.has_value()) {
-            if (m_particleObjectConfig.value()->shape == "cube")
-                m_particles = ModelLoader::createParticleCube(m_particleObjectConfig.value()->particle_radius,
-                                                              m_particleObjectConfig.value()->lb,
-                                                              m_particleObjectConfig.value()->size);
-            if (m_particleObjectConfig.value()->shape == "box")
-                m_particles = ModelLoader::createParticleBox(m_particleObjectConfig.value()->particle_radius,
-                                                             m_particleObjectConfig.value()->lb,
-                                                             m_particleObjectConfig.value()->size,
-                                                             m_particleObjectConfig.value()->layer);
-            if (m_particleObjectConfig.value()->shape == "plane")
-                m_particles = ModelLoader::createParticlePlane(m_particleObjectConfig.value()->particle_radius,
-                                                               m_particleObjectConfig.value()->lb,
-                                                               m_particleObjectConfig.value()->size,
-                                                               m_particleObjectConfig.value()->layer);
+        if (m_particleObjectConfig->shape.has_value()) {
+            if (m_particleObjectConfig->shape == "cube")
+                m_particles = ModelLoader::createParticleCube(m_particleObjectConfig->particle_radius,
+                                                              m_particleObjectConfig->lb,
+                                                              m_particleObjectConfig->size);
+            if (m_particleObjectConfig->shape == "box")
+                m_particles = ModelLoader::createParticleBox(m_particleObjectConfig->particle_radius,
+                                                             m_particleObjectConfig->lb,
+                                                             m_particleObjectConfig->size,
+                                                             m_particleObjectConfig->layer);
+            if (m_particleObjectConfig->shape == "plane")
+                m_particles = ModelLoader::createParticlePlane(m_particleObjectConfig->particle_radius,
+                                                               m_particleObjectConfig->lb,
+                                                               m_particleObjectConfig->size,
+                                                               m_particleObjectConfig->layer);
         }
 
-        if (m_particleObjectConfig.value()->model_file.has_value()) {
-            m_particles = ModelLoader::loadParticle3DModel(m_particleObjectConfig.value()->model_file.value());
+        if (m_particleObjectConfig->model_file.has_value()) {
+            m_particles = ModelLoader::loadParticle3DModel(m_particleObjectConfig->model_file.value());
         }
 
         // todo transform
@@ -48,8 +52,8 @@ namespace SoSim {
         return m_particles;
     }
 
-    ParticleObjectConfig *Object::getParticleObjectConfig() {
-        return m_particleObjectConfig.value();
+    std::shared_ptr<ParticleObjectConfig> Object::getParticleObjectConfig() {
+        return m_particleObjectConfig;
     }
 
     unsigned Object::getParticleNum() const {
@@ -57,9 +61,9 @@ namespace SoSim {
     }
 
     void Object::update() {
-        if (!m_particleObjectConfig.value()->shape.has_value() &&
-            !m_particleObjectConfig.value()->model_file.has_value())
-            m_particleObjectConfig.value()->shape = "cube";
+        if (!m_particleObjectConfig->shape.has_value() &&
+            !m_particleObjectConfig->model_file.has_value())
+            m_particleObjectConfig->shape = "cube";
 
         createParticleObject();
     }
@@ -67,11 +71,11 @@ namespace SoSim {
     void Object::destroy() {
         // todo if m_particles_renderBuffer not empty, delete it
 
-        std::cout << "Object: " << m_name << " destroyed.\n";
+        std::cout << "Object: " << m_particleObjectConfig->name << " destroyed.\n";
     }
 
-    void Object::rename(std::string new_name) {
-        m_name = std::move(new_name);
+    void Object::setName(std::string new_name) {
+        m_particleObjectConfig->name = std::move(new_name);
     }
 
     unsigned Object::getID() const {
@@ -79,7 +83,7 @@ namespace SoSim {
     }
 
     std::string Object::getName() const {
-        return m_name;
+        return m_particleObjectConfig->name;
     }
 
 }
