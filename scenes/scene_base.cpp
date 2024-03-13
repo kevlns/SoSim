@@ -13,28 +13,37 @@ int main() {
      * create objects
      */
     ObjectManager objectManager;
-    auto cube = objectManager.createObject();
-    cube->rename("cube_1");
-    auto cubeConfig = new ParticleObjectConfig;
-    cubeConfig->particle_radius = 0.05;
-    cubeConfig->particle_mat = FLUID;
-    cubeConfig->shape = "cube";
-    cubeConfig->lb = {-2, -2, -2};
-    cubeConfig->size = {4, 4, 4};
-    cube->setConfig(cubeConfig);
-    cube->update();
+    auto cube_1 = objectManager.createObject();
+    auto cubeConfig_1 = cube_1->getParticleObjectConfig();
+    cube_1->setName("cube_1");
+    cubeConfig_1->particle_radius = 0.05;
+    cubeConfig_1->particle_mat = FLUID;
+    cubeConfig_1->shape = "cube";
+    cubeConfig_1->lb = {-1, 0, 0};
+    cubeConfig_1->size = {2, 2, 2};
+    cubeConfig_1->vel_start = {0.5, 0, 0};
+    cube_1->update();
 
-    auto box = objectManager.createObject();
-    box->rename("box_1");
-    auto boxConfig = new ParticleObjectConfig;
-    boxConfig->particle_radius = 0.05;
-    boxConfig->particle_mat = FIXED_BOUND;
-    boxConfig->shape = "box";
-    boxConfig->lb = {-5, -5, -5};
-    boxConfig->size = {10, 10, 10};
-    boxConfig->layer = 1;
-    box->setConfig(boxConfig);
-    box->update();
+    auto cube_2 = objectManager.createObject();
+    auto cubeConfig_2 = cube_2->getParticleObjectConfig();
+    cube_2->setName("cube_2");
+    cubeConfig_2->particle_radius = 0.05;
+    cubeConfig_2->particle_mat = FLUID;
+    cubeConfig_2->shape = "cube";
+    cubeConfig_2->lb = {1.5, 0, 0};
+    cubeConfig_2->size = {2, 2, 2};
+    cube_2->update();
+
+    auto plane = objectManager.createObject();
+    auto planeConfig = plane->getParticleObjectConfig();
+    plane->setName("plane_1");
+    planeConfig->particle_radius = 0.05;
+    planeConfig->particle_mat = FIXED_BOUND;
+    planeConfig->shape = "plane";
+    planeConfig->lb = {-5, -2.5, -5};
+    planeConfig->size = {10, 10, 10};
+    planeConfig->layer = 2;
+    plane->update();
 
 
     /**  =============================================================
@@ -42,25 +51,21 @@ int main() {
      */
     SolverManager solverManager;
     auto dfsph_solver = solverManager.createSolver<DFSPHSolver>();
-    auto dfsphSolverConfig = new DFSPHSolverConfig;
-    dfsphSolverConfig->dt = 0.0015;
-    dfsphSolverConfig->rest_density = 1200;
+    auto dfsphSolverConfig = dynamic_cast<DFSPHSolverConfig *>(dfsph_solver->getConfig().get());
+    dfsphSolverConfig->dt = 0.01;
+    dfsphSolverConfig->gravity = {0,-0.5,0};
+    dfsphSolverConfig->rest_density = 1000;
+    dfsphSolverConfig->rest_rigid_density = 1000;
     dfsphSolverConfig->rest_vis = 0.001;
-    reinterpret_cast<DFSPHSolver *>(dfsph_solver)->setConfig(dfsphSolverConfig);
-    dfsph_solver->attachObject(cube);
-//    dfsph_solver->attachObject(box);
-    dfsph_solver->initialize();
-
+    dfsphSolverConfig->max_neighborNum = 35;
+    dfsphSolverConfig->export_data = true;
+    dfsph_solver->attachObject(cube_1);
+    dfsph_solver->attachObject(cube_2);
+//    dfsph_solver->attachObject(plane);
 
     /**  =============================================================
      * run simulation
      */
-    dfsph_solver->run(10);
+    dfsph_solver->run(2);
 
-
-    /**  =============================================================
-     * terminate
-     */
-    solverManager.destroy();
-    objectManager.destroy();
 }

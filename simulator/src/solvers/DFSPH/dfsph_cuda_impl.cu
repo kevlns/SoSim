@@ -53,6 +53,69 @@ namespace SoSim {
     }
 
     __global__ void
+    init(DFSPHConstantParams *d_const,
+         DFSPHDynamicParams *d_data,
+         NeighborSearchUGConfig *d_nsConfig,
+         NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        d_data->pos_adv[i] = d_data->pos[i];
+        d_data->vel_adv[i] = d_data->vel[i];
+        d_data->div_err[i] = 0;
+        d_data->density[i] = d_const->rest_density;
+        if (d_data->mat[i] == DYNAMIC_RIGID || d_data->mat[i] == FIXED_BOUND) {
+            d_data->density[i] = d_const->rest_rigid_density;
+            d_data->density_sph[i] = d_data->density[i];
+        }
+    }
+
+    __global__ void
+    computeRigidParticleVolume(DFSPHConstantParams *d_const,
+                               DFSPHDynamicParams *d_data,
+                               NeighborSearchUGConfig *d_nsConfig,
+                               NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        auto p_i = d_nsParams->particleIndices_cuData[i];
+
+        if (d_data->mat[p_i] == FLUID)
+            return;
+
+        d_data->volume[p_i] *= 0;
+        auto pos_i = d_data->pos_adv[p_i];
+        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
+             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
+             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+
+            auto pos_j = d_data->pos_adv[p_j];
+            if (d_data->mat[p_j] == d_data->mat[p_i])
+                d_data->volume[p_i] += cubic_value(pos_i - pos_j, d_const->h);
+        }
+
+        d_data->volume[p_i] = 1 / d_data->volume[p_i];
+    }
+
+    __global__ void
+    computeExtForce(DFSPHConstantParams *d_const,
+                    DFSPHDynamicParams *d_data,
+                    NeighborSearchUGConfig *d_nsConfig,
+                    NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        if (d_data->mat[i] != FLUID)
+            return;
+
+        d_data->vel_adv[i] = d_data->vel[i] + d_const->dt * d_const->gravity;
+    }
+
+    __global__ void
     computeDensity(DFSPHConstantParams *d_const,
                    DFSPHDynamicParams *d_data,
                    NeighborSearchUGConfig *d_nsConfig,
@@ -66,7 +129,7 @@ namespace SoSim {
         if (d_data->mat[p_i] != FLUID)
             return;
 
-        d_data->density[p_i] *= 0.0;
+        d_data->density_sph[p_i] *= 0.0;
         auto pos_i = d_data->pos_adv[p_i];
         auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
 
@@ -75,11 +138,44 @@ namespace SoSim {
              ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
 
             auto pos_j = d_data->pos_adv[p_j];
-            d_data->density[p_i] += d_data->mass[p_j] * cubic_value(pos_i - pos_j, d_const->h);
+
+            d_data->density_sph[p_i] +=
+                    d_data->density[p_j] * d_const->rest_volume * cubic_value(pos_i - pos_j, d_const->h);
         }
 
-        d_data->density[p_i] = max(d_const->rest_density, d_data->density[p_i]);
-        d_data->mass[p_i] = d_data->density[p_i] * d_const->rest_volume;
+        d_data->density[p_i] = max(d_const->rest_density, d_data->density_sph[p_i]);
+    }
+
+    __global__ void
+    computeDivErr(DFSPHConstantParams *d_const,
+                  DFSPHDynamicParams *d_data,
+                  NeighborSearchUGConfig *d_nsConfig,
+                  NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        auto p_i = d_nsParams->particleIndices_cuData[i];
+
+        if (d_data->mat[p_i] != FLUID)
+            return;
+
+        d_data->div_err[p_i] *= 0;
+        auto pos_i = d_data->pos_adv[p_i];
+        auto vel_i = d_data->vel_adv[p_i];
+        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+
+        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
+             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
+             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+
+            auto pos_j = d_data->pos_adv[p_j];
+            auto vel_j = d_data->vel_adv[p_j];
+
+            d_data->div_err[p_i] += d_data->density[p_j] * d_const->rest_volume *
+                                    dot((vel_i - vel_j), cubic_gradient(pos_i - pos_j, d_const->h));
+        }
+        d_data->div_err[p_i] = max(d_data->div_err[p_i], 0.f);
     }
 
     __global__ void
@@ -107,15 +203,158 @@ namespace SoSim {
 
             auto pos_j = d_data->pos_adv[p_j];
 
-            Vec3f da;
-            da = d_data->mass[p_j] * cubic_gradient(pos_i - pos_j, d_const->h);
-            if (d_data->mat[p_j] == FIXED_BOUND)
-                da = d_data->density[p_i] * d_data->volume[p_j] * cubic_gradient(pos_i - pos_j, d_const->h);
+            Vec3f da{0, 0, 0};
+            da = d_data->density[p_j] * d_const->rest_volume * cubic_gradient(pos_i - pos_j, d_const->h);
             alpha_1 += da;
-            alpha_2 += da.length() * da.length();
+
+            if (d_data->mat[p_j] == d_data->mat[p_i])
+                alpha_2 += dot(da, da);
         }
 
-        d_data->dfsph_alpha[p_i] = alpha_1.length() * alpha_1.length() + alpha_2 + 1e-6f;
+        d_data->dfsph_alpha[p_i] = -1.f / (dot(alpha_1, alpha_1) + alpha_2 + 1e-6f);
+    }
+
+    __global__ void
+    adaptVelAdv_1(DFSPHConstantParams *d_const,
+                  DFSPHDynamicParams *d_data,
+                  NeighborSearchUGConfig *d_nsConfig,
+                  NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        auto p_i = d_nsParams->particleIndices_cuData[i];
+
+        if (d_data->mat[p_i] != FLUID)
+            return;
+
+        auto k_i = d_data->div_err[p_i] * d_data->dfsph_alpha[p_i];
+
+        auto pos_i = d_data->pos_adv[p_i];
+        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+
+        Vec3f d_a{0, 0, 0};
+        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
+             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
+             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+
+            auto pos_j = d_data->pos_adv[p_j];
+
+            auto k_j = d_data->div_err[p_j] * d_data->dfsph_alpha[p_j];
+
+            if (d_data->mat[p_j] == d_data->mat[p_i])
+                d_a += d_data->density[p_j] * d_const->rest_volume *
+                       (k_i + k_j) * cubic_gradient(pos_i - pos_j, d_const->h);
+
+            if (d_data->mat[p_j] == DYNAMIC_RIGID || d_data->mat[p_j] == FIXED_BOUND)
+                d_a += d_data->density[p_j] * d_const->rest_volume *
+                       k_i * cubic_gradient(pos_i - pos_j, d_const->h);
+        }
+
+        d_data->vel_adv[p_i] += d_a;
+    }
+
+    __global__ void
+    advectPos(DFSPHConstantParams *d_const,
+              DFSPHDynamicParams *d_data,
+              NeighborSearchUGConfig *d_nsConfig,
+              NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        if (d_data->mat[i] != FLUID)
+            return;
+
+        d_data->pos_adv[i] = d_data->pos[i] + d_const->dt * d_data->vel_adv[i];
+        d_data->pos[i] = d_data->pos_adv[i];
+    }
+
+    __global__ void
+    predictDensity(DFSPHConstantParams *d_const,
+                   DFSPHDynamicParams *d_data,
+                   NeighborSearchUGConfig *d_nsConfig,
+                   NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        auto p_i = d_nsParams->particleIndices_cuData[i];
+
+        if (d_data->mat[p_i] != FLUID)
+            return;
+
+        d_data->density_sph[p_i] = d_data->density[p_i];
+        auto pos_i = d_data->pos_adv[p_i];
+        auto vel_i = d_data->vel_adv[p_i];
+        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+
+        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
+             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
+             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+
+            auto pos_j = d_data->pos_adv[p_j];
+            auto vel_j = d_data->vel_adv[p_j];
+
+            d_data->density_sph[p_i] += d_const->dt * d_data->density[p_j] * d_const->rest_volume *
+                                        dot(vel_i - vel_j, cubic_gradient(pos_i - pos_j, d_const->h));
+        }
+    }
+
+    __global__ void
+    adaptVelAdv_2(DFSPHConstantParams *d_const,
+                  DFSPHDynamicParams *d_data,
+                  NeighborSearchUGConfig *d_nsConfig,
+                  NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        auto p_i = d_nsParams->particleIndices_cuData[i];
+
+        if (d_data->mat[p_i] != FLUID)
+            return;
+
+        auto k_i =
+                (d_data->density_sph[p_i] - d_const->rest_density) * d_data->dfsph_alpha[p_i];
+
+        auto pos_i = d_data->pos_adv[p_i];
+        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+
+        Vec3f d_a{0, 0, 0};
+        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
+             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
+             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+
+            auto pos_j = d_data->pos_adv[p_j];
+
+            auto k_j = (d_data->density_sph[p_j] - d_const->rest_density) * d_data->dfsph_alpha[p_j];
+
+            if (d_data->mat[p_j] == d_data->mat[p_i])
+                d_a += d_data->density[p_j] * d_const->rest_volume *
+                       (k_i + k_j) * cubic_gradient(pos_i - pos_j, d_const->h);
+
+            if (d_data->mat[p_j] == DYNAMIC_RIGID || d_data->mat[p_j] == FIXED_BOUND)
+                d_a += d_data->density[p_j] * d_const->rest_volume *
+                       k_i * cubic_gradient(pos_i - pos_j, d_const->h);
+        }
+
+        d_data->vel_adv[p_i] -= d_a;
+    }
+
+    __global__ void
+    advectVel(DFSPHConstantParams *d_const,
+              DFSPHDynamicParams *d_data,
+              NeighborSearchUGConfig *d_nsConfig,
+              NeighborSearchUGParams *d_nsParams) {
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
+
+        if (d_data->mat[i] != FLUID)
+            return;
+
+        d_data->vel[i] = d_data->vel_adv[i];
     }
 
 }

@@ -15,34 +15,37 @@
 
 namespace SoSim {
 
-    struct DFSPHSolverConfig {
+    struct DFSPHSolverConfig : public SolverConfig {
         float dt{1 / 60.f};
         float cur_sim_time{0};
         Vec3f gravity{0, -9.8, 0};
         float rest_vis{0.001};
         float rest_density{1000};
+        float rest_rigid_density{1200};
         Vec3f scene_lb{-15, -15, -15};
         Vec3f scene_size{30, 30, 30};
         unsigned max_neighborNum{35};
         unsigned kernel_blocks{0};
         unsigned kernel_threads{0};
+
+        unsigned particle_num_copy{0};
+        bool export_data{false};
     };
 
     class DFSPHSolver : public Solver {
     public:
-        ~DFSPHSolver() override = default;
+        DFSPHSolver();
 
-        void setConfig(DFSPHSolverConfig *config);
+        ~DFSPHSolver() override;
 
-        DFSPHSolverConfig *getConfig();
+        std::shared_ptr<SolverConfig> getConfig() override;
 
-        void attachObject(Object *object) override;
+        void attachObject(std::shared_ptr<Object> object) override;
 
-        void detachObject(Object *object) override;
+        void detachObject(std::shared_ptr<Object> object) override;
 
         bool initialize() override;
 
-        void destroy() override;
 
         void run(float total_time) override;
 
@@ -54,17 +57,21 @@ namespace SoSim {
 
         void deviceMalloc();
 
+        void destroy();
+
+        void exportData(DFSPHSolverConfig* solver_config);
+
     private:
-        bool m_changeOccur{false}; // for re-config solver
-        bool m_isInit{false};
-        std::optional<DFSPHSolverConfig *> m_config;
-        std::set<Object *> m_objects;
+        bool m_change_occur{false}; // for re-config solver
+        bool m_is_init{false};
+        bool m_is_start{true};
+        std::shared_ptr<SolverConfig> m_config;
+        std::set<std::shared_ptr<Object>> m_objects;
         DFSPHConstantParams m_host_const;
-        DFSPHConstantParams *m_device_const;
+        DFSPHConstantParams *m_device_const{nullptr};
         DFSPHDynamicParams m_host_data;
-        DFSPHDynamicParams *m_device_data;
+        DFSPHDynamicParams *m_device_data{nullptr};
         NeighborSearchUG m_neighborSearch;
-        std::vector<Vec3f> m_host_pos_reorder;
     };
 
 }

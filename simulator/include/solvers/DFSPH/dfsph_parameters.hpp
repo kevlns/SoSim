@@ -17,17 +17,19 @@ namespace SoSim {
         float rest_vis;
         float rest_density;
         float rest_volume;
+        float rest_rigid_density;
         unsigned particle_num;
         Vec3f gravity;
     };
 
     struct DFSPHDynamicParams {
         float *density;
+        float *density_sph;
         float *mass;
         float *pressure;
         float *volume;
         float *dfsph_alpha;
-        float *density_err;
+        float *div_err;
         Vec3f *vel;
         Vec3f *pos;
         Vec3f *acc;
@@ -42,11 +44,12 @@ namespace SoSim {
         inline void malloc(unsigned particle_num) {
             if (!is_init) {
                 cudaMalloc((void **) &density, particle_num * sizeof(float));
+                cudaMalloc((void **) &density_sph, particle_num * sizeof(float));
                 cudaMalloc((void **) &mass, particle_num * sizeof(float));
                 cudaMalloc((void **) &pressure, particle_num * sizeof(float));
                 cudaMalloc((void **) &volume, particle_num * sizeof(float));
                 cudaMalloc((void **) &dfsph_alpha, particle_num * sizeof(float));
-                cudaMalloc((void **) &density_err, particle_num * sizeof(float));
+                cudaMalloc((void **) &div_err, particle_num * sizeof(float));
                 cudaMalloc((void **) &vel, particle_num * sizeof(Vec3f));
                 cudaMalloc((void **) &pos, particle_num * sizeof(Vec3f));
                 cudaMalloc((void **) &acc, particle_num * sizeof(Vec3f));
@@ -62,11 +65,12 @@ namespace SoSim {
         inline void freeMemory() {
             if (is_init) {
                 cudaFree(density);
+                cudaFree(density_sph);
                 cudaFree(mass);
                 cudaFree(pressure);
                 cudaFree(volume);
                 cudaFree(dfsph_alpha);
-                cudaFree(density_err);
+                cudaFree(div_err);
                 cudaFree(vel);
                 cudaFree(pos);
                 cudaFree(acc);
