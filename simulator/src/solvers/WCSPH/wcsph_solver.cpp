@@ -75,6 +75,7 @@ namespace SoSim {
         m_host_const.rest_density = solver_config->rest_density;
         m_host_const.rest_volume = std::pow(2 * particle_radius, 3);
         m_host_const.rest_rigid_density = solver_config->rest_rigid_density;
+        m_host_const.stiff = m_host_const.rest_density * solver_config->cs * solver_config->cs / 7;
         m_host_const.gravity = solver_config->gravity;
 
         NeighborSearchUGConfig ns_config;

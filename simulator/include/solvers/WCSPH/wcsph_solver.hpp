@@ -22,6 +22,7 @@ namespace SoSim {
         float rest_vis{0.001};
         float rest_density{1000};
         float rest_rigid_density{1000};
+        float cs{100};
         Vec3f scene_lb{-15, -15, -15};
         Vec3f scene_size{30, 30, 30};
         unsigned max_neighborNum{35};

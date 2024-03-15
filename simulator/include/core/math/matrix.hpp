@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/5.
 //
 
-#ifndef SOSIM_DATA_TYPE_HPP
-#define SOSIM_DATA_TYPE_HPP
+#ifndef SOSIM_MATRIX_HPP
+#define SOSIM_MATRIX_HPP
 
 #include <cuda_runtime.h>
 #include <iostream>
@@ -756,4 +756,4 @@ namespace SoSim {
     }
 }
 
-#endif //SOSIM_DATA_TYPE_HPP
+#endif //SOSIM_MATRIX_HPP

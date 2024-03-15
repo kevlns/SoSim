@@ -58,7 +58,7 @@ int main() {
     dfsphSolverConfig->rest_rigid_density = 1000;
     dfsphSolverConfig->rest_vis = 0.001;
     dfsphSolverConfig->max_neighborNum = 35;
-    dfsphSolverConfig->export_data = true;
+    dfsphSolverConfig->export_data = false;
     dfsph_solver->attachObject(cube_1);
     dfsph_solver->attachObject(cube_2);
 //    dfsph_solver->attachObject(plane);

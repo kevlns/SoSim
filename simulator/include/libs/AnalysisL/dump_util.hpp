@@ -5,7 +5,7 @@
 #ifndef SOSIM_DUMP_UTIL_HPP
 #define SOSIM_DUMP_UTIL_HPP
 
-#include "core/data_type.hpp"
+#include "core/math/matrix.hpp"
 
 namespace SoSim {
 

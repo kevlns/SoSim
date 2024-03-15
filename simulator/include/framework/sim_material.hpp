@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/5.
 //
 
-#ifndef SOSIM_MATERIAL_HPP
-#define SOSIM_MATERIAL_HPP
+#ifndef SOSIM_SIM_MATERIAL_HPP
+#define SOSIM_SIM_MATERIAL_HPP
 
 namespace SoSim {
     enum Material {
@@ -18,4 +18,4 @@ namespace SoSim {
 
 }
 
-#endif //SOSIM_MATERIAL_HPP
+#endif //SOSIM_SIM_MATERIAL_HPP

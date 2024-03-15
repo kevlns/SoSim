@@ -9,8 +9,8 @@
 #include <vector>
 #include <optional>
 
-#include "core/data_type.hpp"
-#include "core/material.hpp"
+#include "core/math/matrix.hpp"
+#include "sim_material.hpp"
 
 namespace SoSim {
 
