@@ -1,8 +1,26 @@
 # SoSim
+
 Physical Simulator of SoEngine
 
-Dev Notes:
-``` c++
-2023.11.6 
-第一次调试 MSMSPH 中的 update_density_and_pressure(), compute_overall_acc(), advect_particles() 接口；其他接口未调试。
+## Build with CLion
+
+### Windows
+
+#### 1. setup
+
+```bash
+    git clone https://github.com/kevlns/SoSim.git
+    git submodule init
+    git submodule update
+    cd /path/to/thirdparty/vcpkg
+    .\bootstrap-vcpkg.bat
 ```
+
+#### 2. Install dependencies
+
+select vcpkg tool in the project  
+![select_vcpkg.png](pics/select_vcpkg.png)  
+vcpkg install  
+![vcpkg_install.png](pics/vcpkg_install.png)  
+
+#### 3. Build and Run

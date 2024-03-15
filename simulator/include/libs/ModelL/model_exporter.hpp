@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-#include "core/data_type.hpp"
+#include "core/math/matrix.hpp"
 
 namespace SoSim {
 

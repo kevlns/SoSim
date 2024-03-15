@@ -8,7 +8,7 @@
 #include <optional>
 #include <set>
 
-#include "core/data_type.hpp"
+#include "core/math/matrix.hpp"
 #include "framework/object.hpp"
 
 namespace SoSim {
