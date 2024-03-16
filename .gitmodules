@@ -1,9 +1,3 @@
-[submodule "Simulator/ThirdParty/Private/imgui"]
-	path = Simulator/ThirdParty/Private/imgui
-	url = https://github.com/ocornut/imgui.git
-[submodule "Simulator/ThirdParty/Private/glm"]
-	path = Simulator/ThirdParty/Private/glm
-	url = https://github.com/g-truc/glm.git
 [submodule "simulator/thirdparty/vcpkg"]
 	path = simulator/thirdparty/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
