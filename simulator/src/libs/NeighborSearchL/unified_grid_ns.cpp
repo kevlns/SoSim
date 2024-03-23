@@ -79,6 +79,11 @@ namespace SoSim {
 
     void NeighborSearchUG::setConfig(NeighborSearchUGConfig config) {
         h_config = config;
+        h_config.gridSize = {
+                static_cast<uint32_t>(std::ceil(h_config.sceneSize.x / h_config.cellLength)),
+                static_cast<uint32_t>(std::ceil(h_config.sceneSize.y / h_config.cellLength)),
+                static_cast<uint32_t>(std::ceil(h_config.sceneSize.z / h_config.cellLength))};
+        h_config.cellNum = h_config.gridSize.x * h_config.gridSize.y * h_config.gridSize.z;
         if (d_config)
             cudaFree(d_config);
 

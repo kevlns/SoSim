@@ -43,6 +43,10 @@ namespace SoSim {
         Vec3f transfer{0, 0, 0};
         Vec3f scale{1, 1, 1};
         Vec3f rotate{0, 0, 0};
+
+        /* solver related */
+        // multi-phase fluid solver
+        std::vector<float> phases;  // size is phase num
     };
 
     class Object {

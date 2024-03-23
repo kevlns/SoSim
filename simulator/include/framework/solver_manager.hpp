@@ -10,6 +10,7 @@
 // solvers includes
 #include "solvers/DFSPH/dfsph_solver.hpp"
 #include "solvers/WCSPH/wcsph_solver.hpp"
+#include "solvers/JL21-ConformationTensor/jl21_ct_solver.hpp"
 
 namespace SoSim {
 

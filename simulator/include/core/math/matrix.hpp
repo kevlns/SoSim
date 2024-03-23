@@ -23,7 +23,6 @@ namespace SoSim {
         float r2_2{0};
 
         __host__ __device__
-
         void operator*=(const float n) {
             this->r0_0 *= n;
             this->r0_1 *= n;

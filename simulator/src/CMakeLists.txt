@@ -5,11 +5,17 @@ find_package(assimp CONFIG REQUIRED)
 
 include_directories(${SOSIM_SIMULATOR_ROOT}/include ${CUDAToolkit_INCLUDE_DIRS})
 
+# build core
+file(GLOB_RECURSE CORE_HEADERS ${SOSIM_SIMULATOR_ROOT}/include/core "*.hpp" "*.cuh")
+file(GLOB_RECURSE CORE_SRC core "*.cpp" "*.cu")
+add_library(sosim-core ${CORE_HEADERS} ${CORE_SRC})
+target_link_libraries(sosim-core PUBLIC assimp::assimp CUDA::cudart)
+
 # build sosim-libs[static]
 file(GLOB_RECURSE LIB_HEADERS ${SOSIM_SIMULATOR_ROOT}/include/libs "*.hpp" "*.cuh")
 file(GLOB_RECURSE LIB_SRC libs "*.cpp" "*.cu")
 add_library(sosim-libs ${LIB_HEADERS} ${LIB_SRC})
-target_link_libraries(sosim-libs PUBLIC assimp::assimp CUDA::cudart)
+target_link_libraries(sosim-libs PUBLIC assimp::assimp CUDA::cudart sosim-core)
 
 # build base framework
 file(GLOB FRAMEWORK_HEADERS

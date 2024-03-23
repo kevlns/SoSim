@@ -159,7 +159,7 @@ namespace SoSim {
                 for (unsigned j = d_params->cellStart_cuData[cellId]; j <= d_params->cellEnd_cuData[cellId]; ++j) {
                     auto p_j = d_params->particleIndices_cuData[j];
                     auto pos_j = pos[p_j];
-                    if ((pos_i - pos_j).length() >= 0 && (pos_i - pos_j).length() <= d_config->cellLength) {
+                    if ((pos_i - pos_j).length() > 1e-6 && (pos_i - pos_j).length() <= d_config->cellLength) {
                         if (d_params->neighborNum_cuData[p_i] < d_config->maxNeighborNum) {
                             auto ind_offset = d_params->neighborNum_cuData[p_i]++;
                             d_params->neighbors_cuData[pn_index + ind_offset] = p_j;

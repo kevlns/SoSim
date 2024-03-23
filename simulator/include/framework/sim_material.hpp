@@ -8,12 +8,18 @@
 namespace SoSim {
     enum Material {
         // common
-        FLUID,
+        COMMON_FLUID,
         FIXED_BOUND,
-        DYNAMIC_RIGID
+        DYNAMIC_RIGID,
 
         // JL21-CT
-        // ...
+        JL21CT_NONNEWTON,
+
+        // special
+        ROTATE_RIGID,
+        BOUND_BOWL,
+        MOVE_RIGID,
+        FLUID_PREPARE_1
     };
 
 }

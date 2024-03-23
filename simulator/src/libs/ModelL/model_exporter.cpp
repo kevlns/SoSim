@@ -26,7 +26,7 @@ namespace SoSim {
         ofs << "end_header\n";
 
         for (auto &po: pos) {
-            ofs << po.x << " " << po.y << " " << po.z << " ";
+            ofs << po.x << " " << po.y << " " << po.z << "\n";
         }
 
         ofs.close();
