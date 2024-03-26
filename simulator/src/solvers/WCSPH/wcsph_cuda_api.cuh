@@ -63,19 +63,46 @@ namespace SoSim {
      * Host Invoke API
      */
     __host__ void
-    computeDensityAndPressure();
+    init(NeighborSearchUGConfig &h_nsConfig,
+         WCSPHConstantParams *d_const,
+         WCSPHDynamicParams *d_data,
+         NeighborSearchUGConfig *d_nsConfig,
+         NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    computeGravityForce();
+    computeDensityAndPressure(NeighborSearchUGConfig &h_nsConfig,
+                              WCSPHConstantParams *d_const,
+                              WCSPHDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    computePressureForce();
+    computeGravityForce(NeighborSearchUGConfig &h_nsConfig,
+                        WCSPHConstantParams *d_const,
+                        WCSPHDynamicParams *d_data,
+                        NeighborSearchUGConfig *d_nsConfig,
+                        NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    computeViscousForce();
+    computePressureForce(NeighborSearchUGConfig &h_nsConfig,
+                         WCSPHConstantParams *d_const,
+                         WCSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    advect();
+    computeViscousForce(NeighborSearchUGConfig &h_nsConfig,
+                        WCSPHConstantParams *d_const,
+                        WCSPHDynamicParams *d_data,
+                        NeighborSearchUGConfig *d_nsConfig,
+                        NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    advect(NeighborSearchUGConfig &h_nsConfig,
+           WCSPHConstantParams *d_const,
+           WCSPHDynamicParams *d_data,
+           NeighborSearchUGConfig *d_nsConfig,
+           NeighborSearchUGParams *d_nsParams);
 
     __host__ void
     wcsphOverall();

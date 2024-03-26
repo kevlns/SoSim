@@ -59,6 +59,8 @@ namespace SoSim {
 
         void destroy();
 
+        void exportAsPly();
+
     private:
         bool m_change_occur{false}; // for re-config solver
         bool m_is_init{false};

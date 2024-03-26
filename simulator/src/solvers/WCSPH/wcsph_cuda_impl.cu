@@ -62,22 +62,23 @@ namespace SoSim {
               NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD()
 
-        DATA_VALUE(density, p_i) = CONST_VALUE(rest_density);
-        DATA_VALUE(volume, p_i) = CONST_VALUE(rest_volume);
-        DATA_VALUE(pos_adv, p_i) = DATA_VALUE(pos, p_i);
+        DATA_VALUE(m_device_density, p_i) = CONST_VALUE(rest_density);
+        DATA_VALUE(m_device_volume, p_i) = CONST_VALUE(rest_volume);
+        DATA_VALUE(m_device_pos_adv, p_i) = DATA_VALUE(m_device_pos, p_i);
+        DATA_VALUE(m_device_vel_adv, p_i) = DATA_VALUE(m_device_vel, p_i);
 
         // compute rigid particle volume
-        if (DATA_VALUE(mat, p_i) == FIXED_BOUND || DATA_VALUE(mat, p_i) == DYNAMIC_RIGID) {
-            float density = 0;
-            auto pos_i = DATA_VALUE(pos, p_i);
+        if (DATA_VALUE(m_device_mat, p_i) == FIXED_BOUND || DATA_VALUE(m_device_mat, p_i) == DYNAMIC_RIGID) {
+            float delta = 0;
+            auto pos_i = DATA_VALUE(m_device_pos, p_i);
             FOR_EACH_NEIGHBOR_Pj() {
-                auto pos_j = DATA_VALUE(pos, p_j);
+                auto pos_j = DATA_VALUE(m_device_pos, p_j);
 
-                if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i))
-                    density += cubic_value(pos_i - pos_j, CONST_VALUE(h));
+                if (DATA_VALUE(m_device_mat, p_j) == DATA_VALUE(m_device_mat, p_i))
+                    delta += cubic_value(pos_i - pos_j, CONST_VALUE(h));
             }
-            DATA_VALUE(volume, p_i) = max(1 / density, CONST_VALUE(rest_volume));
-            DATA_VALUE(density, p_i) = CONST_VALUE(rest_rigid_density);
+            DATA_VALUE(m_device_volume, p_i) = 1 / delta;
+            DATA_VALUE(m_device_density, p_i) = CONST_VALUE(rest_density);
         }
     }
 
@@ -88,26 +89,27 @@ namespace SoSim {
                                    NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD()
 
-        if (DATA_VALUE(mat, p_i) != FLUID)
+        if (DATA_VALUE(m_device_mat, p_i) != COMMON_FLUID)
             return;
 
         // define your local var
-        auto pos_i = DATA_VALUE(pos_adv, p_i);
+        auto pos_i = DATA_VALUE(m_device_pos_adv, p_i);
         float density_sph = 0;
 
         FOR_EACH_NEIGHBOR_Pj() {
-            auto pos_j = DATA_VALUE(pos_adv, p_j);
+            auto pos_j = DATA_VALUE(m_device_pos_adv, p_j);
 
-            float dens = DATA_VALUE(density, p_j);
-            if (DATA_VALUE(mat, p_j) == FIXED_BOUND || DATA_VALUE(mat, p_j) == DYNAMIC_RIGID)
-                dens = DATA_VALUE(density, p_i);
-
-            density_sph += dens * cubic_value(pos_i - pos_j, CONST_VALUE(h));
+            if (DATA_VALUE(m_device_mat, p_j) == DATA_VALUE(m_device_mat, p_i))
+                density_sph += DATA_VALUE(m_device_density, p_i) * CONST_VALUE(rest_volume) *
+                               cubic_value(pos_i - pos_j, CONST_VALUE(h));
+            else if (DATA_VALUE(m_device_mat, p_j) == FIXED_BOUND || DATA_VALUE(m_device_mat, p_j) == DYNAMIC_RIGID)
+                density_sph += CONST_VALUE(rest_density) * DATA_VALUE(m_device_volume, p_j) *
+                              cubic_value(pos_i - pos_j, CONST_VALUE(h));
         }
 
-        DATA_VALUE(density, p_i) = max(density_sph, CONST_VALUE(rest_density));
-        DATA_VALUE(pressure, p_i) =
-                CONST_VALUE(stiff) * (pow(DATA_VALUE(density, p_i) / CONST_VALUE(rest_density), 7) - 1);
+        DATA_VALUE(m_device_density, p_i) = max(density_sph, CONST_VALUE(rest_density));
+        DATA_VALUE(m_device_pressure, p_i) =
+                CONST_VALUE(stiff) * (pow(DATA_VALUE(m_device_density, p_i) / CONST_VALUE(rest_density), 7) - 1);
     }
 
     __global__ void
@@ -117,10 +119,10 @@ namespace SoSim {
                              NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD()
 
-        if (DATA_VALUE(mat, p_i) != FLUID)
+        if (DATA_VALUE(m_device_mat, p_i) != COMMON_FLUID)
             return;
 
-        DATA_VALUE(vel_adv, p_i) += CONST_VALUE(dt) * CONST_VALUE(gravity);
+        DATA_VALUE(m_device_vel_adv, p_i) += CONST_VALUE(dt) * CONST_VALUE(gravity);
     }
 
     __global__ void
@@ -131,24 +133,49 @@ namespace SoSim {
 
         CHECK_THREAD()
 
-        if (DATA_VALUE(mat, p_i) != FLUID)
+        if (DATA_VALUE(m_device_mat, p_i) != COMMON_FLUID)
             return;
 
-        auto pos_i = DATA_VALUE(pos_adv, p_i);
-        auto pressure_i = DATA_VALUE(pressure, p_i);
+//        auto pos_i = DATA_VALUE(m_device_pos_adv, p_i);
+//        auto density_i = DATA_VALUE(m_device_density, p_i);
+//        auto mass_i = density_i * CONST_VALUE(rest_volume);
+//        auto pressure_i = DATA_VALUE(m_device_pressure, p_i);
+//        Vec3f d_v;
+//        FOR_EACH_NEIGHBOR_Pj() {
+//
+//            auto pos_j = DATA_VALUE(m_device_pos_adv, p_j);
+//            auto mass_j = DATA_VALUE(m_device_density, p_j) * CONST_VALUE(rest_volume);
+//
+//            if (DATA_VALUE(m_device_mat, p_j) == FIXED_BOUND || DATA_VALUE(m_device_mat, p_j) == DYNAMIC_RIGID) {
+//                mass_j = CONST_VALUE(rest_density) * DATA_VALUE(m_device_volume, p_j);
+//            }
+//
+//            d_v += -mass_i * mass_j * (pressure_i / pow(density_i, 2)) *
+//                   cubic_gradient(pos_i - pos_j, CONST_VALUE(h));
+//        }
+//
+//        DATA_VALUE(m_device_vel_adv, p_i) += CONST_VALUE(dt) * d_v / density_i;
+
+        auto pos_i = DATA_VALUE(m_device_pos_adv, p_i);
+        auto pressure_i = DATA_VALUE(m_device_pressure, p_i);
+        auto density_i = DATA_VALUE(m_device_density, p_i);
         Vec3f acc;
         FOR_EACH_NEIGHBOR_Pj() {
-            auto pos_j = DATA_VALUE(pos_adv, p_j);
+            auto pos_j = DATA_VALUE(m_device_pos_adv, p_j);
+            auto density_j = DATA_VALUE(m_device_density, p_j);
 
-            auto pressure_j = DATA_VALUE(pressure, p_j);
-            if (DATA_VALUE(mat, p_j) == FIXED_BOUND || DATA_VALUE(mat, p_j) == DYNAMIC_RIGID)
+            auto pressure_j = DATA_VALUE(m_device_pressure, p_j);
+            if (DATA_VALUE(m_device_mat, p_j) == FIXED_BOUND || DATA_VALUE(m_device_mat, p_j) == DYNAMIC_RIGID) {
                 pressure_j = pressure_i;
+                density_j = CONST_VALUE(rest_density);
+            }
 
-            acc += -DATA_VALUE(density, p_j) * DATA_VALUE(volume, p_j) *
-                   (pressure_i / pow(DATA_VALUE(density, p_i), 2) + pressure_j / pow(DATA_VALUE(density, p_j), 2)) *
+            acc += -DATA_VALUE(m_device_density, p_j) * DATA_VALUE(m_device_volume, p_j) *
+                   (pressure_i / pow(density_i, 2) +
+                    pressure_j / pow(density_j, 2)) *
                    cubic_gradient(pos_i - pos_j, CONST_VALUE(h));
         }
-        DATA_VALUE(vel_adv, p_i) += CONST_VALUE(dt) * acc;
+        DATA_VALUE(m_device_vel_adv, p_i) += CONST_VALUE(dt) * acc;
     }
 
     __global__ void
@@ -158,21 +185,22 @@ namespace SoSim {
                              NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD()
 
-        if (DATA_VALUE(mat, p_i) != FLUID)
+        if (DATA_VALUE(m_device_mat, p_i) != COMMON_FLUID)
             return;
 
-        auto pos_i = DATA_VALUE(pos_adv, p_i);
-        auto vel_i = DATA_VALUE(vel, p_i);
+        auto pos_i = DATA_VALUE(m_device_pos_adv, p_i);
+        auto vel_i = DATA_VALUE(m_device_vel, p_i);
         Vec3f acc;
         FOR_EACH_NEIGHBOR_Pj() {
-            auto pos_j = DATA_VALUE(pos_adv, p_j);
-            auto vel_j = DATA_VALUE(vel, p_j);
+            auto pos_j = DATA_VALUE(m_device_pos_adv, p_j);
+            auto vel_j = DATA_VALUE(m_device_vel, p_j);
 
-            acc += 10 * CONST_VALUE(rest_vis) * DATA_VALUE(volume, p_j) *
-                   dot(vel_i - vel_j, pos_i - pos_j) * cubic_gradient(pos_i - pos_j, CONST_VALUE(h)) /
-                   (pow((pos_i - pos_j).length(), 2) + 1e-6f);
+            if (DATA_VALUE(m_device_mat, p_j) == DATA_VALUE(m_device_mat, p_i))
+                acc += 10 * CONST_VALUE(rest_vis) * DATA_VALUE(m_device_volume, p_j) *
+                       dot(vel_i - vel_j, pos_i - pos_j) * cubic_gradient(pos_i - pos_j, CONST_VALUE(h)) /
+                       (pow((pos_i - pos_j).length(), 2) + 1e-6f);
         }
-        DATA_VALUE(vel_adv, p_i) += CONST_VALUE(dt) * acc;
+        DATA_VALUE(m_device_vel_adv, p_i) += CONST_VALUE(dt) * acc;
     }
 
     __global__ void
@@ -182,12 +210,114 @@ namespace SoSim {
                 NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD()
 
-        if (DATA_VALUE(mat, p_i) != FLUID)
+        if (DATA_VALUE(m_device_mat, p_i) != COMMON_FLUID)
             return;
 
-        DATA_VALUE(pos_adv, p_i) += CONST_VALUE(dt) * DATA_VALUE(vel_adv, p_i);
-        DATA_VALUE(pos, p_i) = DATA_VALUE(pos_adv, p_i);
-        DATA_VALUE(vel, p_i) = DATA_VALUE(vel_adv, p_i);
+        DATA_VALUE(m_device_pos_adv, p_i) =
+                DATA_VALUE(m_device_pos, p_i) +
+                CONST_VALUE(dt) * DATA_VALUE(m_device_vel_adv, p_i);
+        DATA_VALUE(m_device_pos, p_i) = DATA_VALUE(m_device_pos_adv, p_i);
+        DATA_VALUE(m_device_vel, p_i) = DATA_VALUE(m_device_vel_adv, p_i);
+    }
+
+}
+
+namespace SoSim {
+
+    __host__ void
+    init(NeighborSearchUGConfig &h_nsConfig,
+         WCSPHConstantParams *d_const,
+         WCSPHDynamicParams *d_data,
+         NeighborSearchUGConfig *d_nsConfig,
+         NeighborSearchUGParams *d_nsParams) {
+        init_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
+    }
+
+    __host__ void
+    computeDensityAndPressure(NeighborSearchUGConfig &h_nsConfig,
+                              WCSPHConstantParams *d_const,
+                              WCSPHDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams) {
+        computeDensityAndPressure_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
+    }
+
+    __host__ void
+    computeGravityForce(NeighborSearchUGConfig &h_nsConfig,
+                        WCSPHConstantParams *d_const,
+                        WCSPHDynamicParams *d_data,
+                        NeighborSearchUGConfig *d_nsConfig,
+                        NeighborSearchUGParams *d_nsParams) {
+        computeGravityForce_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
+    }
+
+    __host__ void
+    computePressureForce(NeighborSearchUGConfig &h_nsConfig,
+                         WCSPHConstantParams *d_const,
+                         WCSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams) {
+        computePressureForce_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
+    }
+
+    __host__ void
+    computeViscousForce(NeighborSearchUGConfig &h_nsConfig,
+                        WCSPHConstantParams *d_const,
+                        WCSPHDynamicParams *d_data,
+                        NeighborSearchUGConfig *d_nsConfig,
+                        NeighborSearchUGParams *d_nsParams) {
+        computeViscousForce_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
+    }
+
+    __host__ void
+    advect(NeighborSearchUGConfig &h_nsConfig,
+           WCSPHConstantParams *d_const,
+           WCSPHDynamicParams *d_data,
+           NeighborSearchUGConfig *d_nsConfig,
+           NeighborSearchUGParams *d_nsParams) {
+        advect_cuda<<< h_nsConfig.kernel_blocks, h_nsConfig.kernel_threads>>>(
+                d_const,
+                d_data,
+                d_nsConfig,
+                d_nsParams
+        );
+
+        cudaGetLastError();
     }
 
 }

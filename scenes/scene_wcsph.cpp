@@ -15,35 +15,34 @@ int main() {
     ObjectManager objectManager;
     auto cube_1 = objectManager.createObject();
     auto cubeConfig_1 = cube_1->getParticleObjectConfig();
-    cube_1->setName("cube_1");
     cubeConfig_1->particle_radius = 0.05;
-    cubeConfig_1->particle_mat = FLUID;
+    cubeConfig_1->particle_mat = COMMON_FLUID;
     cubeConfig_1->shape = "cube";
-    cubeConfig_1->lb = {-1, 0, 0};
+    cubeConfig_1->lb = {-1, 0.2, -1};
     cubeConfig_1->size = {2, 2, 2};
-    cubeConfig_1->vel_start = {0.5, 0, 0};
+    cube_1->setName("cube_1");
     cube_1->update();
 
     auto cube_2 = objectManager.createObject();
     auto cubeConfig_2 = cube_2->getParticleObjectConfig();
-    cube_2->setName("cube_2");
-    cubeConfig_2->particle_radius = 0.05;
-    cubeConfig_2->particle_mat = FLUID;
+    cubeConfig_2->particle_radius = 0.1;
+    cubeConfig_2->particle_mat = COMMON_FLUID;
     cubeConfig_2->shape = "cube";
-    cubeConfig_2->lb = {1.5, 0, 0};
+    cubeConfig_2->lb = {1.5, 0.1, 0};
     cubeConfig_2->size = {2, 2, 2};
+    cube_2->setName("cube_2");
     cube_2->update();
 
-    auto plane = objectManager.createObject();
-    auto planeConfig = plane->getParticleObjectConfig();
-    plane->setName("plane_1");
+    auto plane_1 = objectManager.createObject();
+    auto planeConfig = plane_1->getParticleObjectConfig();
     planeConfig->particle_radius = 0.05;
     planeConfig->particle_mat = FIXED_BOUND;
     planeConfig->shape = "plane";
-    planeConfig->lb = {-5, -2.5, -5};
-    planeConfig->size = {10, 10, 10};
+    planeConfig->lb = {-2, -0.4, -2};
+    planeConfig->size = {4, 2, 4};
     planeConfig->layer = 2;
-    plane->update();
+    plane_1->setName("plane_1");
+    plane_1->update();
 
 
     /**  =============================================================
@@ -52,20 +51,23 @@ int main() {
     SolverManager solverManager;
     auto wcsph_solver = solverManager.createSolver<WCSPHSolver>();
     auto wcsphSolverConfig = dynamic_cast<WCSPHSolverConfig *>(wcsph_solver->getConfig().get());
-    wcsphSolverConfig->dt = 0.01;
-    wcsphSolverConfig->gravity = {0,-0.5,0};
+    wcsphSolverConfig->dt = 0.001;
+    wcsphSolverConfig->gravity = {0, -9.8, 0};
     wcsphSolverConfig->rest_density = 1000;
     wcsphSolverConfig->rest_rigid_density = 1000;
+    wcsphSolverConfig->cs = 5;
     wcsphSolverConfig->rest_vis = 0.001;
-    wcsphSolverConfig->max_neighborNum = 35;
+    wcsphSolverConfig->max_neighborNum = 40;
     wcsphSolverConfig->export_data = true;
+    wcsphSolverConfig->scene_lb = {-15, -15, -15};
+    wcsphSolverConfig->scene_size = {30, 30, 30};
     wcsph_solver->attachObject(cube_1);
-    wcsph_solver->attachObject(cube_2);
-//    wcsph_solver->attachObject(plane);
+//    wcsph_solver->attachObject(cube_2);
+    wcsph_solver->attachObject(plane_1);
 
     /**  =============================================================
      * run simulation
      */
-    wcsph_solver->run(0.01);
+    wcsph_solver->run(2);
 
 }

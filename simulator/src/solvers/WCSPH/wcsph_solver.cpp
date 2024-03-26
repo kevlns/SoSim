@@ -4,9 +4,10 @@
 #include <memory>
 #include <cuda_runtime.h>
 
-#include "libs/ModelL/model_exporter.hpp"
-#include "libs/AnalysisL/dump_util.hpp"
 #include "solvers/WCSPH/wcsph_solver.hpp"
+#include "wcsph_cuda_api.cuh"
+#include "libs/ModelL/model_exporter.hpp"
+#include "libs/AnalysisL/statistic_util.hpp"
 
 namespace SoSim {
 
@@ -76,6 +77,8 @@ namespace SoSim {
         m_host_const.rest_volume = std::pow(2 * particle_radius, 3);
         m_host_const.rest_rigid_density = solver_config->rest_rigid_density;
         m_host_const.stiff = m_host_const.rest_density * solver_config->cs * solver_config->cs / 7;
+        m_host_const.stiff = 1000000;
+//        m_host_const.stiff = 1000000;
         m_host_const.gravity = solver_config->gravity;
 
         NeighborSearchUGConfig ns_config;
@@ -100,15 +103,15 @@ namespace SoSim {
         for (const auto &obj: m_objects) {
             std::vector<Vec3f> vel_start(obj->getParticleNum(), obj->getParticleObjectConfig()->vel_start);
             std::vector<Material> mat(obj->getParticleNum(), obj->getParticleObjectConfig()->particle_mat.value());
-            cudaMemcpy(m_host_data.pos + offset,
+            cudaMemcpy(m_host_data.m_device_pos + offset,
                        obj->getParticles().data(),
                        obj->getParticleNum() * sizeof(Vec3f),
                        cudaMemcpyHostToDevice);
-            cudaMemcpy(m_host_data.vel + offset,
+            cudaMemcpy(m_host_data.m_device_vel + offset,
                        vel_start.data(),
                        obj->getParticleNum() * sizeof(Vec3f),
                        cudaMemcpyHostToDevice);
-            cudaMemcpy(m_host_data.mat + offset,
+            cudaMemcpy(m_host_data.m_device_mat + offset,
                        mat.data(),
                        obj->getParticleNum() * sizeof(Material),
                        cudaMemcpyHostToDevice);
@@ -157,6 +160,18 @@ namespace SoSim {
         }
     }
 
+    void WCSPHSolver::exportAsPly() {
+        static int counter = 1;
+        std::vector<Vec3f> pos(m_host_const.particle_num);
+        cudaMemcpy(pos.data(),
+                   m_host_data.m_device_pos,
+                   m_host_const.particle_num * sizeof(Vec3f),
+                   cudaMemcpyDeviceToHost);
+        ModelExporter::exportVecSetAsPly("F:\\DataSet.Research\\ITEM.NN_NewModel\\ply\\wcsph_test",
+                                         std::to_string(counter++),
+                                         pos);
+    }
+
     void WCSPHSolver::run(float total_time) {
         if (!m_is_init)
             initialize();
@@ -166,16 +181,23 @@ namespace SoSim {
         auto solver_config = dynamic_cast<WCSPHSolverConfig *>(m_config.get());
         if (m_is_start) {
 
-            // TODO
-            m_neighborSearch.update(m_host_data.pos);
-            m_neighborSearch.dump();
+            m_neighborSearch.update(m_host_data.m_device_pos);
+            init(m_neighborSearch.h_config,
+                 m_device_const,
+                 m_device_data,
+                 m_neighborSearch.d_config,
+                 m_neighborSearch.d_params);
 
             m_is_start = false;
         }
 
         while (solver_config->cur_sim_time <= total_time) {
 
+            if (dynamic_cast<WCSPHSolverConfig *>(m_config.get())->export_data)
+                exportAsPly();
+
             step();
+
 
             std::cout << "Frame out: " << unsigned(solver_config->cur_sim_time / solver_config->dt) << '\n';
         }
@@ -184,7 +206,51 @@ namespace SoSim {
     void WCSPHSolver::step() {
         auto solver_config = dynamic_cast<WCSPHSolverConfig *>(m_config.get());
 
-        // TODO
+        computeGravityForce(
+                m_neighborSearch.h_config,
+                m_device_const,
+                m_device_data,
+                m_neighborSearch.d_config,
+                m_neighborSearch.d_params
+        );
+
+        advect(
+                m_neighborSearch.h_config,
+                m_device_const,
+                m_device_data,
+                m_neighborSearch.d_config,
+                m_neighborSearch.d_params
+        );
+
+        m_neighborSearch.update(m_host_data.m_device_pos);
+
+        computeDensityAndPressure(
+                m_neighborSearch.h_config,
+                m_device_const,
+                m_device_data,
+                m_neighborSearch.d_config,
+                m_neighborSearch.d_params
+        );
+
+        dump_mean(m_host_data.m_device_pressure,
+                  m_host_const.particle_num,
+                  m_host_const.particle_num);
+
+        computePressureForce(
+                m_neighborSearch.h_config,
+                m_device_const,
+                m_device_data,
+                m_neighborSearch.d_config,
+                m_neighborSearch.d_params
+        );
+
+        computeViscousForce(
+                m_neighborSearch.h_config,
+                m_device_const,
+                m_device_data,
+                m_neighborSearch.d_config,
+                m_neighborSearch.d_params
+        );
 
         solver_config->cur_sim_time += solver_config->dt;
     }

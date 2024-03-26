@@ -46,7 +46,7 @@ namespace SoSim {
 
         /* solver related */
         // multi-phase fluid solver
-        std::vector<float> phases;  // size is phase num
+        std::vector<float> phases;          // size is phase num, value is phase volume fraction
     };
 
     class Object {

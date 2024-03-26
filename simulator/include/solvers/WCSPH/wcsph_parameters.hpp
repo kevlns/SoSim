@@ -22,14 +22,14 @@ namespace SoSim {
     };
 
     struct WCSPHDynamicParams {
-        float *density;
-        float *pressure;
-        float *volume;
-        Vec3f *vel;
-        Vec3f *pos;
-        Vec3f *pos_adv;
-        Vec3f *vel_adv;
-        Material *mat;
+        float *m_device_density;
+        float *m_device_pressure;
+        float *m_device_volume;
+        Vec3f *m_device_vel;
+        Vec3f *m_device_pos;
+        Vec3f *m_device_pos_adv;
+        Vec3f *m_device_vel_adv;
+        Material *m_device_mat;
 
     private:
         bool is_init{false};
@@ -37,14 +37,14 @@ namespace SoSim {
     public:
         inline void malloc(unsigned particle_num) {
             if (!is_init) {
-                cudaMalloc((void **) &density, particle_num * sizeof(float));
-                cudaMalloc((void **) &pressure, particle_num * sizeof(float));
-                cudaMalloc((void **) &volume, particle_num * sizeof(float));
-                cudaMalloc((void **) &vel, particle_num * sizeof(Vec3f));
-                cudaMalloc((void **) &pos, particle_num * sizeof(Vec3f));
-                cudaMalloc((void **) &pos_adv, particle_num * sizeof(Vec3f));
-                cudaMalloc((void **) &vel_adv, particle_num * sizeof(Vec3f));
-                cudaMalloc((void **) &mat, particle_num * sizeof(Material));
+                cudaMalloc((void **) &m_device_density, particle_num * sizeof(float));
+                cudaMalloc((void **) &m_device_pressure, particle_num * sizeof(float));
+                cudaMalloc((void **) &m_device_volume, particle_num * sizeof(float));
+                cudaMalloc((void **) &m_device_vel, particle_num * sizeof(Vec3f));
+                cudaMalloc((void **) &m_device_pos, particle_num * sizeof(Vec3f));
+                cudaMalloc((void **) &m_device_pos_adv, particle_num * sizeof(Vec3f));
+                cudaMalloc((void **) &m_device_vel_adv, particle_num * sizeof(Vec3f));
+                cudaMalloc((void **) &m_device_mat, particle_num * sizeof(Material));
 
                 if (cudaGetLastError() == cudaSuccess)
                     is_init = true;
@@ -53,14 +53,14 @@ namespace SoSim {
 
         inline void freeMemory() {
             if (is_init) {
-                cudaFree(density);
-                cudaFree(pressure);
-                cudaFree(volume);
-                cudaFree(vel);
-                cudaFree(pos);
-                cudaFree(pos_adv);
-                cudaFree(vel_adv);
-                cudaFree(mat);
+                cudaFree(m_device_density);
+                cudaFree(m_device_pressure);
+                cudaFree(m_device_volume);
+                cudaFree(m_device_vel);
+                cudaFree(m_device_pos);
+                cudaFree(m_device_pos_adv);
+                cudaFree(m_device_vel_adv);
+                cudaFree(m_device_mat);
             }
         }
     };
