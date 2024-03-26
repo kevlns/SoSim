@@ -14,12 +14,14 @@ namespace SoSim {
 
         // JL21-CT
         JL21CT_NONNEWTON,
-
-        // special
         ROTATE_RIGID,
         BOUND_BOWL,
         MOVE_RIGID,
-        FLUID_PREPARE_1
+        FLUID_PREPARE_1,
+
+        // IMS-CT
+        IMSCT_NONNEWTON,
+
     };
 
 }

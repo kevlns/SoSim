@@ -4,7 +4,7 @@
 
 #include "dfsph_cuda_invoke_api.cuh"
 #include "dfsph_cuda_api.cuh"
-#include "libs/AnalysisL/dump_util.hpp"
+#include "libs/AnalysisL/statistic_util.hpp"
 
 namespace SoSim {
 

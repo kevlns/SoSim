@@ -17,7 +17,7 @@ int main() {
     auto cubeConfig_1 = cube_1->getParticleObjectConfig();
     cube_1->setName("cube_1");
     cubeConfig_1->particle_radius = 0.05;
-    cubeConfig_1->particle_mat = FLUID;
+    cubeConfig_1->particle_mat = COMMON_FLUID;
     cubeConfig_1->shape = "cube";
     cubeConfig_1->lb = {-1, 0, 0};
     cubeConfig_1->size = {2, 2, 2};
@@ -28,7 +28,7 @@ int main() {
     auto cubeConfig_2 = cube_2->getParticleObjectConfig();
     cube_2->setName("cube_2");
     cubeConfig_2->particle_radius = 0.05;
-    cubeConfig_2->particle_mat = FLUID;
+    cubeConfig_2->particle_mat = COMMON_FLUID;
     cubeConfig_2->shape = "cube";
     cubeConfig_2->lb = {1.5, 0, 0};
     cubeConfig_2->size = {2, 2, 2};

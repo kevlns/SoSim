@@ -82,7 +82,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] == FLUID)
+        if (d_data->mat[p_i] == COMMON_FLUID)
             return;
 
         d_data->volume[p_i] *= 0;
@@ -109,7 +109,7 @@ namespace SoSim {
         if (i >= d_const->particle_num)
             return;
 
-        if (d_data->mat[i] != FLUID)
+        if (d_data->mat[i] != COMMON_FLUID)
             return;
 
         d_data->vel_adv[i] = d_data->vel[i] + d_const->dt * d_const->gravity;
@@ -126,7 +126,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         d_data->density_sph[p_i] *= 0.0;
@@ -157,7 +157,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         d_data->div_err[p_i] *= 0;
@@ -189,7 +189,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         auto pos_i = d_data->pos_adv[p_i];
@@ -225,7 +225,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         auto k_i = d_data->div_err[p_i] * d_data->dfsph_alpha[p_i];
@@ -263,7 +263,7 @@ namespace SoSim {
         if (i >= d_const->particle_num)
             return;
 
-        if (d_data->mat[i] != FLUID)
+        if (d_data->mat[i] != COMMON_FLUID)
             return;
 
         d_data->pos_adv[i] = d_data->pos[i] + d_const->dt * d_data->vel_adv[i];
@@ -281,7 +281,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         d_data->density_sph[p_i] = d_data->density[p_i];
@@ -312,7 +312,7 @@ namespace SoSim {
 
         auto p_i = d_nsParams->particleIndices_cuData[i];
 
-        if (d_data->mat[p_i] != FLUID)
+        if (d_data->mat[p_i] != COMMON_FLUID)
             return;
 
         auto k_i =
@@ -351,7 +351,7 @@ namespace SoSim {
         if (i >= d_const->particle_num)
             return;
 
-        if (d_data->mat[i] != FLUID)
+        if (d_data->mat[i] != COMMON_FLUID)
             return;
 
         d_data->vel[i] = d_data->vel_adv[i];

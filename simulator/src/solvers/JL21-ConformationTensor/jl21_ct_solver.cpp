@@ -7,7 +7,7 @@
 #include "jl21_solver_host_invoke_api.cuh"
 
 #include "libs/ModelL/model_exporter.hpp"
-#include "libs/AnalysisL/dump_util.hpp"
+#include "libs/AnalysisL/statistic_util.hpp"
 
 namespace SoSim {
 

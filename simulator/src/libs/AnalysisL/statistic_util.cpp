@@ -5,7 +5,7 @@
 #include <vector>
 #include <cuda_runtime.h>
 
-#include "libs/AnalysisL/dump_util.hpp"
+#include "libs/AnalysisL/statistic_util.hpp"
 
 namespace SoSim {
 
@@ -50,16 +50,37 @@ namespace SoSim {
         return max_v;
     }
 
+    template<typename T>
+    T cal_mean(T *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start) {
+        std::vector<T> data(raw_size);
+        cudaMemcpy(data.data(), d_ptr, raw_size * sizeof(T), cudaMemcpyDeviceToHost);
+
+        T mean;
+        if (std::is_same<float, T>::value || std::is_same<double, T>::value ||
+            std::is_same<int, T>::value || std::is_same<unsigned, T>::value)
+            mean = 0;
+        for (int i = 0; i < raw_size; ++i) {
+            if (i >= target_start && i < target_start + target_size)
+                mean += data[i];
+        }
+
+        return mean / data.size();
+    }
+
     // explicit template instance
     template Vec3f dump_mean<Vec3f>(Vec3f *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
     template float dump_mean<float>(float *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
-    template unsigned dump_mean<unsigned>(unsigned *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
+    template unsigned
+    dump_mean<unsigned>(unsigned *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
     template Vec3f dump_max<Vec3f>(Vec3f *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
     template float dump_max<float>(float *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
-    template unsigned dump_max<unsigned>(unsigned *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
+    template unsigned
+    dump_max<unsigned>(unsigned *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
+
+    template float cal_mean<float>(float *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 }

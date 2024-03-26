@@ -16,9 +16,13 @@ namespace SoSim {
     struct SolverConfig {
         virtual ~SolverConfig() = default;
 
-        float dt;
-        float cur_sim_time;
-        Vec3f gravity;
+        // common
+        float dt{1 / 60.f};
+        float cur_sim_time{0};
+        Vec3f gravity{0, -9.8, 0};
+        unsigned kernel_threads{0};
+        unsigned kernel_blocks{0};
+        bool export_data{false};
     };
 
     class Solver {
