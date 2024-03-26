@@ -42,14 +42,14 @@ target_link_libraries(${TARGET} PUBLIC
 list(APPEND solver-libs ${TARGET})
 
 # IM-CT
-set(TARGET sosim-imct)
-file(GLOB IMCT_HEADERS
-        ${SOSIM_SIMULATOR_ROOT}/include/solvers/IM-ConformationTensor/*.hpp)
-file(GLOB IMCT_SRC
+set(TARGET sosim-imsct)
+file(GLOB IMSCT_HEADERS
+        ${SOSIM_SIMULATOR_ROOT}/include/solvers/IMS-ConformationTensor/*.hpp)
+file(GLOB IMSCT_SRC
         IMS-ConformationTensor/*.cpp
         IMS-ConformationTensor/*.cuh
         IMS-ConformationTensor/*.cu)
-add_library(${TARGET} ${IMCT_HEADERS} ${IMCT_SRC})
+add_library(${TARGET} ${IMSCT_HEADERS} ${IMSCT_SRC})
 target_link_libraries(${TARGET} PUBLIC
         sosim-framework)
 list(APPEND solver-libs ${TARGET})
