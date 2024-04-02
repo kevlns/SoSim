@@ -115,7 +115,7 @@ namespace SoSim {
         thrust::device_ptr<uint32_t> keys_dev_ptr(h_params.cellIndices_cuData);
         thrust::device_ptr<uint32_t> values_dev_ptr(h_params.particleIndices_cuData);
 
-        // 使用thrust::sort_by_key函数根据键进行排序
+        // use thrust::sort_by_key to order by key
         thrust::sort_by_key(keys_dev_ptr, keys_dev_ptr + h_config.particle_num, values_dev_ptr);
     }
 
@@ -150,6 +150,8 @@ namespace SoSim {
         auto p_i = d_params->particleIndices_cuData[i];
         auto pos_i = pos[p_i];
         auto pn_index = p_i * d_config->maxNeighborNum;
+        d_params->neighborNum_cuData[p_i] = 1;
+        d_params->neighbors_cuData[pn_index] = p_i;
         Vec3i curCellPos = getCellPos(pos[p_i], d_config->sceneLB, d_config->cellLength);
         for (int t = 0; t < 27; ++t) {
             auto offset = d_params->cellOffsets_cuData[t];
@@ -158,6 +160,8 @@ namespace SoSim {
             if (cellIsAvailable(cellPos, d_config->gridSize) && cellIsActivated(cellId, d_params->cellStart_cuData)) {
                 for (unsigned j = d_params->cellStart_cuData[cellId]; j <= d_params->cellEnd_cuData[cellId]; ++j) {
                     auto p_j = d_params->particleIndices_cuData[j];
+                    if (p_j == p_i)
+                        continue;
                     auto pos_j = pos[p_j];
                     if ((pos_i - pos_j).length() > 1e-6 && (pos_i - pos_j).length() <= d_config->cellLength) {
                         if (d_params->neighborNum_cuData[p_i] < d_config->maxNeighborNum) {

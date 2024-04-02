@@ -48,7 +48,7 @@ int main() {
     solver_config->rest_density = {995, 1000};
     solver_config->rest_vis = 0.001;
     solver_config->wc_stiff = 1000;
-    solver_config->max_neighborNum = 40;
+    solver_config->max_neighborNum = 50;
 
     solver_config->phase1_color = {254, 254, 254};
     solver_config->phase2_color = {255, 2, 2};
@@ -65,11 +65,11 @@ int main() {
     solver_config->scene_size = {30, 30, 30};
     solver_config->export_data = true;
     solver->attachObject(cube_1);
-//    solver->attachObject(plane_1);
+    solver->attachObject(plane_1);
 
     /**  =============================================================
      * run simulation
      */
-    solver->run(2);
+    solver->run(3);
 
 }

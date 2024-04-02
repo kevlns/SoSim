@@ -3,8 +3,8 @@
 //
 
 #include "solvers/JL21-ConformationTensor/jl21_ct_solver.hpp"
-//#include "jl21_ct_cuda_api.cuh"
-#include "jl21_solver_host_invoke_api.cuh"
+#include "jl21_ct_cuda_api.cuh"
+//#include "jl21_solver_host_invoke_api.cuh"
 
 #include "libs/ModelL/model_exporter.hpp"
 #include "libs/AnalysisL/statistic_util.hpp"
@@ -205,7 +205,6 @@ namespace SoSim {
         if (m_is_start) {
 
             m_neighborSearch.update(m_host_data.pos);
-            m_neighborSearch.dump();
             InitOtherData(m_host_const, m_device_const, m_device_data);
 
             m_is_start = false;
