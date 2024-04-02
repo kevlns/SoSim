@@ -13,6 +13,11 @@ target_link_libraries(SoSim-SceneWCSPH-Viewer PUBLIC
         sosim-rt)
 
 # mixct scene
-add_executable(SoSim-SceneMixCT-Viewer scene_mixct.cpp)
-target_link_libraries(SoSim-SceneMixCT-Viewer PUBLIC
+add_executable(SoSim-SceneJL21CT-Viewer scene_jl21ct.cpp)
+target_link_libraries(SoSim-SceneJL21CT-Viewer PUBLIC
+        sosim-rt)
+
+# ismct scene
+add_executable(SoSim-SceneISMCT-Viewer scene_ismct.cpp)
+target_link_libraries(SoSim-SceneISMCT-Viewer PUBLIC
         sosim-rt)

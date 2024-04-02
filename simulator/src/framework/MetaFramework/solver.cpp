@@ -5,7 +5,7 @@
 #include <iostream>
 
 // solvers
-#include "framework/solver.hpp"
+#include "framework/MetaFramework/solver.hpp"
 
 
 namespace SoSim {

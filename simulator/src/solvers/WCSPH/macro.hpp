@@ -2,7 +2,7 @@
 // Created by ADMIN on 2024/3/15.
 //
 
-#ifndef SOSIM_MACRO_HPP
+#ifndef SOSIM_ISM_CT_MACRO_HPP
 #define SOSIM_MACRO_HPP
 
 #define CHECK_THREAD() \
@@ -23,4 +23,4 @@
 #define DATA_VALUE(name, index) \
         d_data->name[index]
 
-#endif //SOSIM_MACRO_HPP
+#endif //SOSIM_IMS_CT_MACRO_HPP

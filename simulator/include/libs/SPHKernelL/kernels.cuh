@@ -10,7 +10,7 @@
 namespace SoSim {
     __device__ inline float
     cubic_value(const Vec3f &r, float h) {
-        float r_norm = r.length();
+        const float r_norm = r.length();
         const float PI = 3.14159265;
         const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(h, 3));
 
@@ -65,6 +65,13 @@ namespace SoSim {
             return cSigma * (2 * std::pow(h - r_norm, 3) * std::pow(r_norm, 3) - std::pow(h, 6) / 64);
 
         return 0;
+    }
+
+    __host__ __device__ inline float
+    df_viscosity_kernel_laplacian(const Vec3f &r, const float h) {
+        const float PI = 3.14159265;
+        const float r_norm = r.length();
+        return (r_norm <= h) ? (45.0f * (h - r_norm) / (PI * powf(h, 6))) : 0.0f;
     }
 }
 

@@ -58,6 +58,10 @@ namespace SoSim {
         static void
         export3DModelAsPly(const std::vector<Vec3f> &particles, const std::string &dir, const std::string &file_name);
 
+        static void
+        export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec3f> &colors,
+                           const std::string &dir, const std::string &file_name);
+
     private:
         static std::vector<Vec3f> create3DParticleCube(float particle_radius, Vec3f lb, Vec3f size);
 

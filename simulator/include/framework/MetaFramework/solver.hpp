@@ -9,7 +9,7 @@
 #include <set>
 
 #include "core/math/matrix.hpp"
-#include "framework/object.hpp"
+#include "object.hpp"
 
 namespace SoSim {
 

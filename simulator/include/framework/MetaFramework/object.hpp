@@ -19,7 +19,6 @@ namespace SoSim {
         float particle_radius;
         std::optional<Material> particle_mat;
         Vec3f vel_start{0, 0, 0};
-        std::string name;
 
         /* default building */
         std::optional<std::string> shape;
@@ -49,6 +48,10 @@ namespace SoSim {
         std::vector<float> phases;          // size is phase num, value is phase volume fraction
     };
 
+    struct MeshObjectConfig {
+        // TODO
+    };
+
     class Object {
     public:
         Object(unsigned id);
@@ -58,6 +61,8 @@ namespace SoSim {
         std::vector<Vec3f> &getParticles();
 
         std::shared_ptr<ParticleObjectConfig> getParticleObjectConfig();
+
+        std::shared_ptr<MeshObjectConfig> getMeshObjectConfig();
 
         unsigned getParticleNum() const;
 
@@ -76,11 +81,15 @@ namespace SoSim {
 
     private:
         unsigned m_id;
-        std::shared_ptr<ParticleObjectConfig> m_particleObjectConfig;
-        std::vector<Vec3f> m_particles;
+        std::string m_name;
 
-        // TODO design component system to handle rendering
-//        Vec3f *m_particles_renderBuffer{nullptr};
+        std::shared_ptr<ParticleObjectConfig> m_particle_obj_config;
+        std::shared_ptr<MeshObjectConfig> m_mesh_obj_config;
+//        std::shared_ptr<ObjectRenderComponent> m_render_info;
+        std::vector<Vec3f> m_host_particles;
+
+    public:
+        Vec3f *m_device_cuda_jit_particles;
     };
 
 }

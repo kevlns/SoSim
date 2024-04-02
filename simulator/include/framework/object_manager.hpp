@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "framework/object.hpp"
+#include "framework/MetaFramework/object.hpp"
 
 namespace SoSim {
     class ObjectManager {
@@ -17,6 +17,8 @@ namespace SoSim {
         std::shared_ptr<Object> createObject();
 
         void removeObject(std::shared_ptr<Object> object);
+
+        std::set<std::shared_ptr<Object>> &getObjects();
 
     private:
         void destroy();

@@ -31,4 +31,8 @@ namespace SoSim {
         m_objects.clear();
     }
 
+    std::set<std::shared_ptr<Object>> &ObjectManager::getObjects() {
+        return m_objects;
+    }
+
 }

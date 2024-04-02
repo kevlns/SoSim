@@ -3,7 +3,7 @@ project(sosim-libs)
 find_package(CUDAToolkit)
 find_package(assimp CONFIG REQUIRED)
 
-include_directories(${SOSIM_SIMULATOR_ROOT}/include ${CUDAToolkit_INCLUDE_DIRS})
+include_directories(${SOSIM_SIMULATOR_ROOT}/include ${CUDAToolkit_INCLUDE_DIRS} ${SORENDER_ROOT}/include)
 
 # build core
 file(GLOB_RECURSE CORE_HEADERS ${SOSIM_SIMULATOR_ROOT}/include/core "*.hpp" "*.cuh")
@@ -22,8 +22,8 @@ file(GLOB FRAMEWORK_HEADERS
         ${SOSIM_SIMULATOR_ROOT}/include/framework/object.hpp
         ${SOSIM_SIMULATOR_ROOT}/include/framework/solver.hpp)
 file(GLOB FRAMEWORK_SRC
-        framework/object.cpp
-        framework/solver.cpp)
+        framework/MetaFramework/object.cpp
+        framework/MetaFramework/solver.cpp)
 add_library(sosim-framework ${FRAMEWORK_HEADERS} ${FRAMEWORK_SRC})
 target_link_libraries(sosim-framework PUBLIC sosim-libs)
 

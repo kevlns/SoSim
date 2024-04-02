@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/15.
 //
 
-#ifndef SOSIM_MACRO_HPP
-#define SOSIM_MACRO_HPP
+#ifndef SOSIM_ISM_CT_MACRO_HPP
+#define SOSIM_ISM_CT_MACRO_HPP
 
 #define CHECK_THREAD() \
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x; \
@@ -29,4 +29,4 @@
 #define CUBIC_KERNEL_GRAD() \
         cubic_gradient(pos_i - pos_j, d_const->sph_h)
 
-#endif //SOSIM_MACRO_HPP
+#endif //SOSIM_ISM_CT_MACRO_HPP

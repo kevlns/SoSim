@@ -17,7 +17,7 @@ namespace SoSim {
         static std::vector<Vec3f> particles;
 
         if (!config.particle_radius.has_value()) {
-            config.particle_radius = 0.1;
+            config.particle_radius = 0.1f;
             std::cout << "Warning: Not specified particle radius, use default 0.1.\n";
         }
 
@@ -105,18 +105,62 @@ namespace SoSim {
         ofs.close();
     }
 
+    void ModelHelper::export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec3f> &colors,
+                                         const std::string &dir, const std::string &file_name) {
+        auto dir_ = dir;
+#if defined(WIN32)
+        size_t pos = 0;
+        while ((pos = dir_.find('/', pos)) != std::string::npos) {
+            dir_.replace(pos, 1, "\\");
+            pos += 1;
+        }
+
+        // TODO other platform file path transformation
+        // ...
+#endif
+
+        if (!std::filesystem::exists(dir_))
+            std::filesystem::create_directories(dir_);
+
+        std::ofstream ofs(dir_ + "\\" + file_name + ".ply");
+
+        ofs << "ply\n";
+        ofs << "format ascii 1.0\n";
+        ofs << "element vertex " << particles.size() << "\n";
+        ofs << "property float x\n";
+        ofs << "property float y\n";
+        ofs << "property float z\n";
+        ofs << "property uchar red" << std::endl;
+        ofs << "property uchar green" << std::endl;
+        ofs << "property uchar blue" << std::endl;
+        ofs << "end_header\n";
+
+        for (int i = 0; i < particles.size(); ++i) {
+            ofs << particles[i].x << " " << particles[i].y << " " << particles[i].z << " ";
+            ofs << colors[i].x << " " << colors[i].y << " " << colors[i].z << "\n";
+        }
+
+        ofs.close();
+    }
+
     std::vector<Vec3f> ModelHelper::create3DParticleCube(float particle_radius, Vec3f lb, Vec3f size) {
         std::vector<Vec3f> particles;
         auto diameter = 2 * particle_radius;
 
-        for (float z = particle_radius + lb.z; z < lb.z + size.z; z += diameter) {
-            for (float y = particle_radius + lb.y; y < lb.y + size.y; y += diameter) {
-                for (float x = particle_radius + lb.x; x < lb.x + size.x; x += diameter) {
+        float z = particle_radius + lb.z;
+        while (z < lb.z + size.z) {
+            float y = particle_radius + lb.y;
+            while (y < lb.y + size.y) {
+                float x = particle_radius + lb.x;
+                while (x < lb.x + size.x) {
                     Vec3f _particles = {x, y, z};
-
                     particles.push_back(_particles);
+
+                    x += diameter;
                 }
+                y += diameter;
             }
+            z += diameter;
         }
 
         return particles;
@@ -196,16 +240,14 @@ namespace SoSim {
 
     std::vector<Vec3f> ModelHelper::create3DParticleSphere(float particle_radius, Vec3f center, float volume_radius) {
         std::vector<Vec3f> particles;
-        // 计算粒子间的间距，假设粒子紧密排列
         float gap = particle_radius * 2.0f;
 
-        // 计算球体内的立方体边界
         int num_particles_per_side = std::ceil(volume_radius / gap);
         for (int i = -num_particles_per_side; i <= num_particles_per_side; ++i) {
             for (int j = -num_particles_per_side; j <= num_particles_per_side; ++j) {
                 for (int k = -num_particles_per_side; k <= num_particles_per_side; ++k) {
                     Vec3f particle = {float(i) * gap + center.x, float(j) * gap + center.y, float(k) * gap + center.z};
-                    // 检查粒子是否在球体内
+
                     if ((particle.x - center.x) * (particle.x - center.x) +
                         (particle.y - center.y) * (particle.y - center.y) +
                         (particle.z - center.z) * (particle.z - center.z) <= volume_radius * volume_radius) {
