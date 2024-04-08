@@ -15,4 +15,4 @@ cmake-build-release
 .idea
 .vscode
 
-simulator/thirdparty/*
+simulator/thirdparty/vcpkg/*

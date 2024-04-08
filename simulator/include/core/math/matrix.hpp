@@ -39,6 +39,21 @@ namespace SoSim {
         }
 
         __host__ __device__
+        void assign(const Mat33f &rhs) {
+            this->r0_0 = rhs.r0_0;
+            this->r0_1 = rhs.r0_1;
+            this->r0_2 = rhs.r0_2;
+
+            this->r1_0 = rhs.r1_0;
+            this->r1_1 = rhs.r1_1;
+            this->r1_2 = rhs.r1_2;
+
+            this->r2_0 = rhs.r2_0;
+            this->r2_1 = rhs.r2_1;
+            this->r2_2 = rhs.r2_2;
+        }
+
+        __host__ __device__
 
         void operator/=(const float n) {
             this->r0_0 /= n;

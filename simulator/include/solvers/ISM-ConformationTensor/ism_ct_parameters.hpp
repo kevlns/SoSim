@@ -63,6 +63,7 @@ namespace SoSim {
         float *mass{nullptr};
         float *volume{nullptr};
         Vec3f *color{nullptr};
+        float *density_sph{nullptr};
 
         // mixture model
         Vec2f *vol_frac{nullptr};
@@ -94,6 +95,7 @@ namespace SoSim {
         Mat33f *viscoelastic_stress{nullptr};
         float *shear_rate{nullptr};
         float *solution_vis{nullptr};
+        float *kappa{nullptr};
 
     private:
         bool isInit{false};
@@ -112,6 +114,7 @@ namespace SoSim {
             cudaMalloc((void **) &mass, particle_num * sizeof(float));
             cudaMalloc((void **) &volume, particle_num * sizeof(float));
             cudaMalloc((void **) &color, particle_num * sizeof(Vec3f));
+            cudaMalloc((void **) &density_sph, particle_num * sizeof(float));
 
             // mixture model
             cudaMalloc((void **) &vol_frac, particle_num * sizeof(Vec2f));
@@ -143,6 +146,7 @@ namespace SoSim {
             cudaMalloc((void **) &viscoelastic_stress, particle_num * sizeof(Mat33f));
             cudaMalloc((void **) &shear_rate, particle_num * sizeof(float));
             cudaMalloc((void **) &solution_vis, particle_num * sizeof(float));
+            cudaMalloc((void **) &kappa, particle_num * sizeof(float));
 
 
             if (cudaGetLastError() == cudaSuccess)
@@ -160,6 +164,7 @@ namespace SoSim {
                 cudaFree(mass);
                 cudaFree(volume);
                 cudaFree(color);
+                cudaFree(density_sph);
 
                 cudaFree(vol_frac);
                 cudaFree(rest_density);
@@ -188,6 +193,7 @@ namespace SoSim {
                 cudaFree(viscoelastic_stress);
                 cudaFree(shear_rate);
                 cudaFree(solution_vis);
+                cudaFree(kappa);
 
                 if (cudaGetLastError() == cudaSuccess)
                     isInit = false;

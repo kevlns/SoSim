@@ -8,7 +8,7 @@
 #include <cuda_runtime.h>
 
 #include "core/math/matrix.hpp"
-#include "framework/sim_material.hpp"
+#include "framework/MetaFramework/sim_material.hpp"
 
 namespace SoSim {
     struct DFSPHConstantParams {

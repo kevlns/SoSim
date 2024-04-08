@@ -6,7 +6,7 @@
 #define SOSIM_WCSPH_PARAMETERS_HPP
 
 #include "core/math/matrix.hpp"
-#include "framework/sim_material.hpp"
+#include "framework/MetaFramework/sim_material.hpp"
 
 namespace SoSim {
     struct WCSPHConstantParams {

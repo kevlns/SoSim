@@ -8,7 +8,7 @@
 #include <optional>
 #include <set>
 
-#include "framework/solver.hpp"
+#include "framework/MetaFramework/solver.hpp"
 #include "framework/object_manager.hpp"
 #include "libs/NeighborSearchL/unified_grid_ns.hpp"
 #include "dfsph_parameters.hpp"

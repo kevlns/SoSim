@@ -179,6 +179,11 @@ namespace SoSim {
         m_host_const.block_num = solver_config->kernel_blocks;
         m_host_const.thread_num = solver_config->kernel_threads;
 
+        m_host_const.Cd0 = solver_config->Cd0;
+        m_host_const.ct_thinning_exp0 = solver_config->ct_thinning_exp0;
+        m_host_const.ct_relaxation_time = solver_config->ct_relaxation_time;
+        m_host_const.solution_vis0 = solver_config->solution_vis0;
+
         // setup neighbor search
         NeighborSearchUGConfig ns_config;
         ns_config.sceneLB = solver_config->scene_lb;
@@ -248,7 +253,7 @@ namespace SoSim {
                    cudaMemcpyDeviceToHost);
         ModelHelper::export3DModelAsPly(pos,
                                         color,
-                                        "F:\\DataSet.Research\\ITEM.NN_NewModel\\ply\\imsct_test\\phase_trans",
+                                        "F:\\DataSet.Research\\ITEM.NN_NewModel\\ply\\ismct_test\\ct\\",
                                         std::to_string(counter++));
     }
 
@@ -321,6 +326,29 @@ namespace SoSim {
                        d_nsConfig,
                        d_nsParams);
 
+//        dump_max(m_host_data.acc_phase_2,
+//                 m_host_const.particle_num,
+//                 m_unified_part_type_start_index.y);
+
+//        dump_mean(m_host_data.density_sph,
+//                  m_host_const.particle_num,
+//                  m_unified_part_type_start_index.y);
+//        std::vector<float> den(m_unified_part_type_start_index.y);
+//        cudaMemcpy(den.data(),
+//                   m_host_data.density_sph,
+//                   m_unified_part_type_start_index.y * sizeof(float),
+//                   cudaMemcpyDeviceToHost);
+//        std::vector<Mat33f> cp(m_unified_part_type_start_index.y);
+//        cudaMemcpy(cp.data(),
+//                   m_host_data.CT,
+//                   m_unified_part_type_start_index.y * sizeof(Mat33f),
+//                   cudaMemcpyDeviceToHost);
+//        std::vector<Vec3f> acc(m_unified_part_type_start_index.y);
+//        cudaMemcpy(acc.data(),
+//                   m_host_data.vel_grad,
+//                   m_unified_part_type_start_index.y * sizeof(Vec3f),
+//                   cudaMemcpyDeviceToHost);
+
         vfsph_div(m_host_const,
                   m_host_data,
                   m_unified_part_type_start_index,
@@ -340,6 +368,12 @@ namespace SoSim {
                                 d_nsConfig,
                                 d_nsParams);
 
+        ism_viscoelastic(m_host_const,
+                         m_device_const,
+                         m_device_data,
+                         d_nsConfig,
+                         d_nsParams);
+
         vfsph_incomp(m_host_const,
                      m_host_data,
                      m_unified_part_type_start_index,
@@ -352,7 +386,7 @@ namespace SoSim {
                            m_device_const,
                            m_device_data,
                            d_nsParams);
-//
+
         update_pos(m_host_const,
                    m_device_const,
                    m_device_data,

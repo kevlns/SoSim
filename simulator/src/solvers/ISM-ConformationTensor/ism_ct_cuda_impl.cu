@@ -26,10 +26,11 @@ namespace SoSim {
         DATA_VALUE(color, p_i) = DATA_VALUE(vol_frac, p_i).x * CONST_VALUE(phase1_color) +
                                  DATA_VALUE(vol_frac, p_i).y * CONST_VALUE(phase2_color);
         DATA_VALUE(acc_phase_1, p_i) *= 0;
-//        DATA_VALUE(Cd, p_i) = CONST_VALUE(Cd0);
-//        DATA_VALUE(CT, p_i) = Mat33f::eye();
-//        DATA_VALUE(viscoelastic_stress, p_i) *= 0;
-//        DATA_VALUE(solution_vis, p_i) = CONST_VALUE(solution_vis0);
+        DATA_VALUE(Cd, p_i) = CONST_VALUE(Cd0);
+        DATA_VALUE(CT, p_i) = Mat33f::eye();
+        DATA_VALUE(viscoelastic_stress, p_i) *= 0;
+        DATA_VALUE(solution_vis, p_i) = CONST_VALUE(solution_vis0);
+        DATA_VALUE(ct_thinning_exp, p_i) = CONST_VALUE(ct_thinning_exp0);
     }
 
     __global__ void
@@ -91,6 +92,11 @@ namespace SoSim {
         }
 
         DATA_VALUE(volume, p_i) = 1.f / delta;
+
+        if (DATA_VALUE(mat, p_i) == FIXED_BOUND)
+            DATA_VALUE(rest_density, p_i) = DATA_VALUE(volume, p_i) * CONST_VALUE(rest_bound_density);
+        else if (DATA_VALUE(mat, p_i) == DYNAMIC_RIGID)
+            DATA_VALUE(rest_density, p_i) = DATA_VALUE(volume, p_i) * CONST_VALUE(rest_rigid_density);
     }
 
     __global__ void
@@ -106,16 +112,11 @@ namespace SoSim {
         DATA_VALUE(compression_ratio, p_i) = 0;
 
         auto pos_i = DATA_VALUE(pos, p_i);
-        int neighbor_cnt = 0;
         FOR_EACH_NEIGHBOR_Pj() {
             auto pos_j = DATA_VALUE(pos, p_j);
 
             DATA_VALUE(compression_ratio, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_VALUE();
-            neighbor_cnt++;
         }
-
-        if (neighbor_cnt < 35)
-            DATA_VALUE(compression_ratio, p_i) = fmax(DATA_VALUE(compression_ratio, p_i), DATA_VALUE(volume, p_i));
     }
 
     __global__ void
@@ -192,8 +193,8 @@ namespace SoSim {
                                                         DATA_VALUE(volume, p_j) * CONST_VALUE(dt);
         }
 
-        if (DATA_VALUE(delta_compression_ratio, p_i) < 1e-6)
-            DATA_VALUE(delta_compression_ratio, p_i) = 1e-6;
+        if (DATA_VALUE(delta_compression_ratio, p_i) < 0)
+            DATA_VALUE(delta_compression_ratio, p_i) = 0;
     }
 
     __global__ void
@@ -283,41 +284,49 @@ namespace SoSim {
         if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
             return;
 
-//        Vec3f acc = {0, 0, 0};
-//        float h2_001 = 0.001f * pow(d_const->sph_h, 2);
+        Vec3f acc = {0, 0, 0};
+        float h2_001 = 0.001f * pow(d_const->sph_h, 2);
         auto pos_i = DATA_VALUE(pos, p_i);
         auto vel_i = DATA_VALUE(vel, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i) || p_j == p_i)
+            if (p_j == p_i)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
-            auto x_ij = pos_i = pos_j;
+            auto x_ij = pos_i - pos_j;
             auto vel_j = DATA_VALUE(vel, p_j);
             auto v_ij = vel_i - vel_j;
             auto wGrad = CUBIC_KERNEL_GRAD();
-//            auto pi = -CONST_VALUE(rest_viscosity) * min(0.f, dot(vel_i - vel_j, pos_i - pos_j)) /
-//                      ((pos_i - pos_j).length() * (pos_i - pos_j).length() + h2_001);
+            auto mass_j = DATA_VALUE(mass, p_j);
+            auto vis = CONST_VALUE(rest_viscosity);
 
-//            acc += -d_data->mass[p_i] * d_data->mass[p_j] * pi * CUBIC_KERNEL_GRAD();
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i)) {
+                mass_j = DATA_VALUE(mass, p_i);
+                vis = 0.008;
+            }
+
+            auto pi = -vis * min(0.f, dot(v_ij, pos_i - pos_j)) /
+                      (x_ij.length() * x_ij.length() + h2_001);
+
+            acc += -DATA_VALUE(mass, p_i) * mass_j * pi * wGrad;
 
 //            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i)) {
-            auto v_k1_mj = DATA_VALUE(vel_phase_1, p_i) - vel_j;
-            DATA_VALUE(acc_phase_1, p_i) += 10 * DATA_VALUE(volume, p_j) *
-                                            dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd) * v_k1_mj) +
-                                                (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
-                                                x_ij) * wGrad / dot(x_ij, x_ij);
-
-            auto v_k2_mj = DATA_VALUE(vel_phase_2, p_i) - vel_j;
-            DATA_VALUE(acc_phase_2, p_i) += 10 * DATA_VALUE(volume, p_j) *
-                                            dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd) * v_k2_mj) +
-                                                (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
-                                                x_ij) * wGrad / dot(x_ij, x_ij);
+//            auto v_k1_mj = DATA_VALUE(vel_phase_1, p_i) - vel_j;
+//            DATA_VALUE(acc_phase_1, p_i) += 10 * DATA_VALUE(volume, p_j) *
+//                                            dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd) * v_k1_mj) +
+//                                                (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
+//                                                x_ij) * wGrad / dot(x_ij, x_ij);
+//
+//            auto v_k2_mj = DATA_VALUE(vel_phase_2, p_i) - vel_j;
+//            DATA_VALUE(acc_phase_2, p_i) += 10 * DATA_VALUE(volume, p_j) *
+//                                            dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd) * v_k2_mj) +
+//                                                (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
+//                                                x_ij) * wGrad / dot(x_ij, x_ij);
 //            }
         }
 
-//        DATA_VALUE(acc_phase_1, p_i) += acc;
-//        DATA_VALUE(acc_phase_2, p_i) += acc;
+        DATA_VALUE(acc_phase_1, p_i) += acc * DATA_VALUE(vol_frac, p_i).x;
+        DATA_VALUE(acc_phase_2, p_i) += acc * DATA_VALUE(vol_frac, p_i).x;
     }
 
     __global__ void
@@ -332,16 +341,13 @@ namespace SoSim {
             return;
 
         Vec3f acc = {0, 0, 0};
-        float gamma = 0.001;
+        float gamma = 0.005;
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i) || p_j == p_i)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
-            if ((pos_i - pos_j).length() < 1e-6)
-                continue;
-
 
             acc += -gamma * DATA_VALUE(mass, p_i) * DATA_VALUE(mass, p_j) *
                    surface_tension_C((pos_i - pos_j).length(), CONST_VALUE(sph_h)) * (pos_i - pos_j) /
@@ -655,89 +661,124 @@ namespace SoSim {
         DATA_VALUE(vol_frac, p_i) /= frac_sum;
     }
 
-//    __global__ void
-//    compute_vel_grad_cuda(IMSCTConstantParams *d_const,
-//                          IMSCTDynamicParams *d_data,
-//                          NeighborSearchUGConfig *d_nsConfig,
-//                          NeighborSearchUGParams *d_nsParams) {
-//        CHECK_THREAD();
-//
-//        // applied to all dynamic objects
-//        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
-//            return;
-//
-//        DATA_VALUE(vel_grad, p_i) *= 0;
-//        auto pos_i = DATA_VALUE(pos, p_i);
-//        auto vel_i = DATA_VALUE(vel, p_i);
-//
-//        Mat33f A = {1, 2, 3,
-//                    4, 5, 6, 7, 8, 9};
-//        Mat33f B = {1, 2, 3,
-//                    4, 5, 6, 7, 8, 9};
-//
-//        Vec3f C = {1, 1, 1};
-//        Vec3f D = {4, 5, 6};
-//
-//        FOR_EACH_NEIGHBOR_Pj() {
-//            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
-//                continue;
-//
-//            auto pos_j = DATA_VALUE(pos, p_j);
-//            auto vel_j = DATA_VALUE(vel, p_j);
-//            auto vel_ji = vel_j - vel_i;
-//
-////            DATA_VALUE(vel_grad, p_i) += DATA_VALUE(compression_ratio, p_j) * vel_ji * CUBIC_KERNEL_GRAD();
-//            DATA_VALUE(vel_grad, p_i) = vel_i * C;
-//        }
-//    }
-//
-//    __global__ void
-//    update_conformation_tensor_cuda(IMSCTConstantParams *d_const,
-//                                    IMSCTDynamicParams *d_data,
-//                                    NeighborSearchUGParams *d_nsParams) {
-//        CHECK_THREAD();
-//
-//        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
-//            return;
-//
-//        auto CT_i = DATA_VALUE(CT, p_i);
-//        auto d_CT = CT_i * DATA_VALUE(vel_grad, p_i) +
-//                    DATA_VALUE(vel_grad, p_i).transpose() * CT_i -
-//                    1.f / (CONST_VALUE(ct_relaxation_time) + 1e-5f) * (CT_i - Mat33f::eye());
-//        DATA_VALUE(CT, p_i) += d_CT * CONST_VALUE(dt);
-//    }
-//
-//    __global__ void
-//    add_viscoelastic_acc_cuda(IMSCTConstantParams *d_const,
-//                              IMSCTDynamicParams *d_data,
-//                              NeighborSearchUGConfig *d_nsConfig,
-//                              NeighborSearchUGParams *d_nsParams) {
-//        CHECK_THREAD();
-//
-//        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
-//            return;
-//
-//        auto CT_i = DATA_VALUE(CT, p_i);
-//        DATA_VALUE(viscoelastic_stress, p_i) = DATA_VALUE(solution_vis, p_i) * (CT_i - Mat33f::eye())
-//                                               - DATA_VALUE(ct_thinning_exp, p_i) * DATA_VALUE(solution_vis, p_i) *
-//                                                 (CT_i * CT_i - CT_i);
-//        __syncthreads();
-//
-//        DATA_VALUE(viscoelastic_stress, p_i) *= 0;
-//        auto pos_i = DATA_VALUE(pos, p_i);
-//        FOR_EACH_NEIGHBOR_Pj() {
-//
-//            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
-//                continue;
-//
-//            auto pos_j = DATA_VALUE(pos, p_j);
-//
-//            DATA_VALUE(acc_phase_2, p_i) +=
-//                    (DATA_VALUE(viscoelastic_stress, p_i) / powf(DATA_VALUE(rest_density, p_i), 2) +
-//                     DATA_VALUE(viscoelastic_stress, p_j) / powf(DATA_VALUE(rest_density, p_j), 2)) *
-//                    CUBIC_KERNEL_GRAD();
-//        }
-//    }
+    __global__ void
+    estimate_density_cuda(IMSCTConstantParams *d_const,
+                          IMSCTDynamicParams *d_data,
+                          NeighborSearchUGConfig *d_nsConfig,
+                          NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        DATA_VALUE(density_sph, p_i) *= 0;
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto rest_dens_i = DATA_VALUE(rest_density, p_i);
+
+        FOR_EACH_NEIGHBOR_Pj() {
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto rest_dens_j = DATA_VALUE(rest_density, p_j);
+            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+                rest_dens_j = rest_dens_i;
+
+            DATA_VALUE(density_sph, p_i) += rest_dens_j * CONST_VALUE(rest_volume) * CUBIC_KERNEL_VALUE();
+        }
+
+        DATA_VALUE(density_sph, p_i) = fmax(DATA_VALUE(density_sph, p_i), rest_dens_i);
+    }
+
+    __global__ void
+    compute_vel_grad_cuda(IMSCTConstantParams *d_const,
+                          IMSCTDynamicParams *d_data,
+                          NeighborSearchUGConfig *d_nsConfig,
+                          NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        // TODO
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto vel_i = DATA_VALUE(vel, p_i);
+        Mat33f vGrad_sum;
+
+        FOR_EACH_NEIGHBOR_Pj() {
+
+            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto vel_j = DATA_VALUE(vel, p_j);
+            auto vel_ji = vel_j - vel_i;
+            auto wGrad = CUBIC_KERNEL_GRAD();
+            auto volume_j = DATA_VALUE(volume, p_j);
+
+            vGrad_sum += volume_j * vel_ji * wGrad;
+        }
+
+        DATA_VALUE(vel_grad, p_i) = vGrad_sum;
+    }
+
+    __global__ void
+    update_conformation_tensor_cuda(IMSCTConstantParams *d_const,
+                                    IMSCTDynamicParams *d_data,
+                                    NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        auto CT_i = DATA_VALUE(CT, p_i);
+
+//        Mat33f dQ = (DATA_VALUE(CT, p_i) * DATA_VALUE(vel_grad, p_i) +
+//                     DATA_VALUE(vel_grad, p_i).transpose() * DATA_VALUE(CT, p_i) - 1 /
+//                                                                                   (CONST_VALUE(ct_relaxation_time) +
+//                                                                                    1e-5) *
+//                                                                                   (DATA_VALUE(CT, p_i) -
+//                                                                                    Mat33f::eye())) * CONST_VALUE(dt);
+        Mat33f dQ = (CT_i * DATA_VALUE(vel_grad, p_i) +
+                     DATA_VALUE(vel_grad, p_i).transpose() * CT_i - 1 /
+                                                                    (CONST_VALUE(ct_relaxation_time) +
+                                                                     1e-5) *
+                                                                    (CT_i -
+                                                                     Mat33f::eye())) * CONST_VALUE(dt) -
+                    DATA_VALUE(ct_thinning_exp, p_i) * (CT_i - Mat33f::eye()) * CT_i;
+        DATA_VALUE(CT, p_i) += dQ;
+        DATA_VALUE(viscoelastic_stress, p_i) = DATA_VALUE(solution_vis, p_i) * (DATA_VALUE(CT, p_i) - Mat33f::eye());
+    }
+
+    __global__ void
+    add_viscoelastic_acc_cuda(IMSCTConstantParams *d_const,
+                              IMSCTDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto dens_i = DATA_VALUE(density_sph, p_i);
+        Vec3f acc;
+        float scale_f = 1;
+
+        FOR_EACH_NEIGHBOR_Pj() {
+
+            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto wGrad = CUBIC_KERNEL_GRAD();
+            auto dens_j = DATA_VALUE(density_sph, p_j);
+
+            acc += scale_f * (DATA_VALUE(viscoelastic_stress, p_i) / powf(dens_i, 2) +
+                              DATA_VALUE(viscoelastic_stress, p_j) / powf(dens_j, 2)) * wGrad;
+        }
+
+        DATA_VALUE(acc_phase_1, p_i) += acc * dens_i * DATA_VALUE(vol_frac, p_i).y;
+        DATA_VALUE(acc_phase_2, p_i) += acc * dens_i * DATA_VALUE(vol_frac, p_i).y;
+    }
 }
 
 
@@ -1041,33 +1082,50 @@ namespace SoSim {
                 d_const, d_data, d_nsParams);
     }
 
-//    __host__ void
-//    ism_viscoelastic(IMSCTConstantParams &h_const,
-//                     IMSCTConstantParams *d_const,
-//                     IMSCTDynamicParams *d_data,
-//                     NeighborSearchUGConfig *d_nsConfig,
-//                     NeighborSearchUGParams *d_nsParams) {
-//        // compute_vel_grad()
-//        compute_vel_grad_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsConfig, d_nsParams);
-//
-//        // update_conformation_tensor()
-//        update_conformation_tensor_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsParams);
-//
-//        // clear_phase_acc()
-//        clear_phase_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsParams);
-//
-//        add_viscoelastic_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsConfig, d_nsParams);
-//
-//        // phase_acc_2_phase_vel()
-//        phase_acc_2_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsParams);
-//
-//        // update_vel_from_phase_vel()
-//        update_vel_from_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsParams);
-//    }
+    __host__ void
+    ism_viscoelastic(IMSCTConstantParams &h_const,
+                     IMSCTConstantParams *d_const,
+                     IMSCTDynamicParams *d_data,
+                     NeighborSearchUGConfig *d_nsConfig,
+                     NeighborSearchUGParams *d_nsParams) {
+        // estimate_density()
+        estimate_density_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // compute_vel_grad()
+        compute_vel_grad_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // update_conformation_tensor()
+        update_conformation_tensor_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // clear_phase_acc()
+        clear_phase_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        add_viscoelastic_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // phase_acc_2_phase_vel()
+        phase_acc_2_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // update_vel_from_phase_vel()
+        update_vel_from_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    compute_CT_parameters(IMSCTConstantParams &h_const,
+                          IMSCTConstantParams *d_const,
+                          IMSCTDynamicParams *d_data,
+                          NeighborSearchUGConfig *d_nsConfig,
+                          NeighborSearchUGParams *d_nsParams) {
+        // compute_Cd()
+
+        // compute_kappa_and_beta()
+
+        // update_solution_viscosity()
+    }
 }
