@@ -87,7 +87,7 @@ namespace SoSim {
         solver_config->kernel_blocks = std::ceil(
                 (m_host_const.total_particle_num + solver_config->kernel_threads - 1) / solver_config->kernel_threads);
 
-        auto particle_radius = (*m_objects.begin())->getParticleObjectConfig()->particle_radius;
+        auto particle_radius = (*m_objects.begin())->getParticleObjectConfig()->particle_radius.value();
         auto particle_num = m_host_const.total_particle_num;
 
         // setup m_host_const

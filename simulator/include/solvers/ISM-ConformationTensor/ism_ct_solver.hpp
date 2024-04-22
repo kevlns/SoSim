@@ -40,8 +40,16 @@ namespace SoSim {
         Vec3f phase2_color;
         float Cd0;
         float ct_thinning_exp0{0};
-        float solution_vis0{0.02};
+        float solution_vis_base{0.02};
+        float solution_vis_max{8000};
         float ct_relaxation_time{0.1};
+        float polymer_vol_frac0{0.6};
+
+        // export setting
+        std::optional<std::string> export_path;
+        int export_gap{1};
+        std::string export_partial;
+        bool export_phase{false};
     };
 
     class IMSCTSolver : public Solver {

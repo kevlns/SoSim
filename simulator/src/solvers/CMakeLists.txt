@@ -2,6 +2,8 @@
 
 include_directories(${SOSIM_SIMULATOR_ROOT}/include ${CUDAToolkit_INCLUDE_DIRS})
 
+find_package(Bullet CONFIG REQUIRED)
+
 # dfsph
 set(TARGET sosim-dfsph)
 file(GLOB DFSPH_HEADERS
@@ -51,7 +53,8 @@ file(GLOB ISMCT_SRC
         ISM-ConformationTensor/*.cu)
 add_library(${TARGET} ${ISMCT_HEADERS} ${ISMCT_SRC})
 target_link_libraries(${TARGET} PUBLIC
-        sosim-framework)
+        sosim-framework
+        ${BULLET_LIBRARIES})
 list(APPEND solver-libs ${TARGET})
 
 set(SOSIM_SOLVER_LIBS ${solver-libs} PARENT_SCOPE)

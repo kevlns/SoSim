@@ -17,7 +17,7 @@ int main() {
     auto cubeConfig_1 = cube_1->getParticleObjectConfig();
     cubeConfig_1->particle_radius = 0.05;
     cubeConfig_1->particle_mat = COMMON_FLUID;
-    cubeConfig_1->shape = "cube";
+    cubeConfig_1->shape = ObjectShape::Cube;
     cubeConfig_1->lb = {-1, 0.2, -1};
     cubeConfig_1->size = {2, 2, 2};
     cube_1->setName("cube_1");
@@ -27,7 +27,7 @@ int main() {
     auto cubeConfig_2 = cube_2->getParticleObjectConfig();
     cubeConfig_2->particle_radius = 0.1;
     cubeConfig_2->particle_mat = COMMON_FLUID;
-    cubeConfig_2->shape = "cube";
+    cubeConfig_2->shape = ObjectShape::Cube;
     cubeConfig_2->lb = {1.5, 0.1, 0};
     cubeConfig_2->size = {2, 2, 2};
     cube_2->setName("cube_2");
@@ -37,7 +37,7 @@ int main() {
     auto planeConfig = plane_1->getParticleObjectConfig();
     planeConfig->particle_radius = 0.05;
     planeConfig->particle_mat = FIXED_BOUND;
-    planeConfig->shape = "plane";
+    planeConfig->shape = ObjectShape::Plane;
     planeConfig->lb = {-2, -0.4, -2};
     planeConfig->size = {4, 2, 4};
     planeConfig->layer = 2;

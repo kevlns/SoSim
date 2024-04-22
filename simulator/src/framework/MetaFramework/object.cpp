@@ -20,32 +20,6 @@ namespace SoSim {
         destroy();
     }
 
-    void Object::createParticleObject() {
-        if (m_particle_obj_config->shape.has_value()) {
-            if (m_particle_obj_config->shape == "cube")
-                m_host_particles = ModelLoader::createParticleCube(m_particle_obj_config->particle_radius,
-                                                                   m_particle_obj_config->lb,
-                                                                   m_particle_obj_config->size);
-            if (m_particle_obj_config->shape == "box")
-                m_host_particles = ModelLoader::createParticleBox(m_particle_obj_config->particle_radius,
-                                                                  m_particle_obj_config->lb,
-                                                                  m_particle_obj_config->size,
-                                                                  m_particle_obj_config->layer);
-            if (m_particle_obj_config->shape == "plane")
-                m_host_particles = ModelLoader::createParticlePlane(m_particle_obj_config->particle_radius,
-                                                                    m_particle_obj_config->lb,
-                                                                    m_particle_obj_config->size,
-                                                                    m_particle_obj_config->layer);
-        }
-
-        if (m_particle_obj_config->model_file.has_value()) {
-            m_host_particles = ModelLoader::loadParticle3DModel(m_particle_obj_config->model_file.value());
-        }
-
-        // todo transform
-
-    }
-
     std::vector<Vec3f> &Object::getParticles() {
         return m_host_particles;
     }
@@ -69,11 +43,7 @@ namespace SoSim {
     }
 
     void Object::update() {
-        if (!m_particle_obj_config->shape.has_value() &&
-            !m_particle_obj_config->model_file.has_value())
-            m_particle_obj_config->shape = "cube";
-
-        createParticleObject();
+        m_host_particles = ModelHelper::create3DParticleModel(m_particle_obj_config);
 
         if (m_device_cuda_jit_particles)
             cudaFree(m_device_cuda_jit_particles);
@@ -98,6 +68,12 @@ namespace SoSim {
 
     std::string Object::getName() const {
         return m_name;
+    }
+
+    void Object::exportAsPly(const std::string& dir, const std::string& name) {
+        ModelHelper::export3DModelAsPly(m_host_particles,
+                                        dir,
+                                        name);
     }
 
 }

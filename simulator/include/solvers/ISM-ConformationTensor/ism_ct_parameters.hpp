@@ -45,10 +45,12 @@ namespace SoSim {
         float incompressible_threshold{1e-4};
 
         // ISM-CT
-        float Cd0{0};
+        float Cd0{0.2};
         float ct_thinning_exp0{0};
-        float solution_vis0{0};
+        float solution_vis_base{0};
+        float solution_vis_max{0};
         float ct_relaxation_time{0.1};
+        float polymer_vol_frac0;
     };
 
     struct IMSCTDynamicParams {
@@ -64,6 +66,7 @@ namespace SoSim {
         float *volume{nullptr};
         Vec3f *color{nullptr};
         float *density_sph{nullptr};
+        bool *is_alive{nullptr};
 
         // mixture model
         Vec2f *vol_frac{nullptr};
@@ -95,7 +98,8 @@ namespace SoSim {
         Mat33f *viscoelastic_stress{nullptr};
         float *shear_rate{nullptr};
         float *solution_vis{nullptr};
-        float *kappa{nullptr};
+        float *ct_vis_increase_exp{nullptr};
+        float *blocking_factor{nullptr};
 
     private:
         bool isInit{false};
@@ -115,6 +119,7 @@ namespace SoSim {
             cudaMalloc((void **) &volume, particle_num * sizeof(float));
             cudaMalloc((void **) &color, particle_num * sizeof(Vec3f));
             cudaMalloc((void **) &density_sph, particle_num * sizeof(float));
+            cudaMalloc((void **) &is_alive, particle_num * sizeof(bool));
 
             // mixture model
             cudaMalloc((void **) &vol_frac, particle_num * sizeof(Vec2f));
@@ -146,7 +151,8 @@ namespace SoSim {
             cudaMalloc((void **) &viscoelastic_stress, particle_num * sizeof(Mat33f));
             cudaMalloc((void **) &shear_rate, particle_num * sizeof(float));
             cudaMalloc((void **) &solution_vis, particle_num * sizeof(float));
-            cudaMalloc((void **) &kappa, particle_num * sizeof(float));
+            cudaMalloc((void **) &ct_vis_increase_exp, particle_num * sizeof(float));
+            cudaMalloc((void **) &blocking_factor, particle_num * sizeof(float));
 
 
             if (cudaGetLastError() == cudaSuccess)
@@ -165,6 +171,7 @@ namespace SoSim {
                 cudaFree(volume);
                 cudaFree(color);
                 cudaFree(density_sph);
+                cudaFree(is_alive);
 
                 cudaFree(vol_frac);
                 cudaFree(rest_density);
@@ -193,7 +200,8 @@ namespace SoSim {
                 cudaFree(viscoelastic_stress);
                 cudaFree(shear_rate);
                 cudaFree(solution_vis);
-                cudaFree(kappa);
+                cudaFree(ct_vis_increase_exp);
+                cudaFree(blocking_factor);
 
                 if (cudaGetLastError() == cudaSuccess)
                     isInit = false;

@@ -84,4 +84,6 @@ namespace SoSim {
     dump_max<unsigned>(unsigned *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 
     template float cal_mean<float>(float *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
+
+    template Vec3f cal_mean<Vec3f>(Vec3f *d_ptr, unsigned raw_size, unsigned target_size, unsigned target_start);
 }

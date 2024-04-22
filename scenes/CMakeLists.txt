@@ -21,3 +21,5 @@ target_link_libraries(SoSim-SceneJL21CT-Viewer PUBLIC
 add_executable(SoSim-SceneISMCT-Viewer scene_ismct.cpp)
 target_link_libraries(SoSim-SceneISMCT-Viewer PUBLIC
         sosim-rt)
+
+add_subdirectory(SCA2024)

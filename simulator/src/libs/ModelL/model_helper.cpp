@@ -13,49 +13,49 @@
 
 namespace SoSim {
 
-    std::vector<Vec3f> ModelHelper::create3DParticleModel(ParticleModelConfig &config) {
+    std::vector<Vec3f> ModelHelper::create3DParticleModel(std::shared_ptr<ParticleObjectConfig> config) {
         static std::vector<Vec3f> particles;
 
-        if (!config.particle_radius.has_value()) {
-            config.particle_radius = 0.1f;
+        if (!config->particle_radius.has_value()) {
+            config->particle_radius = 0.1f;
             std::cout << "Warning: Not specified particle radius, use default 0.1.\n";
         }
 
-        if (!config.shape.has_value() && !config.ply_file.has_value()) {
-            config.shape = ObjectShape::Cube;
+        if (!config->shape.has_value() && !config->model_file.has_value()) {
+            config->shape = ObjectShape::Cube;
             std::cout << "Warning: Not specified object shape and ply model file, use default Cube shape.\n";
         }
 
-        if (config.shape.has_value()) {
+        if (config->shape.has_value()) {
 
-            switch (config.shape.value()) {
+            switch (config->shape.value()) {
                 case Cube:
-                    particles = create3DParticleCube(config.particle_radius.value(),
-                                                     config.lb,
-                                                     config.size);
+                    particles = create3DParticleCube(config->particle_radius.value(),
+                                                     config->lb,
+                                                     config->size);
                     break;
                 case Box:
-                    particles = create3DParticleBox(config.particle_radius.value(),
-                                                    config.lb,
-                                                    config.size,
-                                                    config.layer);
+                    particles = create3DParticleBox(config->particle_radius.value(),
+                                                    config->lb,
+                                                    config->size,
+                                                    config->layer);
                     break;
                 case Plane:
-                    particles = create3DParticlePlane(config.particle_radius.value(),
-                                                      config.lb,
-                                                      config.size,
-                                                      config.layer);
+                    particles = create3DParticlePlane(config->particle_radius.value(),
+                                                      config->lb,
+                                                      config->size,
+                                                      config->layer);
                     break;
                 case Cylinder:
-                    particles = create3DParticleCylinder(config.particle_radius.value(),
-                                                         config.center,
-                                                         config.height,
-                                                         config.bottom_area_radius);
+                    particles = create3DParticleCylinder(config->particle_radius.value(),
+                                                         config->center,
+                                                         config->height,
+                                                         config->bottom_area_radius);
                     break;
                 case Sphere:
-                    particles = create3DParticleSphere(config.particle_radius.value(),
-                                                       config.center,
-                                                       config.volume_radius);
+                    particles = create3DParticleSphere(config->particle_radius.value(),
+                                                       config->center,
+                                                       config->volume_radius);
                     break;
                 default:
                     std::cout << "Ops! No matching shape.\n";
@@ -63,10 +63,12 @@ namespace SoSim {
             }
         }
 
-        //    if (m_particleObjectConfig->model_file.has_value())
-        //    {
-        //        m_particles = ModelHelper::loadParticle3DModel(m_particleObjectConfig->model_file.value());
-        //    }
+        if (config->model_file.has_value()) {
+            std::filesystem::path fp(config->model_file.value());
+            auto postfix = fp.extension().string();
+            if (postfix == ".ply")
+                particles = ModelHelper::loadPly3DModel(config->model_file.value());
+        }
 
         return particles;
     }
@@ -138,6 +140,43 @@ namespace SoSim {
         for (int i = 0; i < particles.size(); ++i) {
             ofs << particles[i].x << " " << particles[i].y << " " << particles[i].z << " ";
             ofs << colors[i].x << " " << colors[i].y << " " << colors[i].z << "\n";
+        }
+
+        ofs.close();
+    }
+
+    void ModelHelper::export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec2f> &phases,
+                                         const std::string &dir, const std::string &file_name) {
+        auto dir_ = dir;
+#if defined(WIN32)
+        size_t pos = 0;
+        while ((pos = dir_.find('/', pos)) != std::string::npos) {
+            dir_.replace(pos, 1, "\\");
+            pos += 1;
+        }
+
+        // TODO other platform file path transformation
+        // ...
+#endif
+
+        if (!std::filesystem::exists(dir_))
+            std::filesystem::create_directories(dir_);
+
+        std::ofstream ofs(dir_ + "\\" + file_name + ".ply");
+
+        ofs << "ply\n";
+        ofs << "format ascii 1.0\n";
+        ofs << "element vertex " << particles.size() << "\n";
+        ofs << "property float x\n";
+        ofs << "property float y\n";
+        ofs << "property float z\n";
+        ofs << "property float f1" << std::endl;
+        ofs << "property float f2" << std::endl;
+        ofs << "end_header\n";
+
+        for (int i = 0; i < particles.size(); ++i) {
+            ofs << particles[i].x << " " << particles[i].y << " " << particles[i].z << " ";
+            ofs << phases[i].x << " " << phases[i].y << "\n";
         }
 
         ofs.close();

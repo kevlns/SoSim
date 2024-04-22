@@ -60,7 +60,7 @@ namespace SoSim {
         mergeObjects();
 
         auto solver_config = dynamic_cast<WCSPHSolverConfig *>(m_config.get());
-        auto particle_radius = (*m_objects.begin())->getParticleObjectConfig()->particle_radius;
+        auto particle_radius = (*m_objects.begin())->getParticleObjectConfig()->particle_radius.value();
 
         int device;
         cudaGetDevice(&device);

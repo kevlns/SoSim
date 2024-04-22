@@ -95,6 +95,40 @@ namespace SoSim {
                      NeighborSearchUGConfig *d_nsConfig,
                      NeighborSearchUGParams *d_nsParams);
 
+    __host__ void
+    update_CT_parameters(IMSCTConstantParams &h_const,
+                         IMSCTConstantParams *d_const,
+                         IMSCTDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    artificial_vis_bound(IMSCTConstantParams &h_const,
+                         IMSCTConstantParams *d_const,
+                         IMSCTDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams);
+
+}
+
+namespace SoSim { // extra func
+    __host__ void
+    stirring(IMSCTConstantParams &h_const,
+             IMSCTConstantParams *d_const,
+             IMSCTDynamicParams *d_data,
+             NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    rotate_bowl(IMSCTConstantParams &h_const,
+                IMSCTConstantParams *d_const,
+                IMSCTDynamicParams *d_data,
+                NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    buckling(IMSCTConstantParams &h_const,
+             IMSCTConstantParams *d_const,
+             IMSCTDynamicParams *d_data,
+             NeighborSearchUGParams *d_nsParams);
 }
 
 #endif //SOSIM_ISM_CT_CUDA_API_CUH

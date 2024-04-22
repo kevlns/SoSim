@@ -16,6 +16,7 @@
 #include <optional>
 
 #include "core/math/matrix.hpp"
+#include "framework/MetaFramework/sim_material.hpp"
 
 namespace SoSim {
 
@@ -27,14 +28,17 @@ namespace SoSim {
         Sphere
     };
 
-    struct ParticleModelConfig {
+    struct ParticleObjectConfig {
+        // common
         std::optional<float> particle_radius;
+        std::optional<Material> particle_mat;
+        Vec3f vel_start{0, 0, 0};
 
         /* default building */
         std::optional<ObjectShape> shape;
         // cube/box/plane
-        Vec3f lb{-1, -1, -1};
-        Vec3f size{2, 2, 2};
+        Vec3f lb{-0.5, -0.5, -0.5};
+        Vec3f size{1, 1, 1};
         // box/plane
         float layer{2};
         // cylinder/sphere
@@ -45,13 +49,26 @@ namespace SoSim {
         // sphere
         float volume_radius{1};
 
-        /* load 3D model */
-        std::optional<std::string> ply_file;
+        /* load file */
+        std::optional<std::string> model_file;
+
+        /* transform */
+        Vec3f transfer{0, 0, 0};
+        Vec3f scale{1, 1, 1};
+        Vec3f rotate{0, 0, 0};
+
+        /* solver related */
+        // multi-phase fluid solver
+        std::vector<float> phases;          // size is phase num, value is phase volume fraction
+    };
+
+    struct MeshObjectConfig {
+        // TODO
     };
 
     class ModelHelper {
     public:
-        static std::vector<Vec3f> create3DParticleModel(ParticleModelConfig &config);
+        static std::vector<Vec3f> create3DParticleModel(std::shared_ptr<ParticleObjectConfig> config);
 
         static std::vector<float> transformVec3fSetToFloatSet(std::vector<Vec3f> &vec3f_set);
 
@@ -60,6 +77,10 @@ namespace SoSim {
 
         static void
         export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec3f> &colors,
+                           const std::string &dir, const std::string &file_name);
+
+        static void
+        export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec2f> &phases,
                            const std::string &dir, const std::string &file_name);
 
     private:

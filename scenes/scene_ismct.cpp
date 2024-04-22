@@ -18,7 +18,7 @@ int main() {
     cubeConfig_1->particle_radius = 0.075;
     cubeConfig_1->particle_mat = IMSCT_NONNEWTON;
     cubeConfig_1->phases.assign({0.5, 0.5});
-    cubeConfig_1->shape = "cube";
+    cubeConfig_1->shape = ObjectShape::Cube;
     cubeConfig_1->lb = {-1, -1.2, -1};
     cubeConfig_1->size = {2, 4, 2};
     cube_1->setName("cube_1");
@@ -29,7 +29,7 @@ int main() {
     planeConfig->particle_radius = 0.075;
     planeConfig->particle_mat = FIXED_BOUND;
     planeConfig->phases.assign({0, 0});
-    planeConfig->shape = "plane";
+    planeConfig->shape = ObjectShape::Plane;
     planeConfig->lb = {-3, -2, -3};
     planeConfig->size = {6, 2, 6};
     planeConfig->layer = 2;
@@ -41,7 +41,7 @@ int main() {
     boxConfig->particle_radius = 0.075;
     boxConfig->particle_mat = FIXED_BOUND;
     boxConfig->phases.assign({0, 0});
-    boxConfig->shape = "box";
+    boxConfig->shape = ObjectShape::Box;
     boxConfig->lb = {-2, -2, -2};
     boxConfig->size = {4, 6, 4};
     boxConfig->layer = 2;
@@ -69,14 +69,14 @@ int main() {
     solver_config->div_free_threshold = 1e-4;
     solver_config->incompressible_threshold = 1e-4;
     solver_config->Cf = 0.01;
-    solver_config->Cd = 1;
     solver_config->phase1_color = {50, 0, 200};
     solver_config->phase2_color = {200, 0, 50};
 
     solver_config->Cd0 = 0.4;
-    solver_config->ct_thinning_exp0 = 0.6;
-    solver_config->ct_relaxation_time = 0.01;
-    solver_config->solution_vis0 = 2500;
+    solver_config->ct_thinning_exp0 = 0.2;
+    solver_config->ct_relaxation_time = 0.008;
+    solver_config->solution_vis_base = 2500;
+    solver_config->polymer_vol_frac0 = 0.6; // threshold
 
     solver->attachObject(cube_1);
     solver->attachObject(plane_1);

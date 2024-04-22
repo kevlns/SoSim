@@ -73,6 +73,23 @@ namespace SoSim {
         const float r_norm = r.length();
         return (r_norm <= h) ? (45.0f * (h - r_norm) / (PI * powf(h, 6))) : 0.0f;
     }
+
+    __device__ inline float
+    adhesion_kernel_value(const Vec3f &r, float h) {
+        const float r_norm = r.length();
+        const float PI = 3.14159265;
+        const float cubicSigma = 8.f / PI / static_cast<float>(powf(h, 3));
+        const float factor = 0.007f / powf(h, 3.25);
+
+        float res = 0.0;
+        float invH = 1 / h;
+        float q = r_norm * invH;
+
+        if (q <= 1 && q > 0.5)
+            res = static_cast<float>(factor * powf(-4 * r_norm * r_norm * invH + 6 * r_norm - 2 * h, -4));
+
+        return res;
+    }
 }
 
 #endif //SOSIM_KERNELS_CUH

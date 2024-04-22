@@ -21,6 +21,10 @@ namespace SoSim {
 
         // IMS-CT
         IMSCT_NONNEWTON,
+        STIR_FAN,
+        MOVING_BOWL,
+        MOVING_TUBE,
+        MOVING_COVER,
 
     };
 

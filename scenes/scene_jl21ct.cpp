@@ -18,7 +18,7 @@ int main() {
     cubeConfig_1->particle_radius = 0.05;
     cubeConfig_1->particle_mat = JL21CT_NONNEWTON;
     cubeConfig_1->phases.assign({0.6, 0.4});
-    cubeConfig_1->shape = "cube";
+    cubeConfig_1->shape = ObjectShape::Plane;
     cubeConfig_1->lb = {-1, 0.2, -1};
     cubeConfig_1->size = {2, 2, 2};
     cube_1->setName("cube_1");
@@ -29,7 +29,7 @@ int main() {
     planeConfig->particle_radius = 0.05;
     planeConfig->particle_mat = FIXED_BOUND;
     planeConfig->phases.assign({0, 0});
-    planeConfig->shape = "plane";
+    planeConfig->shape = ObjectShape::Plane;
     planeConfig->lb = {-2, -0.4, -2};
     planeConfig->size = {4, 2, 4};
     planeConfig->layer = 2;

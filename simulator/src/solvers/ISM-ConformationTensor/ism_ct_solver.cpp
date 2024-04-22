@@ -106,7 +106,8 @@ namespace SoSim {
 
         m_unified_part_type_start_index.z = m_host_const.particle_num;
         for (const auto &obj: m_objects) {
-            if (obj->getParticleObjectConfig()->particle_mat.value() == FIXED_BOUND &&
+            if (obj->getParticleObjectConfig()->particle_mat.value() != IMSCT_NONNEWTON &&
+                obj->getParticleObjectConfig()->particle_mat.value() != DYNAMIC_RIGID &&
                 obj_offline.count(obj) < 1) {
                 m_obj_start_index.emplace_back(m_host_const.particle_num);
 
@@ -153,7 +154,7 @@ namespace SoSim {
         solver_config->kernel_blocks = std::ceil(
                 (m_host_const.particle_num + solver_config->kernel_threads - 1) / solver_config->kernel_threads);
 
-        auto particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius;
+        auto particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius.value();
         auto particle_num = m_host_const.particle_num;
 
         // TODO setup m_host_const
@@ -182,7 +183,9 @@ namespace SoSim {
         m_host_const.Cd0 = solver_config->Cd0;
         m_host_const.ct_thinning_exp0 = solver_config->ct_thinning_exp0;
         m_host_const.ct_relaxation_time = solver_config->ct_relaxation_time;
-        m_host_const.solution_vis0 = solver_config->solution_vis0;
+        m_host_const.solution_vis_base = solver_config->solution_vis_base;
+        m_host_const.solution_vis_max = solver_config->solution_vis_max;
+        m_host_const.polymer_vol_frac0 = solver_config->polymer_vol_frac0;
 
         // setup neighbor search
         NeighborSearchUGConfig ns_config;
@@ -207,6 +210,8 @@ namespace SoSim {
         cudaMemcpy(m_host_data.pos_adv, pos_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.vel, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.vel_adv, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.vel_phase_1, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.vel_phase_2, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.vol_frac, vol_frac_all.data(), particle_num * sizeof(Vec2f), cudaMemcpyHostToDevice);
 
         cudaMemcpy(m_device_const, &m_host_const, sizeof(IMSCTConstantParams), cudaMemcpyHostToDevice);
@@ -241,20 +246,51 @@ namespace SoSim {
 
     void IMSCTSolver::exportAsPly() {
         static int counter = 1;
-        std::vector<Vec3f> pos(m_unified_part_type_start_index.y);
-        std::vector<Vec3f> color(m_unified_part_type_start_index.y);
-        cudaMemcpy(pos.data(),
-                   m_host_data.pos,
-                   m_unified_part_type_start_index.y * sizeof(Vec3f),
-                   cudaMemcpyDeviceToHost);
-        cudaMemcpy(color.data(),
-                   m_host_data.color,
-                   m_unified_part_type_start_index.y * sizeof(Vec3f),
-                   cudaMemcpyDeviceToHost);
-        ModelHelper::export3DModelAsPly(pos,
-                                        color,
-                                        "F:\\DataSet.Research\\ITEM.NN_NewModel\\ply\\ismct_test\\ct\\",
-                                        std::to_string(counter++));
+        static int frame = 0;
+        auto config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
+
+        auto part_num = m_host_const.particle_num;
+        if (config->export_partial == "fluid")
+            part_num = m_unified_part_type_start_index.y;
+
+        if (counter % config->export_gap == 0) {
+            std::cout << "export index: " << frame << "\n";
+//            if (frame < 90) {
+//                frame++;
+//                counter++;
+//                return;
+//            }
+
+            std::vector<Vec3f> pos(part_num);
+            std::vector<Vec3f> color(part_num);
+            std::vector<Vec2f> phase(part_num);
+            if (config->export_phase)
+                cudaMemcpy(phase.data(),
+                           m_host_data.vol_frac,
+                           part_num * sizeof(Vec2f),
+                           cudaMemcpyDeviceToHost);
+            cudaMemcpy(pos.data(),
+                       m_host_data.pos,
+                       part_num * sizeof(Vec3f),
+                       cudaMemcpyDeviceToHost);
+            cudaMemcpy(color.data(),
+                       m_host_data.color,
+                       part_num * sizeof(Vec3f),
+                       cudaMemcpyDeviceToHost);
+
+            if (config->export_phase)
+                ModelHelper::export3DModelAsPly(pos,
+                                                phase,
+                                                config->export_path.value() + "_phase",
+                                                std::to_string(frame));
+            ModelHelper::export3DModelAsPly(pos,
+                                            color,
+                                            config->export_path.value(),
+                                            std::to_string(frame));
+
+            frame++;
+        }
+        counter++;
     }
 
     void IMSCTSolver::syncObjectDeviceJitData() {
@@ -302,7 +338,8 @@ namespace SoSim {
 
             step();
 
-            if (dynamic_cast<IMSCTSolverConfig *>(m_config.get())->export_data)
+            if (dynamic_cast<IMSCTSolverConfig *>(m_config.get())->export_data &&
+                dynamic_cast<IMSCTSolverConfig *>(m_config.get())->export_path.has_value())
                 exportAsPly();
 
             frame++;
@@ -315,8 +352,6 @@ namespace SoSim {
         auto d_nsConfig = m_neighborSearch.d_config;
         auto d_nsParams = m_neighborSearch.d_params;
 
-        // update color
-
         // neighbor search
         m_neighborSearch.update(m_host_data.pos);
 
@@ -326,28 +361,11 @@ namespace SoSim {
                        d_nsConfig,
                        d_nsParams);
 
-//        dump_max(m_host_data.acc_phase_2,
-//                 m_host_const.particle_num,
-//                 m_unified_part_type_start_index.y);
-
-//        dump_mean(m_host_data.density_sph,
-//                  m_host_const.particle_num,
-//                  m_unified_part_type_start_index.y);
-//        std::vector<float> den(m_unified_part_type_start_index.y);
-//        cudaMemcpy(den.data(),
-//                   m_host_data.density_sph,
-//                   m_unified_part_type_start_index.y * sizeof(float),
-//                   cudaMemcpyDeviceToHost);
-//        std::vector<Mat33f> cp(m_unified_part_type_start_index.y);
-//        cudaMemcpy(cp.data(),
-//                   m_host_data.CT,
-//                   m_unified_part_type_start_index.y * sizeof(Mat33f),
-//                   cudaMemcpyDeviceToHost);
-//        std::vector<Vec3f> acc(m_unified_part_type_start_index.y);
-//        cudaMemcpy(acc.data(),
-//                   m_host_data.vel_grad,
-//                   m_unified_part_type_start_index.y * sizeof(Vec3f),
-//                   cudaMemcpyDeviceToHost);
+        update_CT_parameters(m_host_const,
+                             m_device_const,
+                             m_device_data,
+                             d_nsConfig,
+                             d_nsParams);
 
         vfsph_div(m_host_const,
                   m_host_data,
@@ -368,12 +386,6 @@ namespace SoSim {
                                 d_nsConfig,
                                 d_nsParams);
 
-        ism_viscoelastic(m_host_const,
-                         m_device_const,
-                         m_device_data,
-                         d_nsConfig,
-                         d_nsParams);
-
         vfsph_incomp(m_host_const,
                      m_host_data,
                      m_unified_part_type_start_index,
@@ -386,6 +398,18 @@ namespace SoSim {
                            m_device_const,
                            m_device_data,
                            d_nsParams);
+
+//        ism_viscoelastic(m_host_const,
+//                         m_device_const,
+//                         m_device_data,
+//                         d_nsConfig,
+//                         d_nsParams);
+
+        artificial_vis_bound(m_host_const,
+                             m_device_const,
+                             m_device_data,
+                             d_nsConfig,
+                             d_nsParams);
 
         update_pos(m_host_const,
                    m_device_const,
@@ -407,6 +431,24 @@ namespace SoSim {
                      m_device_const,
                      m_device_data,
                      d_nsParams);
+
+//        if (solver_config->cur_sim_time >= 3.8 && solver_config->cur_sim_time < 15)
+//            stirring(m_host_const,
+//                     m_device_const,
+//                     m_device_data,
+//                     d_nsParams);
+//
+//        if (solver_config->cur_sim_time > 15 && solver_config->cur_sim_time < 16.7)
+//            rotate_bowl(m_host_const,
+//                        m_device_const,
+//                        m_device_data,
+//                        d_nsParams);
+//
+//        if (solver_config->cur_sim_time > 0.7)
+//            buckling(m_host_const,
+//                     m_device_const,
+//                     m_device_data,
+//                     d_nsParams);
 
         syncObjectDeviceJitData();
 
