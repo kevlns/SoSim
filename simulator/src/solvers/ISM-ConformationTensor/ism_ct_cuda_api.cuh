@@ -37,7 +37,8 @@ namespace SoSim {
               IMSCTConstantParams *d_const,
               IMSCTDynamicParams *d_data,
               NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams);
+              NeighborSearchUGParams *d_nsParams,
+              bool &crash);
 
     __host__ void
     apply_pressure_acc(IMSCTConstantParams &h_const,
@@ -53,13 +54,21 @@ namespace SoSim {
                             NeighborSearchUGParams *d_nsParams);
 
     __host__ void
+    dfsph_gravity_vis_surface(IMSCTConstantParams &h_const,
+                              IMSCTConstantParams *d_const,
+                              IMSCTDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
     vfsph_incomp(IMSCTConstantParams &h_const,
                  IMSCTDynamicParams &h_data,
                  Vec3ui &obj_part_index,
                  IMSCTConstantParams *d_const,
                  IMSCTDynamicParams *d_data,
                  NeighborSearchUGConfig *d_nsConfig,
-                 NeighborSearchUGParams *d_nsParams);
+                 NeighborSearchUGParams *d_nsParams,
+                 bool &crash);
 
     __host__ void
     update_pos(IMSCTConstantParams &h_const,
@@ -72,7 +81,8 @@ namespace SoSim {
                         IMSCTConstantParams *d_const,
                         IMSCTDynamicParams *d_data,
                         NeighborSearchUGConfig *d_nsConfig,
-                        NeighborSearchUGParams *d_nsParams);
+                        NeighborSearchUGParams *d_nsParams,
+                        bool &crash);
 
     __host__ void
     update_mass_and_vel(IMSCTConstantParams &h_const,

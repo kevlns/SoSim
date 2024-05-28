@@ -50,6 +50,10 @@ namespace SoSim {
         int export_gap{1};
         std::string export_partial;
         bool export_phase{false};
+
+        // method compare
+        float phase1_vis{0.01};
+        float phase2_vis{0.01};
     };
 
     class IMSCTSolver : public Solver {
@@ -72,6 +76,12 @@ namespace SoSim {
         void step() override;
 
     private:
+        void imsct_step();
+
+        void ims_step();
+
+        void dfsph_step();
+
         void mergeObjects();
 
         void destroy();
@@ -84,6 +94,7 @@ namespace SoSim {
         bool m_change_occur{false}; // for re-config solver
         bool m_is_init{false};
         bool m_is_start{true};
+        bool m_is_crash{false};
         std::shared_ptr<SolverConfig> m_config;
         std::set<std::shared_ptr<Object>> m_objects;
         IMSCTConstantParams m_host_const;

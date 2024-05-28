@@ -187,6 +187,9 @@ namespace SoSim {
         m_host_const.solution_vis_max = solver_config->solution_vis_max;
         m_host_const.polymer_vol_frac0 = solver_config->polymer_vol_frac0;
 
+        m_host_const.phase1_vis = solver_config->phase1_vis;
+        m_host_const.phase2_vis = solver_config->phase2_vis;
+
         // setup neighbor search
         NeighborSearchUGConfig ns_config;
         ns_config.sceneLB = solver_config->scene_lb;
@@ -338,6 +341,9 @@ namespace SoSim {
 
             step();
 
+            if (m_is_crash)
+                break;
+
             if (dynamic_cast<IMSCTSolverConfig *>(m_config.get())->export_data &&
                 dynamic_cast<IMSCTSolverConfig *>(m_config.get())->export_path.has_value())
                 exportAsPly();
@@ -347,6 +353,37 @@ namespace SoSim {
     }
 
     void IMSCTSolver::step() {
+        auto solver_config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
+
+        auto d_nsConfig = m_neighborSearch.d_config;
+        auto d_nsParams = m_neighborSearch.d_params;
+
+//        imsct_step();
+
+//        ims_step();
+
+        dfsph_step();
+
+        if (solver_config->cur_sim_time < 20)
+            stirring(m_host_const,
+                     m_device_const,
+                     m_device_data,
+                     d_nsParams);
+//
+//        if (solver_config->cur_sim_time > 15 && solver_config->cur_sim_time < 16.7)
+//            rotate_bowl(m_host_const,
+//                        m_device_const,
+//                        m_device_data,
+//                        d_nsParams);
+//
+//        if (solver_config->cur_sim_time > 0.7)
+//            buckling(m_host_const,
+//                     m_device_const,
+//                     m_device_data,
+//                     d_nsParams);
+    }
+
+    void IMSCTSolver::imsct_step() {
         auto solver_config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
 
         auto d_nsConfig = m_neighborSearch.d_config;
@@ -373,7 +410,8 @@ namespace SoSim {
                   m_device_const,
                   m_device_data,
                   d_nsConfig,
-                  d_nsParams);
+                  d_nsParams,
+                  m_is_crash);
 
         apply_pressure_acc(m_host_const,
                            m_device_const,
@@ -392,18 +430,19 @@ namespace SoSim {
                      m_device_const,
                      m_device_data,
                      d_nsConfig,
-                     d_nsParams);
+                     d_nsParams,
+                     m_is_crash);
 
         apply_pressure_acc(m_host_const,
                            m_device_const,
                            m_device_data,
                            d_nsParams);
 
-//        ism_viscoelastic(m_host_const,
-//                         m_device_const,
-//                         m_device_data,
-//                         d_nsConfig,
-//                         d_nsParams);
+        ism_viscoelastic(m_host_const,
+                         m_device_const,
+                         m_device_data,
+                         d_nsConfig,
+                         d_nsParams);
 
         artificial_vis_bound(m_host_const,
                              m_device_const,
@@ -420,7 +459,8 @@ namespace SoSim {
                             m_device_const,
                             m_device_data,
                             d_nsConfig,
-                            d_nsParams);
+                            d_nsParams,
+                            m_is_crash);
 
         update_mass_and_vel(m_host_const,
                             m_device_const,
@@ -432,23 +472,166 @@ namespace SoSim {
                      m_device_data,
                      d_nsParams);
 
-//        if (solver_config->cur_sim_time >= 3.8 && solver_config->cur_sim_time < 15)
-//            stirring(m_host_const,
-//                     m_device_const,
-//                     m_device_data,
-//                     d_nsParams);
-//
-//        if (solver_config->cur_sim_time > 15 && solver_config->cur_sim_time < 16.7)
-//            rotate_bowl(m_host_const,
-//                        m_device_const,
-//                        m_device_data,
-//                        d_nsParams);
-//
-//        if (solver_config->cur_sim_time > 0.7)
-//            buckling(m_host_const,
-//                     m_device_const,
-//                     m_device_data,
-//                     d_nsParams);
+        syncObjectDeviceJitData();
+
+        cudaGetLastError();
+
+        solver_config->cur_sim_time += solver_config->dt;
+    }
+
+    void IMSCTSolver::ims_step() {
+        auto solver_config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
+
+        auto d_nsConfig = m_neighborSearch.d_config;
+        auto d_nsParams = m_neighborSearch.d_params;
+
+        // neighbor search
+        m_neighborSearch.update(m_host_data.pos);
+
+        sph_precompute(m_host_const,
+                       m_device_const,
+                       m_device_data,
+                       d_nsConfig,
+                       d_nsParams);
+
+        vfsph_div(m_host_const,
+                  m_host_data,
+                  m_unified_part_type_start_index,
+                  m_device_const,
+                  m_device_data,
+                  d_nsConfig,
+                  d_nsParams,
+                  m_is_crash);
+
+        apply_pressure_acc(m_host_const,
+                           m_device_const,
+                           m_device_data,
+                           d_nsParams);
+
+        ism_gravity_vis_surface(m_host_const,
+                                m_device_const,
+                                m_device_data,
+                                d_nsConfig,
+                                d_nsParams);
+
+        vfsph_incomp(m_host_const,
+                     m_host_data,
+                     m_unified_part_type_start_index,
+                     m_device_const,
+                     m_device_data,
+                     d_nsConfig,
+                     d_nsParams,
+                     m_is_crash);
+
+        apply_pressure_acc(m_host_const,
+                           m_device_const,
+                           m_device_data,
+                           d_nsParams);
+
+        artificial_vis_bound(m_host_const,
+                             m_device_const,
+                             m_device_data,
+                             d_nsConfig,
+                             d_nsParams);
+
+        update_pos(m_host_const,
+                   m_device_const,
+                   m_device_data,
+                   d_nsParams);
+
+        phase_transport_ism(m_host_const,
+                            m_device_const,
+                            m_device_data,
+                            d_nsConfig,
+                            d_nsParams,
+                            m_is_crash);
+
+        update_mass_and_vel(m_host_const,
+                            m_device_const,
+                            m_device_data,
+                            d_nsParams);
+
+        update_color(m_host_const,
+                     m_device_const,
+                     m_device_data,
+                     d_nsParams);
+
+        syncObjectDeviceJitData();
+
+        cudaGetLastError();
+
+        solver_config->cur_sim_time += solver_config->dt;
+    }
+
+    void IMSCTSolver::dfsph_step() {
+        auto solver_config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
+
+        auto d_nsConfig = m_neighborSearch.d_config;
+        auto d_nsParams = m_neighborSearch.d_params;
+
+        // neighbor search
+        m_neighborSearch.update(m_host_data.pos);
+
+        sph_precompute(m_host_const,
+                       m_device_const,
+                       m_device_data,
+                       d_nsConfig,
+                       d_nsParams);
+
+        vfsph_div(m_host_const,
+                  m_host_data,
+                  m_unified_part_type_start_index,
+                  m_device_const,
+                  m_device_data,
+                  d_nsConfig,
+                  d_nsParams,
+                  m_is_crash);
+
+        apply_pressure_acc(m_host_const,
+                           m_device_const,
+                           m_device_data,
+                           d_nsParams);
+
+        dfsph_gravity_vis_surface(m_host_const,
+                                  m_device_const,
+                                  m_device_data,
+                                  d_nsConfig,
+                                  d_nsParams);
+
+        vfsph_incomp(m_host_const,
+                     m_host_data,
+                     m_unified_part_type_start_index,
+                     m_device_const,
+                     m_device_data,
+                     d_nsConfig,
+                     d_nsParams,
+                     m_is_crash);
+
+        apply_pressure_acc(m_host_const,
+                           m_device_const,
+                           m_device_data,
+                           d_nsParams);
+
+        artificial_vis_bound(m_host_const,
+                             m_device_const,
+                             m_device_data,
+                             d_nsConfig,
+                             d_nsParams);
+
+        update_pos(m_host_const,
+                   m_device_const,
+                   m_device_data,
+                   d_nsParams);
+
+        update_mass_and_vel(m_host_const,
+                            m_device_const,
+                            m_device_data,
+                            d_nsParams);
+
+        update_color(m_host_const,
+                     m_device_const,
+                     m_device_data,
+                     d_nsParams);
 
         syncObjectDeviceJitData();
 

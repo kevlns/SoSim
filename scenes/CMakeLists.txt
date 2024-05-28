@@ -23,3 +23,5 @@ target_link_libraries(SoSim-SceneISMCT-Viewer PUBLIC
         sosim-rt)
 
 add_subdirectory(SCA2024)
+
+add_subdirectory(BIBM2024)

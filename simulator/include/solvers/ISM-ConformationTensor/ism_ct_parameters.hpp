@@ -51,6 +51,10 @@ namespace SoSim {
         float solution_vis_max{0};
         float ct_relaxation_time{0.1};
         float polymer_vol_frac0;
+
+        // method compare
+        float phase1_vis;
+        float phase2_vis;
     };
 
     struct IMSCTDynamicParams {
@@ -62,6 +66,7 @@ namespace SoSim {
         Vec3f *vel{nullptr};
         Vec3f *vel_adv{nullptr};
         Vec3f *acc{nullptr};
+        Vec3f *surface_normal{nullptr};
         float *mass{nullptr};
         float *volume{nullptr};
         Vec3f *color{nullptr};
@@ -101,6 +106,9 @@ namespace SoSim {
         float *ct_vis_increase_exp{nullptr};
         float *blocking_factor{nullptr};
 
+        // method compare
+        float *vis{nullptr};
+
     private:
         bool isInit{false};
 
@@ -115,6 +123,7 @@ namespace SoSim {
             cudaMalloc((void **) &vel, particle_num * sizeof(Vec3f));
             cudaMalloc((void **) &vel_adv, particle_num * sizeof(Vec3f));
             cudaMalloc((void **) &acc, particle_num * sizeof(Vec3f));
+            cudaMalloc((void **) &surface_normal, particle_num * sizeof(Vec3f));
             cudaMalloc((void **) &mass, particle_num * sizeof(float));
             cudaMalloc((void **) &volume, particle_num * sizeof(float));
             cudaMalloc((void **) &color, particle_num * sizeof(Vec3f));
@@ -154,6 +163,7 @@ namespace SoSim {
             cudaMalloc((void **) &ct_vis_increase_exp, particle_num * sizeof(float));
             cudaMalloc((void **) &blocking_factor, particle_num * sizeof(float));
 
+            cudaMalloc((void **) &vis, particle_num * sizeof(float));
 
             if (cudaGetLastError() == cudaSuccess)
                 isInit = true;
@@ -167,6 +177,7 @@ namespace SoSim {
                 cudaFree(vel);
                 cudaFree(vel_adv);
                 cudaFree(acc);
+                cudaFree(surface_normal);
                 cudaFree(mass);
                 cudaFree(volume);
                 cudaFree(color);
@@ -202,6 +213,8 @@ namespace SoSim {
                 cudaFree(solution_vis);
                 cudaFree(ct_vis_increase_exp);
                 cudaFree(blocking_factor);
+
+                cudaFree(vis);
 
                 if (cudaGetLastError() == cudaSuccess)
                     isInit = false;

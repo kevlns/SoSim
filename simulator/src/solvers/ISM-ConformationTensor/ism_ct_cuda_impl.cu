@@ -309,17 +309,84 @@ namespace SoSim {
             if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i)) {
                 auto v_k1_mj = DATA_VALUE(vel_phase_1, p_i) - vel_j;
                 DATA_VALUE(acc_phase_1, p_i) += 10 * DATA_VALUE(volume, p_j) *
-                                                dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd)) * v_k1_mj +
-                                                    (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
+                                                dot(CONST_VALUE(phase1_vis) * (1 - CONST_VALUE(Cd)) * v_k1_mj +
+                                                    (CONST_VALUE(phase1_vis) * CONST_VALUE(Cd) * v_ij),
                                                     x_ij) * wGrad / dot(x_ij, x_ij);
 
                 auto v_k2_mj = DATA_VALUE(vel_phase_2, p_i) - vel_j;
                 DATA_VALUE(acc_phase_2, p_i) += 10 * DATA_VALUE(volume, p_j) *
-                                                dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd)) * v_k2_mj +
-                                                    (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
+                                                dot(CONST_VALUE(phase2_vis) * (1 - CONST_VALUE(Cd)) * v_k2_mj +
+                                                    (CONST_VALUE(phase2_vis) * CONST_VALUE(Cd) * v_ij),
                                                     x_ij) * wGrad / dot(x_ij, x_ij);
             }
         }
+    }
+
+    __global__ void
+    add_phase_acc_dfsph_vis_cuda(IMSCTConstantParams *d_const,
+                                 IMSCTDynamicParams *d_data,
+                                 NeighborSearchUGConfig *d_nsConfig,
+                                 NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        Vec3f acc = {0, 0, 0};
+        float h2_001 = 0.001f * pow(CONST_VALUE(sph_h), 2);
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto vel_i = DATA_VALUE(vel, p_i);
+        auto vis_i = CONST_VALUE(phase1_vis) * DATA_VALUE(vol_frac, p_i).x +
+                     CONST_VALUE(phase2_vis) * DATA_VALUE(vol_frac, p_i).y;
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto x_ij = pos_i - pos_j;
+            auto vel_j = DATA_VALUE(vel, p_j);
+            auto v_ij = vel_i - vel_j;
+            auto vis_j = CONST_VALUE(phase1_vis) * DATA_VALUE(vol_frac, p_j).x +
+                         CONST_VALUE(phase2_vis) * DATA_VALUE(vol_frac, p_j).y;
+
+            auto vis = (vis_i + vis_j) / 2;
+
+            auto pi = vis * DATA_VALUE(mass, p_j) / DATA_VALUE(rest_density, p_j) * dot(v_ij, x_ij) /
+                      (x_ij.length() * x_ij.length() + h2_001);
+
+            acc += 10 * pi * CUBIC_KERNEL_GRAD();
+
+        }
+
+        DATA_VALUE(acc_phase_1, p_i) += acc;
+        DATA_VALUE(acc_phase_2, p_i) += acc;
+    }
+
+    __global__ void
+    compute_surface_normal_cuda(IMSCTConstantParams *d_const,
+                                IMSCTDynamicParams *d_data,
+                                NeighborSearchUGConfig *d_nsConfig,
+                                NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        Vec3f normal;
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+
+            normal += CONST_VALUE(sph_h) * DATA_VALUE(mass, p_j) / DATA_VALUE(rest_density, p_j) *
+                      cubic_gradient(pos_i - pos_j, CONST_VALUE(sph_h));
+        }
+
+        DATA_VALUE(surface_normal, p_i) = normal;
     }
 
     __global__ void
@@ -341,10 +408,16 @@ namespace SoSim {
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
+            auto k =
+                    2 * DATA_VALUE(rest_density, p_i) / (DATA_VALUE(rest_density, p_i) + DATA_VALUE(rest_density, p_j));
 
-            acc += -gamma * DATA_VALUE(mass, p_i) * DATA_VALUE(mass, p_j) *
-                   surface_tension_C((pos_i - pos_j).length(), CONST_VALUE(sph_h)) * (pos_i - pos_j) /
-                   (pos_i - pos_j).length();
+            auto acc_1 = -gamma * DATA_VALUE(mass, p_i) * DATA_VALUE(mass, p_j) *
+                         surface_tension_C((pos_i - pos_j).length(), CONST_VALUE(sph_h)) * (pos_i - pos_j) /
+                         (pos_i - pos_j).length();
+            auto acc_2 = -gamma * DATA_VALUE(mass, p_i) *
+                         (DATA_VALUE(surface_normal, p_i) - DATA_VALUE(surface_normal, p_j));
+
+            acc += k * (acc_1 + acc_2);
         }
 
         DATA_VALUE(acc_phase_1, p_i) += acc;
@@ -891,7 +964,7 @@ namespace SoSim { // extra func cuda impl
             return;
 
         const float M_PI = 3.1415926;
-        float angleRadians = 0.04f * (M_PI / 180.0f);// 将角度转换为弧度
+        float angleRadians = -0.04f * (M_PI / 180.0f);// 将角度转换为弧度
         float cosAngle = cos(angleRadians);
         float sinAngle = sin(angleRadians);
 
@@ -954,8 +1027,8 @@ namespace SoSim { // extra func cuda impl
         }
 
         float f1 = 1;
-        if (cnt > 80)
-            f1 = 0.3;
+        if (cnt > 15)
+            f1 = 1;
 
         DATA_VALUE(vel_phase_1, p_i) *= f1;
         DATA_VALUE(vel_phase_2, p_i) *= f1;
@@ -1018,7 +1091,8 @@ namespace SoSim {
               IMSCTConstantParams *d_const,
               IMSCTDynamicParams *d_data,
               NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams) {
+              NeighborSearchUGParams *d_nsParams,
+              bool &crash) {
         int iter = 0;
         while (true) {
             iter++;
@@ -1053,6 +1127,9 @@ namespace SoSim {
 //                d_const, d_data, d_nsParams);
 
         std::cout << "div-iter: " << iter << '\n';
+
+        if (iter == 101)
+            crash = true;
 
         // vel = vel_adv
         //        cudaMemcpy(h_data.vel, h_data.vel_adv, h_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToDevice);
@@ -1102,6 +1179,45 @@ namespace SoSim {
         add_phase_acc_vis_cuda<<<h_const.block_num, h_const.thread_num>>>(
                 d_const, d_data, d_nsConfig, d_nsParams);
 
+        // compute_surface_normal
+        compute_surface_normal_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // add_phase_acc_surface_tension_cuda()
+        add_phase_acc_surface_tension_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // phase_acc_2_phase_vel()
+        phase_acc_2_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // update_vel_from_phase_vel()
+        update_vel_from_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    dfsph_gravity_vis_surface(IMSCTConstantParams &h_const,
+                              IMSCTConstantParams *d_const,
+                              IMSCTDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams) {
+        // clear_phase_acc()
+        clear_phase_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // add_phase_acc_gravity()
+        add_phase_acc_gravity_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // add_phase_acc_vis()
+        add_phase_acc_dfsph_vis_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // compute_surface_normal
+        compute_surface_normal_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
         // add_phase_acc_surface_tension_cuda()
         add_phase_acc_surface_tension_cuda<<<h_const.block_num, h_const.thread_num>>>(
                 d_const, d_data, d_nsConfig, d_nsParams);
@@ -1122,7 +1238,8 @@ namespace SoSim {
                  IMSCTConstantParams *d_const,
                  IMSCTDynamicParams *d_data,
                  NeighborSearchUGConfig *d_nsConfig,
-                 NeighborSearchUGParams *d_nsParams) {
+                 NeighborSearchUGParams *d_nsParams,
+                 bool &crash) {
         int iter = 0;
         while (true) {
             iter++;
@@ -1153,6 +1270,9 @@ namespace SoSim {
         }
 
         std::cout << "incomp-iter: " << iter << '\n';
+
+        if (iter == 101)
+            crash = true;
     }
 
     __host__ void
@@ -1169,7 +1289,8 @@ namespace SoSim {
                         IMSCTConstantParams *d_const,
                         IMSCTDynamicParams *d_data,
                         NeighborSearchUGConfig *d_nsConfig,
-                        NeighborSearchUGParams *d_nsParams) {
+                        NeighborSearchUGParams *d_nsParams,
+                        bool &crash) {
         // clear_val_frac_tmp()
         clear_val_frac_tmp_cuda<<<h_const.block_num, h_const.thread_num>>>(
                 d_const, d_data, d_nsParams);
