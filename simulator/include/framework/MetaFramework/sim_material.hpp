@@ -11,6 +11,7 @@ namespace SoSim {
         COMMON_FLUID,
         FIXED_BOUND,
         DYNAMIC_RIGID,
+        Emitter_Particle,
 
         // JL21-CT
         JL21CT_NONNEWTON,

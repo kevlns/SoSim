@@ -42,7 +42,11 @@ namespace SoSim {
 
         void attachObject(std::shared_ptr<Object> object) override;
 
+        void attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override {};
+
         void detachObject(std::shared_ptr<Object> object) override;
+
+        void detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override {};
 
         bool initialize() override;
 
@@ -59,7 +63,7 @@ namespace SoSim {
 
         void destroy();
 
-        void exportData(DFSPHSolverConfig* solver_config);
+        void exportData(DFSPHSolverConfig *solver_config);
 
     private:
         bool m_change_occur{false}; // for re-config solver

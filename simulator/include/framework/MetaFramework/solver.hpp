@@ -10,6 +10,7 @@
 
 #include "core/math/matrix.hpp"
 #include "object.hpp"
+#include "libs/ParticleEmitter/particle_emitter.hpp"
 
 namespace SoSim {
 
@@ -33,7 +34,11 @@ namespace SoSim {
 
         virtual void attachObject(std::shared_ptr<Object> object) = 0;
 
+        virtual void attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) = 0;
+
         virtual void detachObject(std::shared_ptr<Object> object) = 0;
+
+        virtual void detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) = 0;
 
         virtual bool initialize() = 0;
 

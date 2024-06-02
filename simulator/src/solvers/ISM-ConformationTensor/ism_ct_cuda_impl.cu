@@ -17,21 +17,23 @@ namespace SoSim {
     init_data_cuda(IMSCTConstantParams *d_const,
                    IMSCTDynamicParams *d_data,
                    NeighborSearchUGParams *d_nsParams) {
-        CHECK_THREAD();
+        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i >= d_const->particle_num)
+            return;
 
         // TODO
-        DATA_VALUE(flag_negative_vol_frac, p_i) = 0;
-        DATA_VALUE(volume, p_i) = CONST_VALUE(rest_volume);
-        DATA_VALUE(kappa_div, p_i) = 0;
-        DATA_VALUE(color, p_i) = DATA_VALUE(vol_frac, p_i).x * CONST_VALUE(phase1_color) +
-                                 DATA_VALUE(vol_frac, p_i).y * CONST_VALUE(phase2_color);
-        DATA_VALUE(acc_phase_1, p_i) *= 0;
-        DATA_VALUE(Cd, p_i) = CONST_VALUE(Cd0);
-        DATA_VALUE(CT, p_i) = Mat33f::eye();
-        DATA_VALUE(viscoelastic_stress, p_i) *= 0;
-        DATA_VALUE(solution_vis, p_i) = CONST_VALUE(solution_vis_base);
-        DATA_VALUE(ct_thinning_exp, p_i) = CONST_VALUE(ct_thinning_exp0);
-        DATA_VALUE(ct_vis_increase_exp, p_i) = 1;
+        DATA_VALUE(flag_negative_vol_frac, i) = 0;
+        DATA_VALUE(volume, i) = CONST_VALUE(rest_volume);
+        DATA_VALUE(kappa_div, i) = 0;
+        DATA_VALUE(color, i) = DATA_VALUE(vol_frac, i).x * CONST_VALUE(phase1_color) +
+                               DATA_VALUE(vol_frac, i).y * CONST_VALUE(phase2_color);
+        DATA_VALUE(acc_phase_1, i) *= 0;
+        DATA_VALUE(Cd, i) = CONST_VALUE(Cd0);
+        DATA_VALUE(CT, i) = Mat33f::eye();
+        DATA_VALUE(viscoelastic_stress, i) *= 0;
+        DATA_VALUE(solution_vis, i) = CONST_VALUE(solution_vis_base);
+        DATA_VALUE(ct_thinning_exp, i) = CONST_VALUE(ct_thinning_exp0);
+        DATA_VALUE(ct_vis_increase_exp, i) = 1;
     }
 
     __global__ void
@@ -40,7 +42,7 @@ namespace SoSim {
                                       NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(rest_density, p_i) = dot(DATA_VALUE(vol_frac, p_i), CONST_VALUE(rest_density));
@@ -66,7 +68,7 @@ namespace SoSim {
                                         NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(vel_phase_1, p_i) = DATA_VALUE(vel, p_i);
@@ -107,13 +109,16 @@ namespace SoSim {
                                    NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
+        DATA_VALUE(compression_ratio, p_i) *= 0;
+
         if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
             return;
 
-        DATA_VALUE(compression_ratio, p_i) = 0;
-
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
             auto pos_j = DATA_VALUE(pos, p_j);
 
             DATA_VALUE(compression_ratio, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_VALUE();
@@ -132,7 +137,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -183,7 +188,7 @@ namespace SoSim {
         auto pos_i = DATA_VALUE(pos, p_i);
         auto vel_adv_i = DATA_VALUE(vel_adv, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -203,6 +208,8 @@ namespace SoSim {
                                                         IMSCTDynamicParams *d_data,
                                                         NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
+
+        DATA_VALUE(kappa_div, p_i) *= 0;
 
         // applied to all dynamic objects
         if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
@@ -226,7 +233,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -568,7 +575,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -964,7 +971,7 @@ namespace SoSim { // extra func cuda impl
             return;
 
         const float M_PI = 3.1415926;
-        float angleRadians = -0.04f * (M_PI / 180.0f);// 将角度转换为弧度
+        float angleRadians = -0.004f * (M_PI / 180.0f);// 将角度转换为弧度
         float cosAngle = cos(angleRadians);
         float sinAngle = sin(angleRadians);
 
@@ -1020,7 +1027,7 @@ namespace SoSim { // extra func cuda impl
 
         int cnt = 0;
         FOR_EACH_NEIGHBOR_Pj() {
-            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i))
+            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i) || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             cnt++;
@@ -1101,9 +1108,16 @@ namespace SoSim {
             compute_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
                     d_const, d_data, d_nsParams);
 
+            std::vector<float> de(h_const.particle_num);
+            cudaMemcpy(de.data(), h_data.delta_compression_ratio, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
+
             // update_delta_compression_ratio_from_vel_adv()
             update_delta_compression_ratio_from_vel_adv_cuda<<<h_const.block_num, h_const.thread_num>>>(
                     d_const, d_data, d_nsConfig, d_nsParams);
+
+            cudaMemcpy(de.data(), h_data.delta_compression_ratio, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
             // update_vf_compressible_ratio()
             auto compressible_ratio = cal_mean(h_data.delta_compression_ratio,
@@ -1112,6 +1126,14 @@ namespace SoSim {
             // compute_kappa_div_from_delta_compression_ratio()
             compute_kappa_div_from_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
                     d_const, d_data, d_nsParams);
+
+            std::vector<float> kd(h_const.particle_num);
+            cudaMemcpy(kd.data(), h_data.kappa_div, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
+
+            std::vector<float> mass(h_const.particle_num);
+            cudaMemcpy(mass.data(), h_data.mass, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
             // vf_update_vel_adv_from_kappa_div()
             vf_update_vel_adv_from_kappa_div_cuda<<<h_const.block_num, h_const.thread_num>>>(

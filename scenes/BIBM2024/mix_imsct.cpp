@@ -64,19 +64,19 @@ int main() {
     /*
      * scene 1_10: dt=0.001; export_gap=300; vis_base=vis_max=100
      * scene 1_100: dt=0.001; export_gap=300; vis_base=1000; vis_max=2000
-     * scene 1_1000: ...
+     * scene 1_1000: dt=0.0005; export_gap=600; vis_base=7000; vis_max=10000
      */
 
     SolverManager solverManager;
     auto solver = solverManager.createSolver<IMSCTSolver>();
     auto solver_config = dynamic_cast<IMSCTSolverConfig *>(solver->getConfig().get());
-    solver_config->dt = 0.001;
+    solver_config->dt = 0.0001;
     solver_config->gravity = {0, -9.8, 0};
     solver_config->scene_lb = {-30, -20, -30};
     solver_config->scene_size = {60, 60, 60};
     solver_config->export_data = true;
-    solver_config->export_path = "F:\\DataSet.Research\\BIBM2024\\ply\\compare\\imsct\\1_100";
-    solver_config->export_gap = 300;
+    solver_config->export_path = "F:\\DataSet.Research\\BIBM2024\\ply\\compare\\imsct\\1_1000";
+    solver_config->export_gap = 3000;
     solver_config->export_partial = "fluid";
     solver_config->export_phase = false;
 
@@ -92,10 +92,10 @@ int main() {
     solver_config->phase2_color = {200, 0, 50};
 
     solver_config->Cd0 = 0.4;
-    solver_config->ct_thinning_exp0 = 0.2;
+    solver_config->ct_thinning_exp0 = 0.25;
     solver_config->ct_relaxation_time = 0.005;
-    solver_config->solution_vis_base = 1000;
-    solver_config->solution_vis_max = 2000;
+    solver_config->solution_vis_base = 7000;
+    solver_config->solution_vis_max = 10000;
     solver_config->polymer_vol_frac0 = 0.65; // threshold
 
     solver->attachObject(water_col);

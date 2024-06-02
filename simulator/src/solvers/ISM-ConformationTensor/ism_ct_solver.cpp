@@ -31,12 +31,28 @@ namespace SoSim {
         std::cout << "ISMCTSolver attach object: " << object->getName() << ".\n";
     }
 
+    void IMSCTSolver::attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
+        if (m_emitters.count(emitter) == 0)
+            m_emitters.insert(emitter);
+
+        m_change_occur = true;
+        std::cout << "ISMCTSolver attach a ParticleEmitter.\n";
+    }
+
     void IMSCTSolver::detachObject(std::shared_ptr<Object> object) {
         if (m_objects.count(object) > 0)
             m_objects.erase(object);
 
         m_change_occur = true;
         std::cout << "ISMCTSolver detach object: " << object->getName() << ".\n";
+    }
+
+    void IMSCTSolver::detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
+        if (m_emitters.count(emitter) > 0)
+            m_emitters.erase(emitter);
+
+        m_change_occur = true;
+        std::cout << "ISMCTSolver detach a ParticleEmitter.\n";
     }
 
     void IMSCTSolver::mergeObjects() {
@@ -76,6 +92,31 @@ namespace SoSim {
                 m_host_const.particle_num += static_cast<int>(pos_tmp.size());
                 obj_offline.insert(obj);
             }
+        }
+
+        // add emitter particles
+        for (const auto &emitter: m_emitters) {
+            m_obj_start_index.emplace_back(m_host_const.particle_num);
+
+            auto part_num = emitter->getConfig()->max_particle_num;
+            emitter->getConfig()->insert_index = m_host_const.particle_num;
+
+            std::vector<Vec3f> pos_tmp(part_num);
+            pos_all.insert(pos_all.end(), pos_tmp.begin(), pos_tmp.end());
+
+            std::vector<Vec3f> vel_tmp(part_num);
+            vel_all.insert(vel_all.end(), vel_tmp.begin(), vel_tmp.end());
+
+            std::vector<Material> mat_tmp(part_num, Emitter_Particle);
+            mat_all.insert(mat_all.end(), mat_tmp.begin(), mat_tmp.end());
+
+            if (emitter->getConfig()->phases.size() != 2)
+                throw std::runtime_error("ISMCTSolver only solve two-phase fluid now.\n");
+            std::vector<Vec2f> alpha_tmp(part_num, {emitter->getConfig()->phases[0],
+                                                    emitter->getConfig()->phases[1]});
+            vol_frac_all.insert(vol_frac_all.end(), alpha_tmp.begin(), alpha_tmp.end());
+
+            m_host_const.particle_num += static_cast<int>(part_num);
         }
 
         m_unified_part_type_start_index.y = m_host_const.particle_num;
@@ -138,7 +179,7 @@ namespace SoSim {
             return false;
         }
 
-        if (m_objects.empty()) {
+        if (m_objects.empty() && m_emitters.empty()) {
             std::cout << "ERROR:: solver attach no object.\n";
             return false;
         }
@@ -154,7 +195,11 @@ namespace SoSim {
         solver_config->kernel_blocks = std::ceil(
                 (m_host_const.particle_num + solver_config->kernel_threads - 1) / solver_config->kernel_threads);
 
-        auto particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius.value();
+        float particle_radius;
+        if (!m_objects.empty())
+            particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius.value();
+        if (!m_emitters.empty())
+            particle_radius = m_emitters.begin()->get()->getConfig()->particle_radius.value();
         auto particle_num = m_host_const.particle_num;
 
         // TODO setup m_host_const
@@ -220,6 +265,18 @@ namespace SoSim {
         cudaMemcpy(m_device_const, &m_host_const, sizeof(IMSCTConstantParams), cudaMemcpyHostToDevice);
         cudaMemcpy(m_device_data, &m_host_data, sizeof(IMSCTDynamicParams), cudaMemcpyHostToDevice);
 
+        // post-init emitter
+        for (auto &emitter: m_emitters) {
+            auto config = emitter->getConfig();
+            if (config->use_unified_buffer) {
+                config->unified_pos_buffer = m_host_data.pos;
+                config->unified_vel_buffer = m_host_data.vel;
+                config->unified_mat_buffer = m_host_data.mat;
+            }
+
+            emitter->update();
+        }
+
         if (cudaGetLastError() == cudaSuccess) {
             std::cout << "ISMCTSolver initialized.\n";
             m_is_init = true;
@@ -248,21 +305,18 @@ namespace SoSim {
     }
 
     void IMSCTSolver::exportAsPly() {
-        static int counter = 1;
-        static int frame = 0;
+        static int counter = 0;
+        static int frame = 1;
         auto config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
+
+        static float gap = 1.f / config->export_fps;
 
         auto part_num = m_host_const.particle_num;
         if (config->export_partial == "fluid")
             part_num = m_unified_part_type_start_index.y;
 
-        if (counter % config->export_gap == 0) {
+        if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
-//            if (frame < 90) {
-//                frame++;
-//                counter++;
-//                return;
-//            }
 
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
@@ -292,6 +346,7 @@ namespace SoSim {
                                             std::to_string(frame));
 
             frame++;
+            counter = 0;
         }
         counter++;
     }
@@ -339,6 +394,32 @@ namespace SoSim {
 
             std::cout << "*========== Frame: " << frame << " ==========* \n";
 
+            std::vector<Vec3f> pos(m_host_const.particle_num);
+            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+
+            // custom step
+            for (const auto &emitter: m_emitters) {
+                if (emitter->emit(solver_config->cur_sim_time)) {
+                    auto config = emitter->getConfig();
+                    auto size_1 = emitter->getTemplatePartNum() * sizeof(Vec3f);
+                    auto size_2 = emitter->getTemplatePartNum() * sizeof(Material);
+                    // copy vel to phase vel
+                    cudaMemcpy(m_host_data.vel_adv + config->insert_index,
+                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+                    cudaMemcpy(m_host_data.vel_phase_1 + config->insert_index,
+                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+                    cudaMemcpy(m_host_data.vel_phase_2 + config->insert_index,
+                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+                    cudaMemcpy(m_host_data.pos_adv + config->insert_index,
+                               emitter->getCudaTemplatePosBuffer(), size_1, cudaMemcpyHostToDevice);
+
+                    config->insert_index += emitter->getTemplatePartNum();
+                }
+            }
+
+
+            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+
             step();
 
             if (m_is_crash)
@@ -355,14 +436,13 @@ namespace SoSim {
     void IMSCTSolver::step() {
         auto solver_config = dynamic_cast<IMSCTSolverConfig *>(m_config.get());
 
-        auto d_nsConfig = m_neighborSearch.d_config;
         auto d_nsParams = m_neighborSearch.d_params;
 
 //        imsct_step();
 
-//        ims_step();
+        ims_step();
 
-        dfsph_step();
+//        dfsph_step();
 
         if (solver_config->cur_sim_time < 20)
             stirring(m_host_const,
@@ -494,6 +574,16 @@ namespace SoSim {
                        d_nsConfig,
                        d_nsParams);
 
+        std::vector<Vec3f> res(m_host_const.particle_num);
+        cudaMemcpy(res.data(), m_host_data.vel,
+                   m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+        cudaMemcpy(res.data(), m_host_data.vel_adv,
+                   m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+
+        std::vector<float> de(m_host_const.particle_num);
+        cudaMemcpy(de.data(), m_host_data.delta_compression_ratio,
+                   m_host_const.particle_num * sizeof(float), cudaMemcpyDeviceToHost);
+
         vfsph_div(m_host_const,
                   m_host_data,
                   m_unified_part_type_start_index,
@@ -502,6 +592,12 @@ namespace SoSim {
                   d_nsConfig,
                   d_nsParams,
                   m_is_crash);
+
+        cudaMemcpy(de.data(), m_host_data.delta_compression_ratio,
+                   m_host_const.particle_num * sizeof(float), cudaMemcpyDeviceToHost);
+
+        cudaMemcpy(res.data(), m_host_data.vel_adv,
+                   m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
 
         apply_pressure_acc(m_host_const,
                            m_device_const,
@@ -639,4 +735,6 @@ namespace SoSim {
 
         solver_config->cur_sim_time += solver_config->dt;
     }
+
+
 }

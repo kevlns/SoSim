@@ -70,7 +70,11 @@ namespace SoSim {
     public:
         static std::vector<Vec3f> create3DParticleModel(std::shared_ptr<ParticleObjectConfig> config);
 
+        static  std::vector<Vec3f> create3DParticleModel(const ParticleObjectConfig& config);
+
         static std::vector<float> transformVec3fSetToFloatSet(std::vector<Vec3f> &vec3f_set);
+
+        static Vec3f loadEmitterAgentNormal(const std::string& agent_file);
 
         static void
         export3DModelAsPly(const std::vector<Vec3f> &particles, const std::string &dir, const std::string &file_name);

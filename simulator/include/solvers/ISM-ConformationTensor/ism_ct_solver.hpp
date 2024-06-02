@@ -48,6 +48,7 @@ namespace SoSim {
         // export setting
         std::optional<std::string> export_path;
         int export_gap{1};
+        int export_fps{30};
         std::string export_partial;
         bool export_phase{false};
 
@@ -66,7 +67,11 @@ namespace SoSim {
 
         void attachObject(std::shared_ptr<Object> object) override;
 
+        void attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override;
+
         void detachObject(std::shared_ptr<Object> object) override;
+
+        void detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override;
 
         bool initialize() override;
 
@@ -97,6 +102,7 @@ namespace SoSim {
         bool m_is_crash{false};
         std::shared_ptr<SolverConfig> m_config;
         std::set<std::shared_ptr<Object>> m_objects;
+        std::set<std::shared_ptr<ParticleEmitter>> m_emitters;
         IMSCTConstantParams m_host_const;
         IMSCTConstantParams *m_device_const{nullptr};
         IMSCTDynamicParams m_host_data;

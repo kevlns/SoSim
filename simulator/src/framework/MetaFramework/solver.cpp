@@ -22,6 +22,11 @@ namespace SoSim {
         return;
     }
 
+    void Solver::detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
+        return;
+    }
+
+
     bool Solver::initialize() {
         return false;
     }
@@ -31,6 +36,10 @@ namespace SoSim {
     }
 
     void Solver::step() {
+        return;
+    }
+
+    void Solver::attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
         return;
     }
 }

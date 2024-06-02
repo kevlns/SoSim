@@ -329,4 +329,34 @@ namespace SoSim {
         return particles;
     }
 
+    std::vector<Vec3f> ModelHelper::create3DParticleModel(const ParticleObjectConfig &config) {
+        auto *c_ptr = new ParticleObjectConfig;
+        memcpy_s(c_ptr, sizeof(ParticleObjectConfig), &config, sizeof(ParticleObjectConfig));
+        std::shared_ptr<ParticleObjectConfig> config_ptr(c_ptr);
+        return create3DParticleModel(config_ptr);
+    }
+
+    Vec3f ModelHelper::loadEmitterAgentNormal(const std::string& agent_file) {
+        std::vector<Vec3f> normals;
+
+        Assimp::Importer importer;
+        const aiScene *scene = importer.ReadFile(agent_file, aiProcess_Triangulate);
+
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+            std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+            return {};
+        }
+
+        for (unsigned int m = 0; m < scene->mNumMeshes; m++) {
+            const aiMesh *mesh = scene->mMeshes[m];
+            for (unsigned int v = 0; v < mesh->mNumVertices; v++) {
+                const aiVector3D &normal = mesh->mNormals[v];
+                Vec3f _normal = {normal.x, normal.y, normal.z};
+                normals.emplace_back(_normal);
+            }
+        }
+
+        return normals[0];
+    }
+
 }  // namespace SoSim

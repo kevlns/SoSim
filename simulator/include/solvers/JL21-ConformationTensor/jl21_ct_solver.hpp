@@ -50,7 +50,11 @@ namespace SoSim {
 
         void attachObject(std::shared_ptr<Object> object) override;
 
+        void attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override {};
+
         void detachObject(std::shared_ptr<Object> object) override;
+
+        void detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override {};
 
         bool initialize() override;
 
