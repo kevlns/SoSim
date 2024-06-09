@@ -18,3 +18,7 @@ target_link_libraries(SoSim-SceneBIBM-MixDFSPH-Viewer PUBLIC
 add_executable(SoSim-SceneBIBM-Emitter-Viewer emitter.cpp)
 target_link_libraries(SoSim-SceneBIBM-Emitter-Viewer PUBLIC
         sosim-rt)
+
+add_executable(SoSim-SceneBIBM-Inject-Viewer inject.cpp)
+target_link_libraries(SoSim-SceneBIBM-Inject-Viewer PUBLIC
+        sosim-rt)

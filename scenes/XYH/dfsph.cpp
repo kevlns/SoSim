@@ -9,19 +9,26 @@ using namespace SoSim;
 int main() {
 
     /**  =============================================================
-     * create emitters
+     * create objects
      */
-    std::shared_ptr<ParticleEmitter> emitter = std::make_shared<ParticleEmitter>();
-    auto emitter_config = emitter->getConfig();
-    emitter_config->particle_radius = 0.075;
-    emitter_config->max_particle_num = 100000;
-    emitter_config->use_unified_buffer = true;
-    emitter_config->use_emit_agent = true;
-    emitter_config->emit_mat = IMSCT_NONNEWTON;
-    emitter_config->agent_file = "F:\\DataSet.Research\\BIBM2024\\model\\inject\\rescale\\agent.ply";
-    emitter_config->agent_normal_file = "F:\\DataSet.Research\\BIBM2024\\model\\inject\\raw\\agent_normal.ply";
-    emitter_config->emit_vel = 6;
-    emitter_config->phases.assign({0.5, 0.5});
+    ObjectManager objectManager;
+    auto fluid = objectManager.createObject();
+    auto fluid_config = fluid->getParticleObjectConfig();
+    fluid_config->particle_radius = 0.025;
+    fluid_config->particle_mat = IMSCT_NONNEWTON;
+    fluid_config->phases.assign({1, 0});
+    fluid_config->model_file = "C:\\Users\\ADMIN\\Downloads\\simulation\\armadillo_ply\\fluid_armadillo.ply";
+    fluid->setName("fluid");
+    fluid->update();
+
+    auto bound = objectManager.createObject();
+    auto bound_config = bound->getParticleObjectConfig();
+    bound_config->particle_radius = 0.025;
+    bound_config->particle_mat = FIXED_BOUND;
+    bound_config->phases.assign({0, 0});
+    bound_config->model_file = "C:\\Users\\ADMIN\\Downloads\\simulation\\armadillo_ply\\box_armadillo.ply";
+    bound->setName("bound");
+    bound->update();
 
     /**  =============================================================
      * create solvers
@@ -34,15 +41,15 @@ int main() {
     solver_config->scene_lb = {-30, -20, -30};
     solver_config->scene_size = {60, 60, 60};
     solver_config->export_data = true;
-    solver_config->export_path = "F:\\DataSet.Research\\BIBM2024\\ply\\inject\\emitter";
-    solver_config->export_fps = 35;
+    solver_config->export_path = "F:\\DataSet.Research\\XYH\\armadillo";
+    solver_config->export_fps = 25;
     solver_config->export_partial = "fluid";
     solver_config->export_phase = false;
 
     solver_config->max_neighborNum = 60;
-    solver_config->rest_viscosity = 0.01;
-    solver_config->phase1_vis = 0.01;
-    solver_config->phase2_vis = 0.05;
+    solver_config->rest_viscosity = 0.001;
+    solver_config->phase1_vis = 0.001;
+    solver_config->phase2_vis = 0.001;
     solver_config->rest_density = {980, 1000};
     solver_config->rest_rigid_density = 1000;
     solver_config->rest_bound_density = 1000;
@@ -54,11 +61,12 @@ int main() {
 
     solver_config->Cd0 = 0.4;
 
-    solver->attachParticleEmitter(emitter);
+    solver->attachObject(fluid);
+    solver->attachObject(bound);
 
     /**  =============================================================
      * run simulation
      */
-    solver->run(5);
+    solver->run(40);
 
 }

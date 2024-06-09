@@ -1447,8 +1447,8 @@ namespace SoSim {
                          NeighborSearchUGConfig *d_nsConfig,
                          NeighborSearchUGParams *d_nsParams) {
         // set_Cd()
-//        update_Cd_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsConfig, d_nsParams);
+        update_Cd_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
 
         // compute_shear_exp()
         compute_shear_exp_cuda<<<h_const.block_num, h_const.thread_num>>>(

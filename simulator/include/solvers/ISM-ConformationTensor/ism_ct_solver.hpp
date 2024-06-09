@@ -48,7 +48,7 @@ namespace SoSim {
         // export setting
         std::optional<std::string> export_path;
         int export_gap{1};
-        int export_fps{30};
+        float export_fps{30};
         std::string export_partial;
         bool export_phase{false};
 

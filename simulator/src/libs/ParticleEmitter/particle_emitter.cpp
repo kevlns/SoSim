@@ -22,6 +22,9 @@ namespace SoSim {
             if (m_device_cuda_vel_buffer)
                 cudaFree(m_device_cuda_vel_buffer);
 
+            if (m_device_cuda_mat_buffer)
+                cudaFree(m_device_cuda_mat_buffer);
+
             if (m_device_cuda_T_pos)
                 cudaFree(m_device_cuda_T_pos);
 
@@ -64,7 +67,7 @@ namespace SoSim {
             cudaFree(m_device_cuda_T_mat);
 
         m_insert_index = m_config->insert_index;
-        m_emit_gap = (m_config->particle_radius.value() * 2.5) / m_config->emit_vel;
+        m_emit_gap = (m_config->particle_radius.value() * 2.5f) / m_config->emit_vel;
 
         // TODO load template particles
         Vec3f dir;

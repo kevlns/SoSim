@@ -318,6 +318,12 @@ namespace SoSim {
         if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
 
+//            if(frame < 12){
+//                frame++;
+//                counter = 0;
+//                return;
+//            }
+
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
             std::vector<Vec2f> phase(part_num);
@@ -394,31 +400,32 @@ namespace SoSim {
 
             std::cout << "*========== Frame: " << frame << " ==========* \n";
 
-            std::vector<Vec3f> pos(m_host_const.particle_num);
-            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+//            std::vector<Vec3f> pos(m_host_const.particle_num);
+//            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
 
             // custom step
-            for (const auto &emitter: m_emitters) {
-                if (emitter->emit(solver_config->cur_sim_time)) {
-                    auto config = emitter->getConfig();
-                    auto size_1 = emitter->getTemplatePartNum() * sizeof(Vec3f);
-                    auto size_2 = emitter->getTemplatePartNum() * sizeof(Material);
-                    // copy vel to phase vel
-                    cudaMemcpy(m_host_data.vel_adv + config->insert_index,
-                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
-                    cudaMemcpy(m_host_data.vel_phase_1 + config->insert_index,
-                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
-                    cudaMemcpy(m_host_data.vel_phase_2 + config->insert_index,
-                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
-                    cudaMemcpy(m_host_data.pos_adv + config->insert_index,
-                               emitter->getCudaTemplatePosBuffer(), size_1, cudaMemcpyHostToDevice);
+//            if(solver_config->cur_sim_time < 15)
+//            for (const auto &emitter: m_emitters) {
+//                if (emitter->emit(solver_config->cur_sim_time)) {
+//                    auto config = emitter->getConfig();
+//                    auto size_1 = emitter->getTemplatePartNum() * sizeof(Vec3f);
+//                    auto size_2 = emitter->getTemplatePartNum() * sizeof(Material);
+//                    // copy vel to phase vel
+//                    cudaMemcpy(m_host_data.vel_adv + config->insert_index,
+//                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+//                    cudaMemcpy(m_host_data.vel_phase_1 + config->insert_index,
+//                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+//                    cudaMemcpy(m_host_data.vel_phase_2 + config->insert_index,
+//                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+//                    cudaMemcpy(m_host_data.pos_adv + config->insert_index,
+//                               emitter->getCudaTemplatePosBuffer(), size_1, cudaMemcpyHostToDevice);
+//
+//                    config->insert_index += emitter->getTemplatePartNum();
+//                }
+//            }
 
-                    config->insert_index += emitter->getTemplatePartNum();
-                }
-            }
 
-
-            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
+//            cudaMemcpy(pos.data(), m_host_data.pos, m_host_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToHost);
 
             step();
 
@@ -440,9 +447,9 @@ namespace SoSim {
 
 //        imsct_step();
 
-        ims_step();
+//        ims_step();
 
-//        dfsph_step();
+        dfsph_step();
 
         if (solver_config->cur_sim_time < 20)
             stirring(m_host_const,
