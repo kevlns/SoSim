@@ -1,360 +1,770 @@
 //
-// Created by ADMIN on 2024/3/8.
+// Created by ADMIN on 2024/3/26.
+//
 //
 
 #include "dfsph_cuda_api.cuh"
+#include "dfsph_macro.hpp"
+#include "libs/SPHKernelL/kernels.cuh"
+#include "libs/AnalysisL/statistic_util.hpp"
+
+/**
+ * cuda impl
+ */
 
 namespace SoSim {
-
-    __device__ inline float
-    cubic_value(const Vec3f &r, float h) {
-        float r_norm = r.length();
-        const float PI = 3.14159265;
-        const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(h, 3));
-
-        float res = 0.0;
-        float invH = 1 / h;
-        float q = r_norm * invH;
-
-        if (q <= 1) {
-            if (q <= 0.5) {
-                auto q2 = q * q;
-                auto q3 = q2 * q;
-                res = static_cast<float>(cubicSigma * (6.0 * q3 - 6.0 * q2 + 1));
-            } else {
-                res = static_cast<float>(cubicSigma * 2 * std::pow(1 - q, 3));
-            }
-        }
-
-        return res;
-    }
-
-    __device__ inline Vec3f
-    cubic_gradient(const Vec3f &r, float h) {
-        const float PI = 3.14159265;
-        const float cubicSigma = 8.f / PI / static_cast<float>(std::pow(h, 3));
-
-        auto res = Vec3f();
-        float invH = 1 / h;
-        float q = r.length() * invH;
-
-        if (q < 1e-6 || q > 1)
-            return res;
-
-        Vec3f grad_q = r / (r.length() * h);
-        if (q <= 0.5)
-            res = (6 * (3 * q * q - 2 * q)) * grad_q * cubicSigma;
-        else {
-            auto factor = 1 - q;
-            res = -6 * factor * factor * grad_q * cubicSigma;
-        }
-
-        return res;
-    }
-
     __global__ void
-    init(DFSPHConstantParams *d_const,
-         DFSPHDynamicParams *d_data,
-         NeighborSearchUGConfig *d_nsConfig,
-         NeighborSearchUGParams *d_nsParams) {
+    init_data_cuda(DFSPHConstantParams *d_const,
+                   DFSPHDynamicParams *d_data,
+                   NeighborSearchUGParams *d_nsParams) {
         uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
         if (i >= d_const->particle_num)
             return;
 
-        d_data->pos_adv[i] = d_data->pos[i];
-        d_data->vel_adv[i] = d_data->vel[i];
-        d_data->div_err[i] = 0;
-        d_data->density[i] = d_const->rest_density;
-        if (d_data->mat[i] == DYNAMIC_RIGID || d_data->mat[i] == FIXED_BOUND) {
-            d_data->density[i] = d_const->rest_rigid_density;
-            d_data->density_sph[i] = d_data->density[i];
+        DATA_VALUE(volume, i) = CONST_VALUE(rest_volume);
+        DATA_VALUE(kappa_div, i) = 0;
+        DATA_VALUE(acc, i) *= 0;
+        DATA_VALUE(vel_adv, i) = DATA_VALUE(vel, i);
+        DATA_VALUE(vis, i) = CONST_VALUE(rest_viscosity);
+        DATA_VALUE(rest_density, i) = CONST_VALUE(rest_density);
+    }
+
+    __global__ void
+    update_mass_cuda(DFSPHConstantParams *d_const,
+                     DFSPHDynamicParams *d_data,
+                     NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
+            return;
+
+        DATA_VALUE(mass, p_i) = DATA_VALUE(rest_density, p_i) * DATA_VALUE(volume, p_i);
+    }
+
+    __global__ void
+    compute_rigid_volume(DFSPHConstantParams *d_const,
+                         DFSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != FIXED_BOUND && DATA_VALUE(mat, p_i) != DYNAMIC_RIGID &&
+            DATA_VALUE(mat, p_i) != STIR_FAN)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        float delta = 0;
+        FOR_EACH_NEIGHBOR_Pj() {
+            auto pos_j = DATA_VALUE(pos, p_j);
+
+            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i))
+                delta += CUBIC_KERNEL_VALUE();
+        }
+
+        DATA_VALUE(volume, p_i) = 1.f / delta;
+        DATA_VALUE(rest_density, p_i) = DATA_VALUE(volume, p_i) * CONST_VALUE(rest_bound_density);
+
+        if (DATA_VALUE(mat, p_i) == DYNAMIC_RIGID)
+            DATA_VALUE(rest_density, p_i) = DATA_VALUE(volume, p_i) * CONST_VALUE(rest_rigid_density);
+    }
+
+    __global__ void
+    compute_compression_ratio_cuda(DFSPHConstantParams *d_const,
+                                   DFSPHDynamicParams *d_data,
+                                   NeighborSearchUGConfig *d_nsConfig,
+                                   NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        DATA_VALUE(compression_ratio, p_i) *= 0;
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+
+            DATA_VALUE(compression_ratio, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_VALUE();
         }
     }
 
     __global__ void
-    computeRigidParticleVolume(DFSPHConstantParams *d_const,
-                               DFSPHDynamicParams *d_data,
-                               NeighborSearchUGConfig *d_nsConfig,
-                               NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
+    compute_df_beta_cuda(DFSPHConstantParams *d_const,
+                         DFSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
 
-        auto p_i = d_nsParams->particleIndices_cuData[i];
+        DATA_VALUE(df_alpha_1, p_i) *= 0;
+        DATA_VALUE(df_alpha_2, p_i) = 1e-6;
 
-        if (d_data->mat[p_i] == COMMON_FLUID)
-            return;
+        auto pos_i = DATA_VALUE(pos, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
 
-        d_data->volume[p_i] *= 0;
-        auto pos_i = d_data->pos_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto wGrad = CUBIC_KERNEL_GRAD();
 
-            auto pos_j = d_data->pos_adv[p_j];
-            if (d_data->mat[p_j] == d_data->mat[p_i])
-                d_data->volume[p_i] += cubic_value(pos_i - pos_j, d_const->h);
+            // applied to all dynamic objects
+            if (DATA_VALUE(mat, p_i) == COMMON_NEWTON)
+                DATA_VALUE(df_alpha_1, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_GRAD();
+
+            // applied to all dynamic objects
+            if (DATA_VALUE(mat, p_j) == COMMON_NEWTON)
+                DATA_VALUE(df_alpha_2, p_i) += dot(wGrad, wGrad) * DATA_VALUE(volume, p_j) * DATA_VALUE(volume, p_j)
+                                               / DATA_VALUE(mass, p_j);
         }
 
-        d_data->volume[p_i] = 1 / d_data->volume[p_i];
+        DATA_VALUE(df_alpha, p_i) =
+                dot(DATA_VALUE(df_alpha_1, p_i), DATA_VALUE(df_alpha_1, p_i)) / DATA_VALUE(mass, p_i)
+                + DATA_VALUE(df_alpha_2, p_i);
+
+        if (DATA_VALUE(df_alpha, p_i) < 1e-6)
+            DATA_VALUE(df_alpha, p_i) = 1e-6;
     }
 
     __global__ void
-    computeExtForce(DFSPHConstantParams *d_const,
+    compute_delta_compression_ratio_cuda(DFSPHConstantParams *d_const,
+                                         DFSPHDynamicParams *d_data,
+                                         NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(delta_compression_ratio, p_i) = DATA_VALUE(compression_ratio, p_i) - 1.f;
+    }
+
+    __global__ void
+    update_delta_compression_ratio_from_vel_adv_cuda(DFSPHConstantParams *d_const,
+                                                     DFSPHDynamicParams *d_data,
+                                                     NeighborSearchUGConfig *d_nsConfig,
+                                                     NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto vel_adv_i = DATA_VALUE(vel_adv, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto vel_adv_j = DATA_VALUE(vel_adv, p_j);
+            auto wGrad = CUBIC_KERNEL_GRAD();
+
+            DATA_VALUE(delta_compression_ratio, p_i) += dot(wGrad, vel_adv_i - vel_adv_j) *
+                                                        DATA_VALUE(volume, p_j) * CONST_VALUE(dt);
+        }
+
+        if (DATA_VALUE(delta_compression_ratio, p_i) < 0)
+            DATA_VALUE(delta_compression_ratio, p_i) = 0;
+    }
+
+    __global__ void
+    compute_kappa_div_from_delta_compression_ratio_cuda(DFSPHConstantParams *d_const,
+                                                        DFSPHDynamicParams *d_data,
+                                                        NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        DATA_VALUE(kappa_div, p_i) *= 0;
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(kappa_div, p_i) = DATA_VALUE(delta_compression_ratio, p_i) / DATA_VALUE(df_alpha, p_i) *
+                                     CONST_VALUE(inv_dt2) / DATA_VALUE(volume, p_i);
+        DATA_VALUE(df_alpha_2, p_i) += DATA_VALUE(kappa_div, p_i);
+    }
+
+    __global__ void
+    vf_update_vel_adv_from_kappa_div_cuda(DFSPHConstantParams *d_const,
+                                          DFSPHDynamicParams *d_data,
+                                          NeighborSearchUGConfig *d_nsConfig,
+                                          NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto wGrad = CUBIC_KERNEL_GRAD();
+
+            DATA_VALUE(vel_adv, p_i) -= CONST_VALUE(dt) * DATA_VALUE(volume, p_i) * DATA_VALUE(volume, p_j) /
+                                        DATA_VALUE(mass, p_i) *
+                                        (DATA_VALUE(kappa_div, p_i) + DATA_VALUE(kappa_div, p_j)) * wGrad;
+        }
+    }
+
+    __global__ void
+    clear_acc_cuda(DFSPHConstantParams *d_const,
+                   DFSPHDynamicParams *d_data,
+                   NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        DATA_VALUE(acc, p_i) *= 0;
+    }
+
+    __global__ void
+    add_acc_gravity_cuda(DFSPHConstantParams *d_const,
+                         DFSPHDynamicParams *d_data,
+                         NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(acc, p_i) += CONST_VALUE(gravity);
+    }
+
+    __global__ void
+    add_acc_explicit_lap_vis_cuda(DFSPHConstantParams *d_const,
+                                  DFSPHDynamicParams *d_data,
+                                  NeighborSearchUGConfig *d_nsConfig,
+                                  NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        Vec3f acc = {0, 0, 0};
+        float h2_001 = 0.001f * pow(CONST_VALUE(sph_h), 2);
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto vel_i = DATA_VALUE(vel, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto x_ij = pos_i - pos_j;
+            auto vel_j = DATA_VALUE(vel, p_j);
+            auto v_ij = vel_i - vel_j;
+
+            auto vis = (DATA_VALUE(vis, p_i) + DATA_VALUE(vis, p_j)) / 2;
+
+            auto pi = vis * DATA_VALUE(mass, p_j) / DATA_VALUE(rest_density, p_j) * dot(v_ij, x_ij) /
+                      (x_ij.length() * x_ij.length() + h2_001);
+
+            acc += 10 * pi * CUBIC_KERNEL_GRAD();
+        }
+
+        DATA_VALUE(acc, p_i) += acc;
+    }
+
+    __global__ void
+    compute_surface_normal_cuda(DFSPHConstantParams *d_const,
+                                DFSPHDynamicParams *d_data,
+                                NeighborSearchUGConfig *d_nsConfig,
+                                NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        Vec3f normal;
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+
+            normal += CONST_VALUE(sph_h) * DATA_VALUE(mass, p_j) / DATA_VALUE(rest_density, p_j) *
+                      cubic_gradient(pos_i - pos_j, CONST_VALUE(sph_h));
+        }
+
+        DATA_VALUE(surface_normal, p_i) = normal;
+    }
+
+    __global__ void
+    add_acc_surface_tension_cuda(DFSPHConstantParams *d_const,
+                                 DFSPHDynamicParams *d_data,
+                                 NeighborSearchUGConfig *d_nsConfig,
+                                 NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        Vec3f acc = {0, 0, 0};
+        float gamma = 0.005;
+        auto pos_i = DATA_VALUE(pos, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i) || p_j == p_i)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto k =
+                    2 * DATA_VALUE(rest_density, p_i) / (DATA_VALUE(rest_density, p_i) + DATA_VALUE(rest_density, p_j));
+
+            auto acc_1 = -gamma * DATA_VALUE(mass, p_i) * DATA_VALUE(mass, p_j) *
+                         surface_tension_C((pos_i - pos_j).length(), CONST_VALUE(sph_h)) * (pos_i - pos_j) /
+                         (pos_i - pos_j).length();
+            auto acc_2 = -gamma * DATA_VALUE(mass, p_i) *
+                         (DATA_VALUE(surface_normal, p_i) - DATA_VALUE(surface_normal, p_j));
+
+            acc += k * (acc_1 + acc_2);
+        }
+
+        DATA_VALUE(acc, p_i) += acc;
+    }
+
+
+    __global__ void
+    acc_2_vel(DFSPHConstantParams *d_const,
+              DFSPHDynamicParams *d_data,
+              NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(vel, p_i) += DATA_VALUE(acc, p_i) * CONST_VALUE(dt);
+        DATA_VALUE(vel_adv, p_i) = DATA_VALUE(vel, p_i);
+    }
+
+    __global__ void
+    add_acc_pressure_cuda(DFSPHConstantParams *d_const,
+                          DFSPHDynamicParams *d_data,
+                          NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(acc, p_i) += (DATA_VALUE(vel_adv, p_i) - DATA_VALUE(vel, p_i)) * CONST_VALUE(inv_dt);
+    }
+
+    __global__ void
+    compute_kappa_incomp_from_delta_compression_ratio_cuda(DFSPHConstantParams *d_const,
+                                                           DFSPHDynamicParams *d_data,
+                                                           NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(kappa_incomp, p_i) = DATA_VALUE(delta_compression_ratio, p_i) / DATA_VALUE(df_alpha, p_i) *
+                                        CONST_VALUE(inv_dt2) / DATA_VALUE(volume, p_i);
+        DATA_VALUE(df_alpha_2, p_i) += DATA_VALUE(kappa_incomp, p_i);
+    }
+
+    __global__ void
+    vf_update_vel_adv_from_kappa_incomp_cuda(DFSPHConstantParams *d_const,
+                                             DFSPHDynamicParams *d_data,
+                                             NeighborSearchUGConfig *d_nsConfig,
+                                             NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        auto pos_i = DATA_VALUE(pos, p_i);
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto wGrad = CUBIC_KERNEL_GRAD();
+
+            DATA_VALUE(vel_adv, p_i) -= CONST_VALUE(dt) * DATA_VALUE(volume, p_i) * DATA_VALUE(volume, p_j) /
+                                        DATA_VALUE(mass, p_i) *
+                                        (DATA_VALUE(kappa_incomp, p_i) + DATA_VALUE(kappa_incomp, p_j)) * wGrad;
+        }
+    }
+
+    __global__ void
+    update_pos_cuda(DFSPHConstantParams *d_const,
                     DFSPHDynamicParams *d_data,
-                    NeighborSearchUGConfig *d_nsConfig,
                     NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
+        CHECK_THREAD();
+
+        // applied to all dynamic objects
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
-        if (d_data->mat[i] != COMMON_FLUID)
-            return;
-
-        d_data->vel_adv[i] = d_data->vel[i] + d_const->dt * d_const->gravity;
+        DATA_VALUE(pos, p_i) += DATA_VALUE(vel, p_i) * CONST_VALUE(dt);
+        DATA_VALUE(pos_adv, p_i) = DATA_VALUE(pos, p_i);
     }
 
     __global__ void
-    computeDensity(DFSPHConstantParams *d_const,
+    estimate_density_cuda(DFSPHConstantParams *d_const,
+                          DFSPHDynamicParams *d_data,
+                          NeighborSearchUGConfig *d_nsConfig,
+                          NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        DATA_VALUE(density_sph, p_i) *= 0;
+        auto pos_i = DATA_VALUE(pos, p_i);
+        auto rest_dens_i = DATA_VALUE(rest_density, p_i);
+
+        FOR_EACH_NEIGHBOR_Pj() {
+            auto pos_j = DATA_VALUE(pos, p_j);
+            auto rest_dens_j = DATA_VALUE(rest_density, p_j);
+            if (DATA_VALUE(mat, p_j) != COMMON_NEWTON)
+                rest_dens_j = rest_dens_i;
+
+            DATA_VALUE(density_sph, p_i) += rest_dens_j * CONST_VALUE(rest_volume) * CUBIC_KERNEL_VALUE();
+        }
+
+        DATA_VALUE(density_sph, p_i) = fmax(DATA_VALUE(density_sph, p_i), rest_dens_i);
+    }
+}
+
+namespace SoSim { // extra func cuda impl
+    __global__ void
+    stir_fan_cuda(DFSPHConstantParams *d_const,
+                  DFSPHDynamicParams *d_data,
+                  NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != STIR_FAN)
+            return;
+
+        const float M_PI = 3.1415926;
+        float angleRadians = -0.004f * (M_PI / 180.0f);// 将角度转换为弧度
+        float cosAngle = cos(angleRadians);
+        float sinAngle = sin(angleRadians);
+
+        Vec3f center_offset = {0, 0, 0};
+
+        auto pos = DATA_VALUE(pos, p_i) - center_offset;
+        DATA_VALUE(pos, p_i).x = pos.x * cosAngle - pos.z * sinAngle + center_offset.x;
+        DATA_VALUE(pos, p_i).z = pos.x * sinAngle + pos.z * cosAngle + center_offset.z;
+    }
+
+    __global__ void
+    buckling_move_cuda(DFSPHConstantParams *d_const,
+                       DFSPHDynamicParams *d_data,
+                       NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != MOVING_TUBE && DATA_VALUE(mat, p_i) != MOVING_COVER)
+            return;
+
+        DATA_VALUE(pos, p_i) += CONST_VALUE(dt) * DATA_VALUE(vel, p_i);
+    }
+
+    __global__ void
+    rotate_bowl_cuda(DFSPHConstantParams *d_const,
+                     DFSPHDynamicParams *d_data,
+                     NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != MOVING_BOWL && DATA_VALUE(mat, p_i) != STIR_FAN)
+            return;
+
+        const float M_PI = 3.1415926;
+        float angleRadians = -0.0001;// 将角度转换为弧度
+        float cosAngle = cos(angleRadians);
+        float sinAngle = sin(angleRadians);
+
+        Vec3f offset = {0, -6.8165, 0};
+
+        auto pos = DATA_VALUE(pos, p_i) - offset;
+        DATA_VALUE(pos, p_i).y = pos.y * cosAngle - pos.z * sinAngle + offset.y;
+        DATA_VALUE(pos, p_i).z = pos.y * sinAngle + pos.z * cosAngle + offset.z;
+    }
+
+    __global__ void
+    correct_vel_by_artificial_vis_bound_cuda(DFSPHConstantParams *d_const,
+                                             DFSPHDynamicParams *d_data,
+                                             NeighborSearchUGConfig *d_nsConfig,
+                                             NeighborSearchUGParams *d_nsParams) {
+        CHECK_THREAD();
+
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
+            return;
+
+        int cnt = 0;
+        FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i) || DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
+            cnt++;
+        }
+
+        float f1 = 1;
+        if (cnt > 15)
+            f1 = 1;
+
+        DATA_VALUE(vel, p_i) *= f1;
+    }
+}
+
+
+/**
+ * host invoke impl
+ */
+
+namespace SoSim {
+    __host__ void
+    init_data(DFSPHConstantParams &h_const,
+              DFSPHConstantParams *d_const,
+              DFSPHDynamicParams *d_data,
+              NeighborSearchUGParams *d_nsParams) {
+        init_data_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    prepare_dfsph(DFSPHConstantParams &h_const,
+                  DFSPHConstantParams *d_const,
+                  DFSPHDynamicParams *d_data,
+                  NeighborSearchUGConfig *d_nsConfig,
+                  NeighborSearchUGParams *d_nsParams) {
+        // ims update_rest_density_and_mass()
+        update_mass_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // compute_rigid_volume()
+        compute_rigid_volume<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+    }
+
+    __host__ void
+    sph_precompute(DFSPHConstantParams &h_const,
+                   DFSPHConstantParams *d_const,
                    DFSPHDynamicParams *d_data,
                    NeighborSearchUGConfig *d_nsConfig,
                    NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
+        // compute_compression_ratio(), AKA step_sph_compute_compression_ratio()
+        compute_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
 
-        auto p_i = d_nsParams->particleIndices_cuData[i];
-
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
-
-        d_data->density_sph[p_i] *= 0.0;
-        auto pos_i = d_data->pos_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
-
-            auto pos_j = d_data->pos_adv[p_j];
-
-            d_data->density_sph[p_i] +=
-                    d_data->density[p_j] * d_const->rest_volume * cubic_value(pos_i - pos_j, d_const->h);
-        }
-
-        d_data->density[p_i] = max(d_const->rest_density, d_data->density_sph[p_i]);
+        // compute_df_beta(), AKA step_df_compute_beta()
+        compute_df_beta_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
     }
 
-    __global__ void
-    computeDivErr(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
-
-        auto p_i = d_nsParams->particleIndices_cuData[i];
-
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
-
-        d_data->div_err[p_i] *= 0;
-        auto pos_i = d_data->pos_adv[p_i];
-        auto vel_i = d_data->vel_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
-
-            auto pos_j = d_data->pos_adv[p_j];
-            auto vel_j = d_data->vel_adv[p_j];
-
-            d_data->div_err[p_i] += d_data->density[p_j] * d_const->rest_volume *
-                                    dot((vel_i - vel_j), cubic_gradient(pos_i - pos_j, d_const->h));
-        }
-        d_data->div_err[p_i] = max(d_data->div_err[p_i], 0.f);
-    }
-
-    __global__ void
-    computeDFSPHAlpha(DFSPHConstantParams *d_const,
-                      DFSPHDynamicParams *d_data,
-                      NeighborSearchUGConfig *d_nsConfig,
-                      NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
-
-        auto p_i = d_nsParams->particleIndices_cuData[i];
-
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
-
-        auto pos_i = d_data->pos_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-
-        Vec3f alpha_1{0, 0, 0};
-        float alpha_2 = 0;
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
-
-            auto pos_j = d_data->pos_adv[p_j];
-
-            Vec3f da{0, 0, 0};
-            da = d_data->density[p_j] * d_const->rest_volume * cubic_gradient(pos_i - pos_j, d_const->h);
-            alpha_1 += da;
-
-            if (d_data->mat[p_j] == d_data->mat[p_i])
-                alpha_2 += dot(da, da);
-        }
-
-        d_data->dfsph_alpha[p_i] = -1.f / (dot(alpha_1, alpha_1) + alpha_2 + 1e-6f);
-    }
-
-    __global__ void
-    adaptVelAdv_1(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
-
-        auto p_i = d_nsParams->particleIndices_cuData[i];
-
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
-
-        auto k_i = d_data->div_err[p_i] * d_data->dfsph_alpha[p_i];
-
-        auto pos_i = d_data->pos_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-
-        Vec3f d_a{0, 0, 0};
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
-
-            auto pos_j = d_data->pos_adv[p_j];
-
-            auto k_j = d_data->div_err[p_j] * d_data->dfsph_alpha[p_j];
-
-            if (d_data->mat[p_j] == d_data->mat[p_i])
-                d_a += d_data->density[p_j] * d_const->rest_volume *
-                       (k_i + k_j) * cubic_gradient(pos_i - pos_j, d_const->h);
-
-            if (d_data->mat[p_j] == DYNAMIC_RIGID || d_data->mat[p_j] == FIXED_BOUND)
-                d_a += d_data->density[p_j] * d_const->rest_volume *
-                       k_i * cubic_gradient(pos_i - pos_j, d_const->h);
-        }
-
-        d_data->vel_adv[p_i] += d_a;
-    }
-
-    __global__ void
-    advectPos(DFSPHConstantParams *d_const,
+    __host__ void
+    vfsph_div(DFSPHConstantParams &h_const,
+              DFSPHDynamicParams &h_data,
+              Vec3ui &obj_part_index,
+              DFSPHConstantParams *d_const,
               DFSPHDynamicParams *d_data,
               NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
+              NeighborSearchUGParams *d_nsParams,
+              bool &crash) {
+        int iter = 0;
+        while (true) {
+            iter++;
 
-        if (d_data->mat[i] != COMMON_FLUID)
-            return;
+            // compute_delta_compression_ratio()
+            compute_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsParams);
 
-        d_data->pos_adv[i] = d_data->pos[i] + d_const->dt * d_data->vel_adv[i];
-        d_data->pos[i] = d_data->pos_adv[i];
-    }
+            std::vector<float> de(h_const.particle_num);
+            cudaMemcpy(de.data(), h_data.delta_compression_ratio, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
-    __global__ void
-    predictDensity(DFSPHConstantParams *d_const,
-                   DFSPHDynamicParams *d_data,
-                   NeighborSearchUGConfig *d_nsConfig,
-                   NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
+            // update_delta_compression_ratio_from_vel_adv()
+            update_delta_compression_ratio_from_vel_adv_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsConfig, d_nsParams);
 
-        auto p_i = d_nsParams->particleIndices_cuData[i];
+            cudaMemcpy(de.data(), h_data.delta_compression_ratio, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
+            // update_vf_compressible_ratio()
+            auto compressible_ratio = cal_mean(h_data.delta_compression_ratio,
+                                               h_const.particle_num, obj_part_index.y);
 
-        d_data->density_sph[p_i] = d_data->density[p_i];
-        auto pos_i = d_data->pos_adv[p_i];
-        auto vel_i = d_data->vel_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
+            // compute_kappa_div_from_delta_compression_ratio()
+            compute_kappa_div_from_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsParams);
 
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
+            std::vector<float> kd(h_const.particle_num);
+            cudaMemcpy(kd.data(), h_data.kappa_div, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
-            auto pos_j = d_data->pos_adv[p_j];
-            auto vel_j = d_data->vel_adv[p_j];
+            std::vector<float> mass(h_const.particle_num);
+            cudaMemcpy(mass.data(), h_data.mass, h_const.particle_num * sizeof(float),
+                       cudaMemcpyDeviceToHost);
 
-            d_data->density_sph[p_i] += d_const->dt * d_data->density[p_j] * d_const->rest_volume *
-                                        dot(vel_i - vel_j, cubic_gradient(pos_i - pos_j, d_const->h));
-        }
-    }
+            // vf_update_vel_adv_from_kappa_div()
+            vf_update_vel_adv_from_kappa_div_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsConfig, d_nsParams);
 
-    __global__ void
-    adaptVelAdv_2(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
-
-        auto p_i = d_nsParams->particleIndices_cuData[i];
-
-        if (d_data->mat[p_i] != COMMON_FLUID)
-            return;
-
-        auto k_i =
-                (d_data->density_sph[p_i] - d_const->rest_density) * d_data->dfsph_alpha[p_i];
-
-        auto pos_i = d_data->pos_adv[p_i];
-        auto neib_ind = p_i * d_nsConfig->maxNeighborNum;
-
-        Vec3f d_a{0, 0, 0};
-        for (unsigned int p_j = d_nsParams->neighbors_cuData[neib_ind], t = 0;
-             p_j != UINT_MAX && t < d_nsConfig->maxNeighborNum;
-             ++t, p_j = d_nsParams->neighbors_cuData[neib_ind + t]) {
-
-            auto pos_j = d_data->pos_adv[p_j];
-
-            auto k_j = (d_data->density_sph[p_j] - d_const->rest_density) * d_data->dfsph_alpha[p_j];
-
-            if (d_data->mat[p_j] == d_data->mat[p_i])
-                d_a += d_data->density[p_j] * d_const->rest_volume *
-                       (k_i + k_j) * cubic_gradient(pos_i - pos_j, d_const->h);
-
-            if (d_data->mat[p_j] == DYNAMIC_RIGID || d_data->mat[p_j] == FIXED_BOUND)
-                d_a += d_data->density[p_j] * d_const->rest_volume *
-                       k_i * cubic_gradient(pos_i - pos_j, d_const->h);
+            // check compressible_ratio
+            if (compressible_ratio < h_const.div_free_threshold || iter > 100)
+                break;
         }
 
-        d_data->vel_adv[p_i] -= d_a;
+        // log_kappa_div()
+//        log_kappa_div_cuda<<<h_const.block_num, h_const.thread_num>>>(
+//                d_const, d_data, d_nsParams);
+
+        std::cout << "div-iter: " << iter << '\n';
+
+        if (iter == 101)
+            crash = true;
+
+        // vel = vel_adv
+        //        cudaMemcpy(h_data.vel, h_data.vel_adv, h_const.particle_num * sizeof(Vec3f), cudaMemcpyDeviceToDevice);
     }
 
-    __global__ void
-    advectVel(DFSPHConstantParams *d_const,
-              DFSPHDynamicParams *d_data,
-              NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams) {
-        uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-        if (i >= d_const->particle_num)
-            return;
+    __host__ void
+    apply_pressure_acc(DFSPHConstantParams &h_const,
+                       DFSPHConstantParams *d_const,
+                       DFSPHDynamicParams *d_data,
+                       NeighborSearchUGParams *d_nsParams) {
+        // clear_phase_acc()
+        clear_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
 
-        if (d_data->mat[i] != COMMON_FLUID)
-            return;
+        // get_acc_pressure()
+        add_acc_pressure_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
 
-        d_data->vel[i] = d_data->vel_adv[i];
+        // phase_acc_2_phase_vel()
+        acc_2_vel<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
     }
 
+    __host__ void
+    dfsph_gravity_vis_surface(DFSPHConstantParams &h_const,
+                              DFSPHConstantParams *d_const,
+                              DFSPHDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams) {
+        // clear_phase_acc()
+        clear_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // add_phase_acc_gravity()
+        add_acc_gravity_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+
+        // add_acc_explicit_lap_vis_cuda()
+        add_acc_explicit_lap_vis_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // compute_surface_normal
+        compute_surface_normal_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // add_acc_surface_tension_cuda()
+        add_acc_surface_tension_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+
+        // acc_2_vel()
+        acc_2_vel<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    vfsph_incomp(DFSPHConstantParams &h_const,
+                 DFSPHDynamicParams &h_data,
+                 Vec3ui &obj_part_index,
+                 DFSPHConstantParams *d_const,
+                 DFSPHDynamicParams *d_data,
+                 NeighborSearchUGConfig *d_nsConfig,
+                 NeighborSearchUGParams *d_nsParams,
+                 bool &crash) {
+        int iter = 0;
+        while (true) {
+            iter++;
+
+            // compute_delta_compression_ratio()
+            compute_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsParams);
+
+            // update_delta_compression_ratio_from_vel_adv()
+            update_delta_compression_ratio_from_vel_adv_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsConfig, d_nsParams);
+
+            // update_vf_compressible_ratio()
+            auto compressible_ratio = cal_mean(h_data.delta_compression_ratio,
+                                               h_const.particle_num, obj_part_index.y);
+
+            // compute_kappa_incomp_from_delta_compression_ratio()
+            compute_kappa_incomp_from_delta_compression_ratio_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsParams);
+
+            // vf_update_vel_adv_from_kappa_incomp()
+            vf_update_vel_adv_from_kappa_incomp_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                    d_const, d_data, d_nsConfig, d_nsParams);
+
+            // check compressible_ratio
+            if (compressible_ratio < h_const.incompressible_threshold || iter > 100)
+                break;
+        }
+
+        std::cout << "incomp-iter: " << iter << '\n';
+
+        if (iter == 101)
+            crash = true;
+    }
+
+    __host__ void
+    update_pos(DFSPHConstantParams &h_const,
+               DFSPHConstantParams *d_const,
+               DFSPHDynamicParams *d_data,
+               NeighborSearchUGParams *d_nsParams) {
+        update_pos_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    artificial_vis_bound(DFSPHConstantParams &h_const,
+                         DFSPHConstantParams *d_const,
+                         DFSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams) {
+        // correct_phase_vel_by_artificial_vis_bound()
+        correct_vel_by_artificial_vis_bound_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
+    }
+}
+
+namespace SoSim { // extra func host invoke
+    __host__ void
+    stirring(DFSPHConstantParams &h_const,
+             DFSPHConstantParams *d_const,
+             DFSPHDynamicParams *d_data,
+             NeighborSearchUGParams *d_nsParams) {
+        stir_fan_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    rotate_bowl(DFSPHConstantParams &h_const,
+                DFSPHConstantParams *d_const,
+                DFSPHDynamicParams *d_data,
+                NeighborSearchUGParams *d_nsParams) {
+        rotate_bowl_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
+
+    __host__ void
+    buckling(DFSPHConstantParams &h_const,
+             DFSPHConstantParams *d_const,
+             DFSPHDynamicParams *d_data,
+             NeighborSearchUGParams *d_nsParams) {
+        buckling_move_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsParams);
+    }
 }

@@ -1,84 +1,82 @@
 //
-// Created by ADMIN on 2024/3/8.
+// Created by ADMIN on 2024/3/26.
 //
 
 #ifndef SOSIM_DFSPH_CUDA_API_CUH
 #define SOSIM_DFSPH_CUDA_API_CUH
 
+#include "solvers/DFSPH/dfsph_solver.hpp"
 #include "solvers/DFSPH/dfsph_parameters.hpp"
 #include "libs/NeighborSearchL/unified_grid_ns.hpp"
 
 namespace SoSim {
 
-    __device__ inline float cubic_value(const Vec3f &r, float h);
+    __host__ void
+    init_data(DFSPHConstantParams &h_const,
+              DFSPHConstantParams *d_const,
+              DFSPHDynamicParams *d_data,
+              NeighborSearchUGParams *d_nsParams);
 
-    __device__ inline Vec3f cubic_gradient(const Vec3f &r, float h);
+    __host__ void
+    prepare_dfsph(DFSPHConstantParams &h_const,
+                DFSPHConstantParams *d_const,
+                DFSPHDynamicParams *d_data,
+                NeighborSearchUGConfig *d_nsConfig,
+                NeighborSearchUGParams *d_nsParams);
 
-    __global__ void
-    init(DFSPHConstantParams *d_const,
-         DFSPHDynamicParams *d_data,
-         NeighborSearchUGConfig *d_nsConfig,
-         NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    computeRigidParticleVolume(DFSPHConstantParams *d_const,
-                               DFSPHDynamicParams *d_data,
-                               NeighborSearchUGConfig *d_nsConfig,
-                               NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    computeExtForce(DFSPHConstantParams *d_const,
-                    DFSPHDynamicParams *d_data,
-                    NeighborSearchUGConfig *d_nsConfig,
-                    NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    computeDensity(DFSPHConstantParams *d_const,
+    __host__ void
+    sph_precompute(DFSPHConstantParams &h_const,
+                   DFSPHConstantParams *d_const,
                    DFSPHDynamicParams *d_data,
                    NeighborSearchUGConfig *d_nsConfig,
                    NeighborSearchUGParams *d_nsParams);
 
-    __global__ void
-    predictDensity(DFSPHConstantParams *d_const,
-                   DFSPHDynamicParams *d_data,
-                   NeighborSearchUGConfig *d_nsConfig,
-                   NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    computeDivErr(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    computeDFSPHAlpha(DFSPHConstantParams *d_const,
-                      DFSPHDynamicParams *d_data,
-                      NeighborSearchUGConfig *d_nsConfig,
-                      NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    adaptVelAdv_1(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams);
-
-    __global__ void
-    advectPos(DFSPHConstantParams *d_const,
+    __host__ void
+    vfsph_div(DFSPHConstantParams &h_const,
+              DFSPHDynamicParams &h_data,
+              Vec3ui &obj_part_index,
+              DFSPHConstantParams *d_const,
               DFSPHDynamicParams *d_data,
               NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams);
+              NeighborSearchUGParams *d_nsParams,
+              bool &crash);
 
-    __global__ void
-    adaptVelAdv_2(DFSPHConstantParams *d_const,
-                  DFSPHDynamicParams *d_data,
-                  NeighborSearchUGConfig *d_nsConfig,
-                  NeighborSearchUGParams *d_nsParams);
+    __host__ void
+    apply_pressure_acc(DFSPHConstantParams &h_const,
+                       DFSPHConstantParams *d_const,
+                       DFSPHDynamicParams *d_data,
+                       NeighborSearchUGParams *d_nsParams);
 
-    __global__ void
-    advectVel(DFSPHConstantParams *d_const,
-              DFSPHDynamicParams *d_data,
-              NeighborSearchUGConfig *d_nsConfig,
-              NeighborSearchUGParams *d_nsParams);
+    __host__ void
+    dfsph_gravity_vis_surface(DFSPHConstantParams &h_const,
+                              DFSPHConstantParams *d_const,
+                              DFSPHDynamicParams *d_data,
+                              NeighborSearchUGConfig *d_nsConfig,
+                              NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    vfsph_incomp(DFSPHConstantParams &h_const,
+                 DFSPHDynamicParams &h_data,
+                 Vec3ui &obj_part_index,
+                 DFSPHConstantParams *d_const,
+                 DFSPHDynamicParams *d_data,
+                 NeighborSearchUGConfig *d_nsConfig,
+                 NeighborSearchUGParams *d_nsParams,
+                 bool &crash);
+
+    __host__ void
+    update_pos(DFSPHConstantParams &h_const,
+               DFSPHConstantParams *d_const,
+               DFSPHDynamicParams *d_data,
+               NeighborSearchUGParams *d_nsParams);
+
+    __host__ void
+    artificial_vis_bound(DFSPHConstantParams &h_const,
+                         DFSPHConstantParams *d_const,
+                         DFSPHDynamicParams *d_data,
+                         NeighborSearchUGConfig *d_nsConfig,
+                         NeighborSearchUGParams *d_nsParams);
+
 }
 
 #endif //SOSIM_DFSPH_CUDA_API_CUH
