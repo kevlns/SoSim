@@ -40,7 +40,7 @@ namespace SoSim {
         Vec3f lb{-0.5, -0.5, -0.5};
         Vec3f size{1, 1, 1};
         // box/plane
-        float layer{2};
+        float layer{2};  // 1 or 2
         // cylinder/sphere
         Vec3f center{0, 0, 0};
         // cylinder

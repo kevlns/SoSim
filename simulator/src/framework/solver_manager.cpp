@@ -32,9 +32,11 @@ namespace SoSim {
     // explicit template instance
     template std::shared_ptr<Solver> SolverManager::createSolver<DFSPHSolver>();
 
-    template std::shared_ptr<Solver> SolverManager::createSolver<WCSPHSolver>();
+    template std::shared_ptr<Solver> SolverManager::createSolver<IMMSolver>();
 
-    template std::shared_ptr<Solver> SolverManager::createSolver<JL21CTSolver>();
+    template std::shared_ptr<Solver> SolverManager::createSolver<IMMCTSolver>();
 
-    template std::shared_ptr<Solver> SolverManager::createSolver<IMSCTSolver>();
+//    template std::shared_ptr<Solver> SolverManager::createSolver<WCSPHSolver>();
+//
+//    template std::shared_ptr<Solver> SolverManager::createSolver<JL21CTSolver>();
 }

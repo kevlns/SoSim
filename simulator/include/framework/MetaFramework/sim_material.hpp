@@ -8,7 +8,7 @@
 namespace SoSim {
     enum Material {
         // common
-        COMMON_FLUID,
+        COMMON_NEWTON,
         FIXED_BOUND,
         DYNAMIC_RIGID,
         Emitter_Particle,

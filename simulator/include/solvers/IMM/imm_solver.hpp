@@ -1,21 +1,21 @@
 //
-// Created by ADMIN on 2024/3/7.
+// Created by ADMIN on 2024/3/26.
 //
 
-#ifndef SOSIM_DFSPH_SOLVER_HPP
-#define SOSIM_DFSPH_SOLVER_HPP
+#ifndef SOSIM_IMM_SOLVER_HPP
+#define SOSIM_IMM_SOLVER_HPP
 
 #include <optional>
 #include <set>
 
 #include "framework/MetaFramework/solver.hpp"
-#include "framework/object_manager.hpp"
+#include "framework/MetaFramework/object.hpp"
+
 #include "libs/NeighborSearchL/unified_grid_ns.hpp"
-#include "dfsph_parameters.hpp"
+#include "imm_parameters.hpp"
 
 namespace SoSim {
-
-    struct DFSPHSolverConfig : public SolverConfig {
+    struct IMMSolverConfig : public SolverConfig {
         // common
         float dt{1 / 60.f};
         float cur_sim_time{0};
@@ -28,25 +28,41 @@ namespace SoSim {
         Vec3f scene_lb{-15, -15, -15};
         Vec3f scene_size{30, 30, 30};
         unsigned max_neighborNum{60};
-        float rest_viscosity{0.001};
-        float rest_density;
+        float rest_viscosity{0.01};
+        Vec2f rest_density;
         float rest_rigid_density;
         float rest_bound_density;
         float div_free_threshold;
         float incompressible_threshold;
+        float Cf;
+//        float Cd;
+        Vec3f phase1_color;
+        Vec3f phase2_color;
+        float Cd0;
+        float ct_thinning_exp0{0};
+        float solution_vis_base{0.02};
+        float solution_vis_max{8000};
+        float ct_relaxation_time{0.1};
+        float polymer_vol_frac0{0.6};
+        bool enable_CT{false};
 
         // export setting
         std::optional<std::string> export_path;
+        int export_gap{1};
         float export_fps{30};
         std::string export_partial;
+        bool export_phase{false};
 
+        // method compare
+        float phase1_vis{0.01};
+        float phase2_vis{0.01};
     };
 
-    class DFSPHSolver : public Solver {
+    class IMMSolver : public Solver {
     public:
-        DFSPHSolver();
+        IMMSolver();
 
-        ~DFSPHSolver() override;
+        ~IMMSolver() override;
 
         std::shared_ptr<SolverConfig> getConfig() override;
 
@@ -60,7 +76,6 @@ namespace SoSim {
 
         bool initialize() override;
 
-
         void run(float total_time) override;
 
     protected:
@@ -73,6 +88,8 @@ namespace SoSim {
 
         void exportAsPly();
 
+        void syncObjectDeviceJitData();
+
     private:
         bool m_change_occur{false}; // for re-config solver
         bool m_is_init{false};
@@ -81,10 +98,10 @@ namespace SoSim {
         std::shared_ptr<SolverConfig> m_config;
         std::set<std::shared_ptr<Object>> m_objects;
         std::set<std::shared_ptr<ParticleEmitter>> m_emitters;
-        DFSPHConstantParams m_host_const;
-        DFSPHConstantParams *m_device_const{nullptr};
-        DFSPHDynamicParams m_host_data;
-        DFSPHDynamicParams *m_device_data{nullptr};
+        IMMConstantParams m_host_const;
+        IMMConstantParams *m_device_const{nullptr};
+        IMMDynamicParams m_host_data;
+        IMMDynamicParams *m_device_data{nullptr};
         NeighborSearchUG m_neighborSearch;
         Vec3ui m_unified_part_type_start_index; // start index of three sim-mat: ISMCT_NONNEWTON, DYNAIMC_RIGID, FIXED_BOUND
         std::vector<unsigned> m_obj_start_index; // start index of each obj
@@ -93,8 +110,8 @@ namespace SoSim {
         std::vector<Vec3f> pos_all;
         std::vector<Vec3f> vel_all;
         std::vector<Material> mat_all;
+        std::vector<Vec2f> vol_frac_all;
     };
-
 }
 
-#endif //SOSIM_DFSPH_SOLVER_HPP
+#endif //SOSIM_IMM_SOLVER_HPP

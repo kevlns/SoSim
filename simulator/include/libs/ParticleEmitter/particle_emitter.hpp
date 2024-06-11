@@ -21,6 +21,8 @@ namespace SoSim {
         std::optional<Material> emit_mat;
         unsigned max_particle_num{10000};
         float emit_vel{1};
+        std::optional<float> start_time;
+        std::optional<float> end_time;
 
         // if multiphase
         std::vector<float> phases;
