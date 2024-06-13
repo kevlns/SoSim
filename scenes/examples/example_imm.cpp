@@ -61,14 +61,6 @@ int main() {
     solver_config->Cf = 0.01;
     solver_config->Cd0 = 0.4;
 
-    // if enable_CT == true
-    solver_config->enable_CT = false;
-//    solver_config->ct_thinning_exp0 = 0.25;
-//    solver_config->ct_relaxation_time = 0.005;
-//    solver_config->solution_vis_base = 1;
-//    solver_config->solution_vis_max = 1;
-//    solver_config->polymer_vol_frac0 = 0; // threshold
-
     /**  =============================================================
      * attach objects to solver
      */
