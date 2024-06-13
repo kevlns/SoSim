@@ -11,6 +11,7 @@
 #include "solvers/DFSPH/dfsph_solver.hpp"
 #include "solvers/IMM/imm_solver.hpp"
 #include "solvers/IMM-CT/immct_solver.hpp"
+#include "solvers/PBF/pbf_solver.hpp"
 
 namespace SoSim {
 

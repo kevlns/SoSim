@@ -45,6 +45,20 @@ target_link_libraries(${TARGET} PUBLIC
         ${BULLET_LIBRARIES})
 list(APPEND solver-libs ${TARGET})
 
+# PBF
+set(TARGET sosim-pbf)
+file(GLOB PBF_HEADERS
+        ${SOSIM_SIMULATOR_ROOT}/include/solvers/PBF/*.hpp)
+file(GLOB PBF_SRC
+        PBF/*.cpp
+        PBF/*.cuh
+        PBF/*.cu)
+add_library(${TARGET} ${PBF_HEADERS} ${PBF_SRC})
+target_link_libraries(${TARGET} PUBLIC
+        sosim-framework
+        ${BULLET_LIBRARIES})
+list(APPEND solver-libs ${TARGET})
+
 ## wcsph
 #set(TARGET sosim-wcsph)
 #file(GLOB WCSPH_HEADERS
@@ -69,20 +83,6 @@ list(APPEND solver-libs ${TARGET})
 #add_library(${TARGET} ${JL21CT_HEADERS} ${JL21CT_SRC})
 #target_link_libraries(${TARGET} PUBLIC
 #        sosim-framework)
-#list(APPEND solver-libs ${TARGET})
-#
-## ISM-CT
-#set(TARGET sosim-ismct)
-#file(GLOB ISMCT_HEADERS
-#        ${SOSIM_SIMULATOR_ROOT}/include/solvers/IMM/*.hpp)
-#file(GLOB ISMCT_SRC
-#        IMM/*.cpp
-#        IMM/*.cuh
-#        IMM/*.cu)
-#add_library(${TARGET} ${ISMCT_HEADERS} ${ISMCT_SRC})
-#target_link_libraries(${TARGET} PUBLIC
-#        sosim-framework
-#        ${BULLET_LIBRARIES})
 #list(APPEND solver-libs ${TARGET})
 
 set(SOSIM_SOLVER_LIBS ${solver-libs} PARENT_SCOPE)

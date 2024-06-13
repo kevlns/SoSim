@@ -17,3 +17,7 @@ target_link_libraries(SoSim-Examples-IMM-Viewer PUBLIC
 add_executable(SoSim-Examples-IMMCT-Viewer example_immct.cpp)
 target_link_libraries(SoSim-Examples-IMMCT-Viewer PUBLIC
         sosim-rt)
+
+add_executable(SoSim-Examples-PBF-Viewer example_pbf.cpp)
+target_link_libraries(SoSim-Examples-PBF-Viewer PUBLIC
+        sosim-rt)
