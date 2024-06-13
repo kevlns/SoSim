@@ -36,6 +36,8 @@ namespace SoSim {
 
     template std::shared_ptr<Solver> SolverManager::createSolver<IMMCTSolver>();
 
+    template std::shared_ptr<Solver> SolverManager::createSolver<PBFSolver>();
+
 //    template std::shared_ptr<Solver> SolverManager::createSolver<WCSPHSolver>();
 //
 //    template std::shared_ptr<Solver> SolverManager::createSolver<JL21CTSolver>();
