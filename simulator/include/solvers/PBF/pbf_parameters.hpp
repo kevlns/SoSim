@@ -28,6 +28,9 @@ namespace SoSim {
         float rest_rigid_density{0};
         float rest_bound_density{0};
         float sph_h{0};
+
+        // PBF
+        float XSPH_k{0.01};
     };
 
     struct PBFDynamicParams {

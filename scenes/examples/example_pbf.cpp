@@ -18,8 +18,8 @@ int main() {
     fluid_obj_config->particle_radius = 0.05;
     fluid_obj_config->particle_mat = COMMON_NEWTON;
     fluid_obj_config->shape = ObjectShape::Cube;
-    fluid_obj_config->lb = {-1,-1,-1};
-    fluid_obj_config->size = {2,2,2};
+    fluid_obj_config->lb = {-1, -1, -1};
+    fluid_obj_config->size = {2, 2, 2};
     fluid_obj->setName("fluid_obj");
     fluid_obj->update();
 
@@ -34,7 +34,7 @@ int main() {
     box->setName("box");
     box->update();
     box->exportAsPly("F:\\DataSet.Research\\SoSimExamples\\PBF\\bound",
-                       "box");
+                     "box");
 
     /**  =============================================================
      * create solver
@@ -42,7 +42,7 @@ int main() {
     SolverManager solverManager;
     auto solver = solverManager.createSolver<PBFSolver>();
     auto solver_config = dynamic_cast<PBFSolverConfig *>(solver->getConfig().get());
-    solver_config->dt = 0.001;
+    solver_config->dt = 0.015;
     solver_config->gravity = {0, -9.8, 0};
     solver_config->scene_lb = {-30, -20, -30};
     solver_config->scene_size = {60, 60, 60};
@@ -50,14 +50,15 @@ int main() {
     // export config
     solver_config->export_data = true;
     solver_config->export_path = "F:\\DataSet.Research\\SoSimExamples\\PBF";
-    solver_config->export_fps = 30;
+    solver_config->export_fps = 25;
     solver_config->export_partial = "fluid";
 
     // common
     solver_config->rest_density = 1000;
     solver_config->rest_rigid_density = 2000;
     solver_config->rest_bound_density = 2000;
-    solver_config->pbf_iter_num = 5;
+    solver_config->pbf_iter_num = 10;
+    solver_config->XSPH_k = 0.02;
 
     /**  =============================================================
      * attach objects to solver

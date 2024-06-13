@@ -102,7 +102,7 @@ namespace SoSim { // cuda kernels
 
         DATA_VALUE(lamb, p_i) += dot(DATA_VALUE(error_grad, p_i), DATA_VALUE(error_grad, p_i));
 
-        DATA_VALUE(lamb, p_i) = -DATA_VALUE(error, p_i) / DATA_VALUE(lamb, p_i);
+        DATA_VALUE(lamb, p_i) = -DATA_VALUE(error, p_i) / (DATA_VALUE(lamb, p_i) + 1e-6f);
     }
 
     __global__ void
@@ -170,16 +170,12 @@ namespace SoSim { // cuda kernels
         auto vel_i = DATA_VALUE(vel, p_i);
         DATA_VALUE(dx, p_i) *= 0;
         Vec3f dv;
-        float k = 0.01;
 
         FOR_EACH_NEIGHBOR_Pj() {
-//            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
-//                continue;
-
             auto pos_j = DATA_VALUE(pos, p_j);
             auto vel_j = DATA_VALUE(vel, p_j);
 
-            dv += k * DATA_VALUE(volume, p_j) * (vel_j - vel_i) * CUBIC_KERNEL_VALUE();
+            dv += CONST_VALUE(XSPH_k) * DATA_VALUE(volume, p_j) * (vel_j - vel_i) * CUBIC_KERNEL_VALUE();
         }
 
         DATA_VALUE(dx, p_i) += dv * CONST_VALUE(dt);
@@ -274,12 +270,12 @@ namespace SoSim { // host invoke api
                  PBFConstantParams *d_const,
                  PBFDynamicParams *d_data,
                  NeighborSearchUGConfig *d_nsConfig,
-                 NeighborSearchUGParams *d_nsParams){
+                 NeighborSearchUGParams *d_nsParams) {
         // XSPH_cuda
         XSPH_cuda<<<h_const.block_num, h_const.thread_num>>>(d_const,
-                                                                 d_data,
-                                                                 d_nsConfig,
-                                                                 d_nsParams);
+                                                             d_data,
+                                                             d_nsConfig,
+                                                             d_nsParams);
 
         // apply_dx_cuda
         apply_dx_cuda<<<h_const.block_num, h_const.thread_num>>>(d_const,

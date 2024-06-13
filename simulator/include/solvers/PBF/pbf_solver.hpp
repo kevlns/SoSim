@@ -31,6 +31,7 @@ namespace SoSim {
         float rest_rigid_density{1000};
         float rest_bound_density{1000};
         unsigned pbf_iter_num{3};
+        float XSPH_k{0.01};
 
         // export setting
         bool export_data{false};
@@ -57,7 +58,7 @@ namespace SoSim {
         void detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) override;
 
         bool initialize() override;
-        
+
         void run(float total_time) override;
 
     protected:

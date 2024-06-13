@@ -190,6 +190,7 @@ namespace SoSim {
         m_host_const.rest_rigid_density = solver_config->rest_rigid_density;
         m_host_const.rest_bound_density = solver_config->rest_bound_density;
         m_host_const.sph_h = 4 * particle_radius;
+        m_host_const.XSPH_k = solver_config->XSPH_k;
         m_host_const.block_num = solver_config->kernel_blocks;
         m_host_const.thread_num = solver_config->kernel_threads;
 
