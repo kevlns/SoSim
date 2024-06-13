@@ -40,7 +40,7 @@ namespace SoSim {
                                       NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(rest_density, p_i) = dot(DATA_VALUE(vol_frac, p_i), CONST_VALUE(rest_density));
@@ -53,7 +53,7 @@ namespace SoSim {
                       NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(color, p_i) = DATA_VALUE(vol_frac, p_i).x * CONST_VALUE(phase1_color) +
@@ -66,7 +66,7 @@ namespace SoSim {
                                         NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(vel_phase_1, p_i) = DATA_VALUE(vel, p_i);
@@ -109,7 +109,7 @@ namespace SoSim {
 
         DATA_VALUE(compression_ratio, p_i) *= 0;
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -142,11 +142,11 @@ namespace SoSim {
             auto wGrad = CUBIC_KERNEL_GRAD();
 
             // applied to all dynamic objects
-            if (DATA_VALUE(mat, p_i) == IMSCT_NONNEWTON)
+            if (DATA_VALUE(mat, p_i) == COMMON_NEWTON)
                 DATA_VALUE(df_alpha_1, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_GRAD();
 
             // applied to all dynamic objects
-            if (DATA_VALUE(mat, p_j) == IMSCT_NONNEWTON)
+            if (DATA_VALUE(mat, p_j) == COMMON_NEWTON)
                 DATA_VALUE(df_alpha_2, p_i) += dot(wGrad, wGrad) * DATA_VALUE(volume, p_j) * DATA_VALUE(volume, p_j)
                                                / DATA_VALUE(mass, p_j);
         }
@@ -166,7 +166,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(delta_compression_ratio, p_i) = DATA_VALUE(compression_ratio, p_i) - 1.f;
@@ -180,7 +180,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -210,7 +210,7 @@ namespace SoSim {
         DATA_VALUE(kappa_div, p_i) *= 0;
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(kappa_div, p_i) = DATA_VALUE(delta_compression_ratio, p_i) / DATA_VALUE(df_alpha, p_i) *
@@ -226,7 +226,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -250,7 +250,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(kappa_div, p_i) = DATA_VALUE(df_alpha_2, p_i);
@@ -272,7 +272,7 @@ namespace SoSim {
                                NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(acc_phase_1, p_i) += CONST_VALUE(gravity);
@@ -287,7 +287,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         Vec3f acc = {0, 0, 0};
@@ -335,7 +335,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         Vec3f acc = {0, 0, 0};
@@ -376,7 +376,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -402,7 +402,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         Vec3f acc = {0, 0, 0};
@@ -437,7 +437,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         Vec3f acc = {0, 0, 0};
@@ -467,7 +467,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         int cnt = 0;
@@ -492,7 +492,7 @@ namespace SoSim {
                                NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(vel_phase_1, p_i) += DATA_VALUE(acc_phase_1, p_i) * CONST_VALUE(dt);
@@ -505,7 +505,7 @@ namespace SoSim {
                                    NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(vel, p_i) = DATA_VALUE(vel_phase_1, p_i) * DATA_VALUE(vol_frac, p_i).x
@@ -522,7 +522,7 @@ namespace SoSim {
                           NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(acc, p_i) = (DATA_VALUE(vel_adv, p_i) - DATA_VALUE(vel, p_i)) * CONST_VALUE(inv_dt);
@@ -534,7 +534,7 @@ namespace SoSim {
                                          NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(acc_phase_1, p_i) += DATA_VALUE(acc, p_i) * (DATA_VALUE(Cd, p_i) + (1 - DATA_VALUE(Cd, p_i)) *
@@ -552,7 +552,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(kappa_incomp, p_i) = DATA_VALUE(delta_compression_ratio, p_i) / DATA_VALUE(df_alpha, p_i) *
@@ -568,7 +568,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -592,7 +592,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(pos, p_i) += DATA_VALUE(vel, p_i) * CONST_VALUE(dt);
@@ -606,7 +606,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(vol_frac_in, p_i) *= 0;
@@ -621,7 +621,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         if (DATA_VALUE(flag_negative_vol_frac, p_i) != 0)
@@ -670,7 +670,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         if (DATA_VALUE(flag_negative_vol_frac, p_i) != 0)
@@ -720,7 +720,7 @@ namespace SoSim {
         __syncthreads();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         if (DATA_VALUE(flag_negative_vol_frac, p_i) != 0)
@@ -740,7 +740,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(vol_frac, p_i) += (DATA_VALUE(vol_frac_in, p_i) + DATA_VALUE(vol_frac_out, p_i));
@@ -753,7 +753,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         if (DATA_VALUE(flag_negative_vol_frac, p_i) != 0) {
@@ -769,7 +769,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(flag_negative_vol_frac, p_i) = 0;
@@ -782,7 +782,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         float frac_sum = DATA_VALUE(vol_frac, p_i).x + DATA_VALUE(vol_frac, p_i).y;
@@ -796,7 +796,7 @@ namespace SoSim {
                           NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         DATA_VALUE(density_sph, p_i) *= 0;
@@ -806,7 +806,7 @@ namespace SoSim {
         FOR_EACH_NEIGHBOR_Pj() {
             auto pos_j = DATA_VALUE(pos, p_j);
             auto rest_dens_j = DATA_VALUE(rest_density, p_j);
-            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+            if (DATA_VALUE(mat, p_j) != COMMON_NEWTON)
                 rest_dens_j = rest_dens_i;
 
             DATA_VALUE(density_sph, p_i) += rest_dens_j * CONST_VALUE(rest_volume) * CUBIC_KERNEL_VALUE();
@@ -823,7 +823,7 @@ namespace SoSim {
         CHECK_THREAD();
 
         // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         // TODO
@@ -833,7 +833,7 @@ namespace SoSim {
 
         FOR_EACH_NEIGHBOR_Pj() {
 
-            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+            if (DATA_VALUE(mat, p_j) != COMMON_NEWTON)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -854,7 +854,7 @@ namespace SoSim {
                                     NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto CT_i = DATA_VALUE(CT, p_i);
@@ -889,7 +889,7 @@ namespace SoSim {
                               NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -898,7 +898,7 @@ namespace SoSim {
 
         FOR_EACH_NEIGHBOR_Pj() {
 
-            if (DATA_VALUE(mat, p_j) != IMSCT_NONNEWTON)
+            if (DATA_VALUE(mat, p_j) != COMMON_NEWTON)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -920,7 +920,7 @@ namespace SoSim {
                    NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         auto pos_i = DATA_VALUE(pos, p_i);
@@ -944,7 +944,7 @@ namespace SoSim {
                            NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         // thinning coefficient: beta
@@ -1020,7 +1020,7 @@ namespace SoSim { // extra func cuda impl
                                                    NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
             return;
 
         int cnt = 0;

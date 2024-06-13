@@ -61,13 +61,13 @@ namespace SoSim {
         mat_all.clear();
         vol_frac_all.clear();
 
-        // object push order: IMSCT_NONNEWTON, DYNAMIC_RIGID, FIXED_BOUND
+        // object push order: COMMON_NEWTON, DYNAMIC_RIGID, FIXED_BOUND
         std::set<std::shared_ptr<Object>> obj_offline;
         m_host_const.particle_num = 0;
 
         m_unified_part_type_start_index.x = 0;
         for (const auto &obj: m_objects) {
-            if (obj->getParticleObjectConfig()->particle_mat.value() == IMSCT_NONNEWTON &&
+            if (obj->getParticleObjectConfig()->particle_mat.value() == COMMON_NEWTON &&
                 obj_offline.count(obj) < 1) {
 
                 // TODO: if solver attach order doesn't follow object push order above, this push policy if wrong
@@ -147,7 +147,7 @@ namespace SoSim {
 
         m_unified_part_type_start_index.z = m_host_const.particle_num;
         for (const auto &obj: m_objects) {
-            if (obj->getParticleObjectConfig()->particle_mat.value() != IMSCT_NONNEWTON &&
+            if (obj->getParticleObjectConfig()->particle_mat.value() != COMMON_NEWTON &&
                 obj->getParticleObjectConfig()->particle_mat.value() != DYNAMIC_RIGID &&
                 obj_offline.count(obj) < 1) {
                 m_obj_start_index.emplace_back(m_host_const.particle_num);

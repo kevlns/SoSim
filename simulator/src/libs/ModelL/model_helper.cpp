@@ -209,14 +209,14 @@ namespace SoSim {
         std::vector<Vec3f> particles;
 
         int numParticles[] = {
-                static_cast<int>(size.x / (2.0 * particle_radius)),
-                static_cast<int>(size.y / (2.0 * particle_radius)),
-                static_cast<int>(size.z / (2.0 * particle_radius))
+                static_cast<int>((size.x + particle_radius) / (2.0 * particle_radius)),
+                static_cast<int>((size.y + particle_radius) / (2.0 * particle_radius)),
+                static_cast<int>((size.z + particle_radius) / (2.0 * particle_radius))
         };
 
-        for (int i = 0; i < numParticles[0]; ++i) {
-            for (int j = 0; j < numParticles[1]; ++j) {
-                for (int k = 0; k < numParticles[2]; ++k) {
+        for (int i = 0; i <= numParticles[0]; ++i) {
+            for (int j = 0; j <= numParticles[1]; ++j) {
+                for (int k = 0; k <= numParticles[2]; ++k) {
                     // If this particle is in the first two or last two layers in any dimension...
                     if (i < layer || i >= numParticles[0] - layer || j < layer || j >= numParticles[1] - layer ||
                         k < layer || k >= numParticles[2] - layer) {

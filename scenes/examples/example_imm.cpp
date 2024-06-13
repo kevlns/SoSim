@@ -15,7 +15,7 @@ int main() {
     auto fluid_obj = objectManager.createObject();
     auto fluid_obj_config = fluid_obj->getParticleObjectConfig();
     fluid_obj_config->particle_radius = 0.025;
-    fluid_obj_config->particle_mat = IMSCT_NONNEWTON;
+    fluid_obj_config->particle_mat = COMMON_NEWTON;
     fluid_obj_config->phases.assign({0.5, 0.5});
     fluid_obj_config->model_file = "C:\\Users\\ADMIN\\Downloads\\simulation\\armadillo_ply\\fluid_armadillo.ply";
     fluid_obj->setName("fluid_obj");
