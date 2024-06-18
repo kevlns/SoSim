@@ -45,6 +45,7 @@ namespace SoSim {
         float solution_vis_max{8000};
         float ct_relaxation_time{0.1};
         float polymer_vol_frac0{0.6};
+        float vis_bound_damp_factor{0.1};
 
         // export setting
         std::optional<std::string> export_path;

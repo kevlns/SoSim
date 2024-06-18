@@ -59,6 +59,20 @@ target_link_libraries(${TARGET} PUBLIC
         ${BULLET_LIBRARIES})
 list(APPEND solver-libs ${TARGET})
 
+# VisPBF
+set(TARGET sosim-vis_pbf)
+file(GLOB VisPBF_HEADERS
+        ${SOSIM_SIMULATOR_ROOT}/include/solvers/VisPBF/*.hpp)
+file(GLOB VisPBF_SRC
+        VisPBF/*.cpp
+        VisPBF/*.cuh
+        VisPBF/*.cu)
+add_library(${TARGET} ${VisPBF_HEADERS} ${VisPBF_SRC})
+target_link_libraries(${TARGET} PUBLIC
+        sosim-framework
+        ${BULLET_LIBRARIES})
+list(APPEND solver-libs ${TARGET})
+
 ## wcsph
 #set(TARGET sosim-wcsph)
 #file(GLOB WCSPH_HEADERS

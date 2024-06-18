@@ -101,7 +101,8 @@ namespace SoSim {
             auto part_num = emitter->getConfig()->max_particle_num;
             emitter->getConfig()->insert_index = m_host_const.particle_num;
 
-            std::vector<Vec3f> pos_tmp(part_num);
+            auto pos = dynamic_cast<IMMCTSolverConfig *>(m_config.get())->scene_lb;
+            std::vector<Vec3f> pos_tmp(part_num, pos);
             pos_all.insert(pos_all.end(), pos_tmp.begin(), pos_tmp.end());
 
             std::vector<Vec3f> vel_tmp(part_num);
@@ -179,8 +180,8 @@ namespace SoSim {
             return false;
         }
 
-        if (m_objects.empty()) {
-            std::cout << "ERROR:: solver attach no object.\n";
+        if (m_objects.empty() && m_emitters.empty()) {
+            std::cout << "ERROR:: solver attach no object or emitter.\n";
             return false;
         }
 
@@ -195,7 +196,11 @@ namespace SoSim {
         solver_config->kernel_blocks = std::ceil(
                 (m_host_const.particle_num + solver_config->kernel_threads - 1) / solver_config->kernel_threads);
 
-        auto particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius.value();
+        float particle_radius;
+        if (!m_objects.empty())
+            particle_radius = m_objects.begin()->get()->getParticleObjectConfig()->particle_radius.value();
+        if (!m_emitters.empty())
+            particle_radius = m_emitters.begin()->get()->getConfig()->particle_radius.value();
         auto particle_num = m_host_const.particle_num;
 
         // TODO setup m_host_const
@@ -227,6 +232,7 @@ namespace SoSim {
         m_host_const.solution_vis_base = solver_config->solution_vis_base;
         m_host_const.solution_vis_max = solver_config->solution_vis_max;
         m_host_const.polymer_vol_frac0 = solver_config->polymer_vol_frac0;
+        m_host_const.vis_bound_damp_factor = solver_config->vis_bound_damp_factor;
 
         m_host_const.phase1_vis = solver_config->phase1_vis;
         m_host_const.phase2_vis = solver_config->phase2_vis;
@@ -247,6 +253,18 @@ namespace SoSim {
         cudaMalloc((void **) &m_device_data, sizeof(IMMCTDynamicParams));
         m_host_data.malloc(particle_num);
         m_neighborSearch.malloc();
+
+        // setup emitter
+        for (auto &emitter: m_emitters) {
+            auto config = emitter->getConfig();
+            if (config->use_unified_buffer.has_value() && config->use_unified_buffer.value()) {
+                config->unified_pos_buffer = m_host_data.pos;
+                config->unified_vel_buffer = m_host_data.vel;
+                config->unified_mat_buffer = m_host_data.mat;
+            }
+
+            emitter->update();
+        }
 
         // TODO data copy
         cudaMemcpy(m_host_data.mat, mat_all.data(), particle_num * sizeof(Material), cudaMemcpyHostToDevice);
@@ -378,17 +396,18 @@ namespace SoSim {
 
             std::cout << "*========== Frame: " << frame << " ==========* \n";
 
+            //            if(solver_config->cur_sim_time < 15)
             for (const auto &emitter: m_emitters) {
-                auto config = emitter->getConfig();
-                if (config->start_time.has_value() && config->start_time.value() > solver_config->cur_sim_time)
-                    continue;
-                if (config->end_time.has_value() && config->end_time.value() < solver_config->cur_sim_time)
-                    continue;
-
                 if (emitter->emit(solver_config->cur_sim_time)) {
+                    auto config = emitter->getConfig();
                     auto size_1 = emitter->getTemplatePartNum() * sizeof(Vec3f);
+                    auto size_2 = emitter->getTemplatePartNum() * sizeof(Material);
                     // copy vel to phase vel
                     cudaMemcpy(m_host_data.vel_adv + config->insert_index,
+                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+                    cudaMemcpy(m_host_data.vel_phase_1 + config->insert_index,
+                               emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
+                    cudaMemcpy(m_host_data.vel_phase_2 + config->insert_index,
                                emitter->getCudaTemplateVelBuffer(), size_1, cudaMemcpyDeviceToDevice);
                     cudaMemcpy(m_host_data.pos_adv + config->insert_index,
                                emitter->getCudaTemplatePosBuffer(), size_1, cudaMemcpyHostToDevice);

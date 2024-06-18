@@ -41,7 +41,7 @@ namespace SoSim {
                                       NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(rest_density, p_i) = dot(DATA_VALUE(vol_frac, p_i), CONST_VALUE(rest_density));
@@ -67,7 +67,7 @@ namespace SoSim {
                                         NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON)
+        if (DATA_VALUE(mat, p_i) != IMSCT_NONNEWTON && DATA_VALUE(mat, p_i) != Emitter_Particle)
             return;
 
         DATA_VALUE(vel_phase_1, p_i) = DATA_VALUE(vel, p_i);
@@ -115,6 +115,9 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
+            if (DATA_VALUE(mat, p_j) == Emitter_Particle)
+                continue;
+
             auto pos_j = DATA_VALUE(pos, p_j);
 
             DATA_VALUE(compression_ratio, p_i) += DATA_VALUE(volume, p_j) * CUBIC_KERNEL_VALUE();
@@ -133,7 +136,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -184,7 +187,7 @@ namespace SoSim {
         auto pos_i = DATA_VALUE(pos, p_i);
         auto vel_adv_i = DATA_VALUE(vel_adv, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -227,7 +230,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -569,7 +572,7 @@ namespace SoSim {
 
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
-            if (p_j == p_i)
+            if (p_j == p_i || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             auto pos_j = DATA_VALUE(pos, p_j);
@@ -1021,15 +1024,15 @@ namespace SoSim { // extra func cuda impl
 
         int cnt = 0;
         FOR_EACH_NEIGHBOR_Pj() {
-            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i))
+            if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i) || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
             cnt++;
         }
 
         float f1 = 1;
-        if (cnt > 15)
-            f1 = 1;
+        if (cnt > 25)
+            f1 = 1 - d_const->vis_bound_damp_factor;
 
         DATA_VALUE(vel_phase_1, p_i) *= f1;
         DATA_VALUE(vel_phase_2, p_i) *= f1;

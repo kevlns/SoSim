@@ -51,6 +51,7 @@ namespace SoSim {
         float solution_vis_max{0};
         float ct_relaxation_time{0.1};
         float polymer_vol_frac0;
+        float vis_bound_damp_factor{0.1};
 
         // method compare
         float phase1_vis;
