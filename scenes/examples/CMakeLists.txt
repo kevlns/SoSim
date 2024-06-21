@@ -17,3 +17,12 @@ target_link_libraries(SoSim-Examples-IMM-Viewer PUBLIC
 add_executable(SoSim-Examples-IMMCT-Viewer example_immct.cpp)
 target_link_libraries(SoSim-Examples-IMMCT-Viewer PUBLIC
         sosim-rt)
+
+if(WIN32)
+    message(STATUS ${OPEN3D_DLL_PATH})
+    add_custom_command(TARGET SoSim-Examples-GenObj-Viewer POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${OPEN3D_DLL_PATH}
+            $<TARGET_FILE_DIR:SoSim-Examples-GenObj-Viewer>
+    )
+endif ()

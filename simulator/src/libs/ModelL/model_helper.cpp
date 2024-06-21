@@ -4,12 +4,14 @@
 
 #include <fstream>
 #include <filesystem>
+#include <random>
 
 #include "libs/ModelL/model_helper.hpp"
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "open3d/Open3D.h"
 
 namespace SoSim {
 
@@ -57,13 +59,25 @@ namespace SoSim {
                                                        config->center,
                                                        config->volume_radius);
                     break;
+                case Surface_Sample:
+                    if (config->model_file.has_value()) {
+                        particles = sample3DSurfaceParticle(config->particle_radius.value(),
+                                                            config->model_file.value(),
+                                                            config->ratio);
+                    }
+                    break;
+                case Volume_Sample:
+                    std::cout << "todo.\n";
+                    break;
                 default:
                     std::cout << "Ops! No matching shape.\n";
                     break;
             }
         }
 
-        if (config->model_file.has_value()) {
+        if (config->model_file.has_value() && (!config->shape.has_value()
+                                               || config->shape.value() != Surface_Sample
+                                               || config->shape.value() != Volume_Sample)) {
             std::filesystem::path fp(config->model_file.value());
             auto postfix = fp.extension().string();
             if (postfix == ".ply")
@@ -324,6 +338,49 @@ namespace SoSim {
                 Vec3f _particles = {vertex.x, vertex.y, vertex.z};
                 particles.emplace_back(_particles);
             }
+        }
+
+        return particles;
+    }
+
+    std::vector<Vec3f> ModelHelper::sample3DSurfaceParticle(float particle_radius, std::string file_path, float ratio) {
+        std::vector<Vec3f> particles;
+
+        // load mesh
+        auto mesh = std::make_shared<open3d::geometry::TriangleMesh>();
+
+        std::cout << "Reading mesh from " << file_path << std::endl;
+        if (!open3d::io::ReadTriangleMesh(file_path, *mesh)) {
+            std::cerr << "Failed to load mesh file: " << file_path << std::endl;
+            return particles;
+        }
+        std::cout << "Mesh read complete. Number of vertices: " << mesh->vertices_.size() << std::endl;
+
+        if (mesh->vertices_.empty()) {
+            std::cerr << "Mesh contains no vertices. Aborting." << std::endl;
+            return particles;
+        }
+
+        // 确保法线已计算（泊松采样需要法线）
+        if (!mesh->HasVertexNormals()) {
+            std::cout << "Computing vertex normals." << std::endl;
+            mesh->ComputeVertexNormals();
+        }
+        std::cout << "Vertex normals are ready." << std::endl;
+
+        const float PI = 3.14159265;
+        float particle_area = PI * particle_radius * particle_radius;
+
+        int num_points = int(ratio * mesh->GetSurfaceArea() / particle_area);
+        auto poisson_sampled_cloud = mesh->SamplePointsPoissonDisk(num_points, 5, nullptr, true);
+        if (!poisson_sampled_cloud) {
+            std::cerr << "Poisson disk sampling failed." << std::endl;
+            return particles;
+        }
+
+        for (const auto &point: poisson_sampled_cloud->points_) {
+            particles.emplace_back(static_cast<float>(point.x()), static_cast<float>(point.y()),
+                                   static_cast<float>(point.z()));
         }
 
         return particles;

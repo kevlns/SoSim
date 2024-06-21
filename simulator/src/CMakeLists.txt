@@ -2,6 +2,7 @@ project(sosim-libs)
 
 find_package(CUDAToolkit)
 find_package(assimp CONFIG REQUIRED)
+find_package(Open3D CONFIG REQUIRED)
 
 include_directories(${SOSIM_SIMULATOR_ROOT}/include ${CUDAToolkit_INCLUDE_DIRS} ${SORENDER_ROOT}/include)
 
@@ -15,7 +16,8 @@ target_link_libraries(sosim-core PUBLIC assimp::assimp CUDA::cudart)
 file(GLOB_RECURSE LIB_HEADERS ${SOSIM_SIMULATOR_ROOT}/include/libs "*.hpp" "*.cuh")
 file(GLOB_RECURSE LIB_SRC libs "*.cpp" "*.cu")
 add_library(sosim-libs ${LIB_HEADERS} ${LIB_SRC})
-target_link_libraries(sosim-libs PUBLIC assimp::assimp CUDA::cudart sosim-core)
+include_directories(${Open3D_INCLUDE_DIRS} ${Open3D_INCLUDE_DIRS}/open3d/3rdparty)
+target_link_libraries(sosim-libs PUBLIC Open3D::Open3D assimp::assimp CUDA::cudart sosim-core)
 
 # build base framework
 file(GLOB FRAMEWORK_HEADERS

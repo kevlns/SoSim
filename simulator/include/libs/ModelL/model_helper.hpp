@@ -25,7 +25,9 @@ namespace SoSim {
         Box,
         Plane,
         Cylinder,
-        Sphere
+        Sphere,
+        Surface_Sample,
+        Volume_Sample
     };
 
     struct ParticleObjectConfig {
@@ -51,6 +53,8 @@ namespace SoSim {
 
         /* load file */
         std::optional<std::string> model_file;
+        // for surface sample
+        float ratio{1.9};
 
         /* transform */
         Vec3f transfer{0, 0, 0};
@@ -100,6 +104,9 @@ namespace SoSim {
         static std::vector<Vec3f> create3DParticleSphere(float particle_radius, Vec3f center, float volume_radius);
 
         static std::vector<Vec3f> loadPly3DModel(std::string ply_file);
+
+        static std::vector<Vec3f> sample3DSurfaceParticle(float particle_radius, std::string file_path, float ratio);
+
     };
 
 }  // namespace SoSim

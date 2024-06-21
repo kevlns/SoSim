@@ -72,14 +72,17 @@ int main() {
     cylinder->setName("cylinder");
     cylinder->update();
 
-    // create host cylinder object;
+    // sample particles from obj mesh
     auto model = objectManager.createObject();
     auto model_config = model->getParticleObjectConfig();
-    model_config->model_file = "path/to/file"; // only ply model supported yet.
-    model_config->particle_radius = 0.05;
+    model_config->model_file = "D:\\xuyuhang\\obj\\bunny_10k_sample.obj"; // only ply model supported yet.
+    model_config->shape = Surface_Sample;
+    model_config->ratio = 1.9;
+    model_config->particle_radius = 0.025;
     model_config->particle_mat = COMMON_NEWTON;
-    model->setName("model");
+    model->setName("sample model");
     model->update();
+    model->exportAsPly("D:\\xuyuhang\\sample_ply", "bunny_10k_sample");
 
     // once you use a multiphase solver, you need to assign phase fraction
     // config->phases.assign({0.5,0.5}); only two-phase fluid supported yet.
