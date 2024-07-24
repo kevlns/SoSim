@@ -16,5 +16,5 @@ int main() {
     Vec2<float> v1;
     v1 = {1, 2};
 
-    std::cout << Mat33<float>::eye() << std::endl;
+    std::cout << v1[0] << std::endl;
 }
