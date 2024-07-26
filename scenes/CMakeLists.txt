@@ -5,3 +5,7 @@ include_directories(${SOSIM_SIMULATOR_ROOT}/include)
 add_subdirectory(examples)
 
 add_subdirectory(BIBM)
+
+add_subdirectory(SCA)
+
+add_subdirectory(TVCG)

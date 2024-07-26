@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/26.
 //
 
-#include "solvers/IMM/imm_solver.hpp"
-#include "imm_cuda_api.cuh"
+#include "solvers/IMM-v2/imm_v2_solver.hpp"
+#include "imm_v2_cuda_api.cuh"
 
 #include <chrono>
 
@@ -12,52 +12,52 @@
 
 
 namespace SoSim {
-    IMMSolver::IMMSolver() {
-        m_config = std::make_shared<IMMSolverConfig>();
-        std::cout << "Create IMMSolver.\n";
+    IMMSolver_v2::IMMSolver_v2() {
+        m_config = std::make_shared<IMMSolverConfig_v2>();
+        std::cout << "Create IMMSolver_v2.\n";
     }
 
-    IMMSolver::~IMMSolver() {
+    IMMSolver_v2::~IMMSolver_v2() {
         destroy();
     }
 
-    std::shared_ptr<SolverConfig> IMMSolver::getConfig() {
+    std::shared_ptr<SolverConfig> IMMSolver_v2::getConfig() {
         return m_config;
     }
 
-    void IMMSolver::attachObject(std::shared_ptr<Object> object) {
+    void IMMSolver_v2::attachObject(std::shared_ptr<Object> object) {
         if (m_objects.count(object) == 0)
             m_objects.insert(object);
 
         m_change_occur = true;
-        std::cout << "IMMSolver attach object: " << object->getName() << ".\n";
+        std::cout << "IMMSolver_v2 attach object: " << object->getName() << ".\n";
     }
 
-    void IMMSolver::attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
+    void IMMSolver_v2::attachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
         if (m_emitters.count(emitter) == 0)
             m_emitters.insert(emitter);
 
         m_change_occur = true;
-        std::cout << "IMMSolver attach a ParticleEmitter.\n";
+        std::cout << "IMMSolver_v2 attach a ParticleEmitter.\n";
     }
 
-    void IMMSolver::detachObject(std::shared_ptr<Object> object) {
+    void IMMSolver_v2::detachObject(std::shared_ptr<Object> object) {
         if (m_objects.count(object) > 0)
             m_objects.erase(object);
 
         m_change_occur = true;
-        std::cout << "IMMSolver detach object: " << object->getName() << ".\n";
+        std::cout << "IMMSolver_v2 detach object: " << object->getName() << ".\n";
     }
 
-    void IMMSolver::detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
+    void IMMSolver_v2::detachParticleEmitter(std::shared_ptr<ParticleEmitter> emitter) {
         if (m_emitters.count(emitter) > 0)
             m_emitters.erase(emitter);
 
         m_change_occur = true;
-        std::cout << "IMMSolver detach a ParticleEmitter.\n";
+        std::cout << "IMMSolver_v2 detach a ParticleEmitter.\n";
     }
 
-    void IMMSolver::mergeObjects() {
+    void IMMSolver_v2::mergeObjects() {
         pos_all.clear();
         vel_all.clear();
         mat_all.clear();
@@ -85,10 +85,16 @@ namespace SoSim {
                 std::vector<Material> mat_tmp(pos_tmp.size(), obj->getParticleObjectConfig()->particle_mat.value());
                 mat_all.insert(mat_all.end(), mat_tmp.begin(), mat_tmp.end());
 
-                if (obj->getParticleObjectConfig()->phases.size() != 2)
-                    throw std::runtime_error("IMMSolver only solve two-phase fluid now.\n");
-                std::vector<Vec2f> alpha_tmp(pos_tmp.size(), {obj->getParticleObjectConfig()->phases[0],
-                                                              obj->getParticleObjectConfig()->phases[1]});
+                if (obj->getParticleObjectConfig()->phases.empty())
+                    throw std::runtime_error(obj->getName() + " doesn't have phase info, please check.\n");
+
+                auto s = obj->getParticleObjectConfig()->phases;
+                std::vector<float> alpha_tmp(pos_tmp.size() * obj->getParticleObjectConfig()->phases.size());
+                for (int i = 0; i < pos_tmp.size(); i++) {
+                    for (int j = 0; j < obj->getParticleObjectConfig()->phases.size(); j++) {
+                        alpha_tmp[i * obj->getParticleObjectConfig()->phases.size() + j] = s[j];
+                    }
+                }
                 vol_frac_all.insert(vol_frac_all.end(), alpha_tmp.begin(), alpha_tmp.end());
 
                 m_host_const.particle_num += static_cast<int>(pos_tmp.size());
@@ -112,10 +118,16 @@ namespace SoSim {
             std::vector<Material> mat_tmp(part_num, Emitter_Particle);
             mat_all.insert(mat_all.end(), mat_tmp.begin(), mat_tmp.end());
 
-            if (emitter->getConfig()->phases.size() != 2)
-                throw std::runtime_error("IMMSolver only solve two-phase fluid now.\n");
-            std::vector<Vec2f> alpha_tmp(part_num, {emitter->getConfig()->phases[0],
-                                                    emitter->getConfig()->phases[1]});
+            if (emitter->getConfig()->phases.empty())
+                throw std::runtime_error(" This emitter doesn't have phase info, please check.\n");
+
+            auto s = emitter->getConfig()->phases;
+            std::vector<float> alpha_tmp(pos_tmp.size() * emitter->getConfig()->phases.size());
+            for (int i = 0; i < pos_tmp.size(); i++) {
+                for (int j = 0; j < emitter->getConfig()->phases.size(); j++) {
+                    alpha_tmp[i * emitter->getConfig()->phases.size() + j] = s[j];
+                }
+            }
             vol_frac_all.insert(vol_frac_all.end(), alpha_tmp.begin(), alpha_tmp.end());
 
             m_host_const.particle_num += static_cast<int>(part_num);
@@ -136,10 +148,16 @@ namespace SoSim {
                 std::vector<Material> mat_tmp(pos_tmp.size(), obj->getParticleObjectConfig()->particle_mat.value());
                 mat_all.insert(mat_all.end(), mat_tmp.begin(), mat_tmp.end());
 
-                if (obj->getParticleObjectConfig()->phases.size() != 2)
-                    throw std::runtime_error("IMMSolver only solve two-phase fluid now.\n");
-                std::vector<Vec2f> alpha_tmp(pos_tmp.size(), {obj->getParticleObjectConfig()->phases[0],
-                                                              obj->getParticleObjectConfig()->phases[1]});
+                if (obj->getParticleObjectConfig()->phases.empty())
+                    throw std::runtime_error(obj->getName() + " doesn't have phase info, please check.\n");
+
+                auto s = obj->getParticleObjectConfig()->phases;
+                std::vector<float> alpha_tmp(pos_tmp.size() * obj->getParticleObjectConfig()->phases.size());
+                for (int i = 0; i < pos_tmp.size(); i++) {
+                    for (int j = 0; j < obj->getParticleObjectConfig()->phases.size(); j++) {
+                        alpha_tmp[i * obj->getParticleObjectConfig()->phases.size() + j] = s[j];
+                    }
+                }
                 vol_frac_all.insert(vol_frac_all.end(), alpha_tmp.begin(), alpha_tmp.end());
 
                 m_host_const.particle_num += static_cast<int>(pos_tmp.size());
@@ -163,19 +181,39 @@ namespace SoSim {
                 std::vector<Material> mat_tmp(pos_tmp.size(), obj->getParticleObjectConfig()->particle_mat.value());
                 mat_all.insert(mat_all.end(), mat_tmp.begin(), mat_tmp.end());
 
-                if (obj->getParticleObjectConfig()->phases.size() != 2)
-                    throw std::runtime_error("IMMSolver only solve two-phase fluid now.\n");
-                std::vector<Vec2f> alpha_tmp(pos_tmp.size(), {obj->getParticleObjectConfig()->phases[0],
-                                                              obj->getParticleObjectConfig()->phases[1]});
+                if (obj->getParticleObjectConfig()->phases.empty())
+                    throw std::runtime_error(obj->getName() + " doesn't have phase info, please check.\n");
+
+                auto s = obj->getParticleObjectConfig()->phases;
+                std::vector<float> alpha_tmp(pos_tmp.size() * obj->getParticleObjectConfig()->phases.size());
+                for (int i = 0; i < pos_tmp.size(); i++) {
+                    for (int j = 0; j < obj->getParticleObjectConfig()->phases.size(); j++) {
+                        alpha_tmp[i * obj->getParticleObjectConfig()->phases.size() + j] = s[j];
+                    }
+                }
                 vol_frac_all.insert(vol_frac_all.end(), alpha_tmp.begin(), alpha_tmp.end());
 
                 m_host_const.particle_num += static_cast<int>(pos_tmp.size());
                 obj_offline.insert(obj);
             }
         }
+
+        std::vector<int> phase_nums;
+        for (const auto &obj: m_objects){
+            std::cout << obj->getName() << " has " << obj->getParticleObjectConfig()->phases.size() << " phases.\n";
+            phase_nums.push_back(obj->getParticleObjectConfig()->phases.size());
+        }
+
+        for(int i = 1; i < phase_nums.size(); ++i){
+            if(phase_nums[i] != phase_nums[i-1]){
+                std::cout << "ERROR:: phase number of different objects are not equal.\n";
+                m_is_crash = true;
+                return;
+            }
+        }
     }
 
-    bool IMMSolver::initialize() {
+    bool IMMSolver_v2::initialize() {
         if (!m_config) {
             std::cout << "ERROR:: solver config empty.\n";
             return false;
@@ -188,7 +226,7 @@ namespace SoSim {
 
         mergeObjects();
 
-        auto solver_config = dynamic_cast<IMMSolverConfig *>(m_config.get());
+        auto solver_config = dynamic_cast<IMMSolverConfig_v2 *>(m_config.get());
         int device;
         cudaGetDevice(&device);
         cudaDeviceProp prop{};
@@ -212,30 +250,22 @@ namespace SoSim {
         m_host_const.gravity = solver_config->gravity;
         m_host_const.particle_num = particle_num;
         m_host_const.particle_radius = particle_radius;
-        m_host_const.phase1_color = solver_config->phase1_color;
-        m_host_const.phase2_color = solver_config->phase2_color;
-        m_host_const.rest_density = solver_config->rest_density;
         m_host_const.rest_volume = std::powf(2 * particle_radius, 3);
-        m_host_const.rest_rigid_density = solver_config->rest_rigid_density;
-        m_host_const.rest_bound_density = solver_config->rest_bound_density;
         m_host_const.sph_h = 4 * particle_radius;
-        m_host_const.rest_viscosity = solver_config->rest_viscosity;
         m_host_const.Cf = solver_config->Cf;
-        m_host_const.Cd = solver_config->Cd0;
+        m_host_const.Cd = solver_config->Cd;
         m_host_const.div_free_threshold = solver_config->div_free_threshold;
         m_host_const.incompressible_threshold = solver_config->incompressible_threshold;
         m_host_const.block_num = solver_config->kernel_blocks;
         m_host_const.thread_num = solver_config->kernel_threads;
 
-        m_host_const.Cd0 = solver_config->Cd0;
-        m_host_const.ct_thinning_exp0 = solver_config->ct_thinning_exp0;
-        m_host_const.ct_relaxation_time = solver_config->ct_relaxation_time;
-        m_host_const.solution_vis_base = solver_config->solution_vis_base;
-        m_host_const.solution_vis_max = solver_config->solution_vis_max;
-        m_host_const.polymer_vol_frac0 = solver_config->polymer_vol_frac0;
+        m_host_const.phase_rest_densities = solver_config->phase_rest_densities;
+        m_host_const.phase_colors = solver_config->phase_colors;
+        m_host_const.phase_vis = solver_config->phase_vis;
+        m_host_const.phase_num = solver_config->phase_colors.size();
 
-        m_host_const.phase1_vis = solver_config->phase1_vis;
-        m_host_const.phase2_vis = solver_config->phase2_vis;
+        m_host_const.rest_rigid_density = solver_config->rigid_rest_density;
+        m_host_const.rest_bound_density = solver_config->bound_rest_density;
 
         // setup neighbor search
         NeighborSearchUGConfig ns_config;
@@ -249,23 +279,31 @@ namespace SoSim {
         m_neighborSearch.setConfig(ns_config);
 
         // malloc
-        cudaMalloc((void **) &m_device_const, sizeof(IMMConstantParams));
-        cudaMalloc((void **) &m_device_data, sizeof(IMMDynamicParams));
-        m_host_data.malloc(particle_num);
+        cudaMalloc((void **) &m_device_const, sizeof(m_host_const));
+        cudaMalloc((void **) &m_device_data, sizeof(m_host_data));
+        m_host_data.malloc(particle_num, m_host_const.phase_num);
         m_neighborSearch.malloc();
 
-        // TODO data copy
+        // data copy
         cudaMemcpy(m_host_data.mat, mat_all.data(), particle_num * sizeof(Material), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.pos, pos_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.pos_adv, pos_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.vel, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
         cudaMemcpy(m_host_data.vel_adv, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
-        cudaMemcpy(m_host_data.vel_phase_1, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
-        cudaMemcpy(m_host_data.vel_phase_2, vel_all.data(), particle_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
-        cudaMemcpy(m_host_data.vol_frac, vol_frac_all.data(), particle_num * sizeof(Vec2f), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.vol_frac, vol_frac_all.data(), particle_num * sizeof(float) * m_host_const.phase_num,
+                   cudaMemcpyHostToDevice);
 
-        cudaMemcpy(m_device_const, &m_host_const, sizeof(IMMConstantParams), cudaMemcpyHostToDevice);
-        cudaMemcpy(m_device_data, &m_host_data, sizeof(IMMDynamicParams), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.const_phase_rest_densities, m_host_const.phase_rest_densities.data(),
+                   sizeof(float) * m_host_const.phase_num,
+                   cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.const_phase_colors, m_host_const.phase_colors.data(),
+                   sizeof(Vec3f) * m_host_const.phase_num,
+                   cudaMemcpyHostToDevice);
+        cudaMemcpy(m_host_data.const_phase_vis, m_host_const.phase_vis.data(), sizeof(float) * m_host_const.phase_num,
+                   cudaMemcpyHostToDevice);
+
+        cudaMemcpy(m_device_const, &m_host_const, sizeof(m_host_const), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_device_data, &m_host_data, sizeof(m_host_data), cudaMemcpyHostToDevice);
 
         // post-init emitter
         for (auto &emitter: m_emitters) {
@@ -280,14 +318,14 @@ namespace SoSim {
         }
 
         if (cudaGetLastError() == cudaSuccess) {
-            std::cout << "IMMSolver initialized.\n";
+            std::cout << "IMMSolver_v2 initialized.\n";
             m_is_init = true;
             return true;
         }
         return false;
     }
 
-    void IMMSolver::destroy() {
+    void IMMSolver_v2::destroy() {
         m_objects.clear();
 
         if (m_is_init) {
@@ -302,14 +340,14 @@ namespace SoSim {
             m_neighborSearch.freeMemory();
 
             if (cudaGetLastError() == cudaSuccess)
-                std::cout << "IMMSolver destroyed.\n";
+                std::cout << "IMMSolver_v2 destroyed.\n";
         }
     }
 
-    void IMMSolver::exportAsPly() {
+    void IMMSolver_v2::exportAsPly() {
         static int counter = 0;
         static int frame = 1;
-        auto config = dynamic_cast<IMMSolverConfig *>(m_config.get());
+        auto config = dynamic_cast<IMMSolverConfig_v2 *>(m_config.get());
 
         static float gap = 1.f / config->export_fps;
 
@@ -319,11 +357,6 @@ namespace SoSim {
 
         if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
-
-            if(frame > 300){
-                m_is_crash = true;
-                return;
-            }
 
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
@@ -358,7 +391,7 @@ namespace SoSim {
         counter++;
     }
 
-    void IMMSolver::syncObjectDeviceJitData() {
+    void IMMSolver_v2::syncObjectDeviceJitData() {
         int cnt = 0;
         for (auto &obj: m_objects) {
             auto offset = m_obj_start_index[cnt++];
@@ -370,16 +403,17 @@ namespace SoSim {
         }
     }
 
-    void IMMSolver::run(float total_time) {
+    void IMMSolver_v2::run(float total_time) {
         if (!m_is_init)
             initialize();
 
-        std::cout << "IMMSolver run.\n";
+        std::cout << "IMMSolver_v2 run.\n";
 
-        auto solver_config = dynamic_cast<IMMSolverConfig *>(m_config.get());
+        auto solver_config = dynamic_cast<IMMSolverConfig_v2 *>(m_config.get());
         if (m_is_start) {
-
             m_neighborSearch.update(m_host_data.pos);
+
+            m_neighborSearch.dump();
 
             init_data(m_host_const,
                       m_device_const,
@@ -391,6 +425,10 @@ namespace SoSim {
                         m_device_data,
                         m_neighborSearch.d_config,
                         m_neighborSearch.d_params);
+
+            std::vector<Vec3f> pos(m_host_const.particle_num);
+            cudaMemcpy(pos.data(), m_host_data.pos,
+                       sizeof(Vec3f) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
 
             m_is_start = false;
         }
@@ -425,34 +463,37 @@ namespace SoSim {
             if (m_is_crash)
                 break;
 
-            if (dynamic_cast<IMMSolverConfig *>(m_config.get())->export_data &&
-                dynamic_cast<IMMSolverConfig *>(m_config.get())->export_path.has_value())
+            if (dynamic_cast<IMMSolverConfig_v2 *>(m_config.get())->export_data &&
+                dynamic_cast<IMMSolverConfig_v2 *>(m_config.get())->export_path.has_value())
                 exportAsPly();
 
             frame++;
         }
     }
 
-    void IMMSolver::step() {
-        auto solver_config = dynamic_cast<IMMSolverConfig *>(m_config.get());
+    void IMMSolver_v2::step() {
+        auto solver_config = dynamic_cast<IMMSolverConfig_v2 *>(m_config.get());
 
         auto d_nsConfig = m_neighborSearch.d_config;
         auto d_nsParams = m_neighborSearch.d_params;
 
-        if (solver_config->cur_sim_time < 20)
-            stirring(m_host_const,
-                     m_device_const,
-                     m_device_data,
-                     d_nsParams);
-
         // neighbor search
         m_neighborSearch.update(m_host_data.pos);
+
+        std::vector<Vec3f> pos(m_host_const.particle_num);
+        cudaMemcpy(pos.data(), m_host_data.pos,
+                   sizeof(Vec3f) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
 
         sph_precompute(m_host_const,
                        m_device_const,
                        m_device_data,
                        d_nsConfig,
                        d_nsParams);
+
+        std::vector<float> mass(m_host_const.particle_num);
+        cudaMemcpy(mass.data(), m_host_data.mass,
+                   sizeof(float) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
+
 
         vfsph_div(m_host_const,
                   m_host_data,
@@ -468,11 +509,28 @@ namespace SoSim {
                            m_device_data,
                            d_nsParams);
 
+        std::vector<Vec3f> acc(m_host_const.particle_num);
+        cudaMemcpy(acc.data(), m_host_data.acc,
+                   sizeof(Vec3f) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
+
+
         ism_gravity_vis_surface(m_host_const,
                                 m_device_const,
                                 m_device_data,
                                 d_nsConfig,
                                 d_nsParams);
+
+        std::vector<Vec3f> vel_phase(m_host_const.particle_num * m_host_const.phase_num);
+        cudaMemcpy(vel_phase.data(), m_host_data.vel_phase,
+                   m_host_const.phase_num * sizeof(Vec3f) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
+
+        std::vector<float> vol_frac(m_host_const.particle_num * m_host_const.phase_num);
+        cudaMemcpy(vol_frac.data(), m_host_data.vol_frac,
+                   m_host_const.phase_num * sizeof(float) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
+
+        std::vector<float> cd(m_host_const.particle_num * m_host_const.phase_num);
+        cudaMemcpy(cd.data(), m_host_data.Cd,
+                   sizeof(float) * m_host_const.particle_num, cudaMemcpyDeviceToHost);
 
         vfsph_incomp(m_host_const,
                      m_host_data,
@@ -488,23 +546,17 @@ namespace SoSim {
                            m_device_data,
                            d_nsParams);
 
-        artificial_vis_bound(m_host_const,
-                             m_device_const,
-                             m_device_data,
-                             d_nsConfig,
-                             d_nsParams);
-
         update_pos(m_host_const,
                    m_device_const,
                    m_device_data,
                    d_nsParams);
 
-        phase_transport_ism(m_host_const,
-                            m_device_const,
-                            m_device_data,
-                            d_nsConfig,
-                            d_nsParams,
-                            m_is_crash);
+//        phase_transport_ism(m_host_const,
+//                            m_device_const,
+//                            m_device_data,
+//                            d_nsConfig,
+//                            d_nsParams,
+//                            m_is_crash);
 
         update_mass_and_vel(m_host_const,
                             m_device_const,

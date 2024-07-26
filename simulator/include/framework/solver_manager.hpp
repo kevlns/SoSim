@@ -12,6 +12,7 @@
 #include "solvers/IMM/imm_solver.hpp"
 #include "solvers/IMM-CT/immct_solver.hpp"
 #include "solvers/PBF/pbf_solver.hpp"
+#include "solvers/IMM-v2/imm_v2_solver.hpp"
 
 namespace SoSim {
 

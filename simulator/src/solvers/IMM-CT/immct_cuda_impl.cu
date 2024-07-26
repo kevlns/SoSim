@@ -21,6 +21,9 @@ namespace SoSim {
         CHECK_THREAD();
 
         // TODO
+        CONST_VALUE(solution_vis_base) = 1 / CONST_VALUE(solution_vis_base);
+        CONST_VALUE(solution_vis_max) = 1 / CONST_VALUE(solution_vis_max);
+
         DATA_VALUE(flag_negative_vol_frac, p_i) = 0;
         DATA_VALUE(volume, p_i) = CONST_VALUE(rest_volume);
         DATA_VALUE(kappa_div, p_i) = 0;
@@ -405,7 +408,7 @@ namespace SoSim {
             return;
 
         Vec3f acc = {0, 0, 0};
-        float gamma = 0.005;
+        float gamma = 0.0025;
         auto pos_i = DATA_VALUE(pos, p_i);
         FOR_EACH_NEIGHBOR_Pj() {
             if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i) || p_j == p_i)
@@ -839,7 +842,7 @@ namespace SoSim {
             auto vel_j = DATA_VALUE(vel, p_j);
             auto vel_ji = vel_j - vel_i;
             auto wGrad = CUBIC_KERNEL_GRAD();
-            auto volume_j = DATA_VALUE(volume, p_j);
+            auto volume_j = DATA_VALUE(mass, p_j) / DATA_VALUE(density_sph, p_j);
 
             vGrad_sum += volume_j * vel_ji * wGrad;
         }
@@ -858,27 +861,33 @@ namespace SoSim {
 
         auto CT_i = DATA_VALUE(CT, p_i);
 
-        Mat33f dQ = (CT_i * DATA_VALUE(vel_grad, p_i) +
-                     DATA_VALUE(vel_grad, p_i).transpose() * CT_i - 1.f /
-                                                                    (CONST_VALUE(ct_relaxation_time) +
-                                                                     1e-5f) *
-                                                                    (CT_i -
-                                                                     Mat33f::eye())) * CONST_VALUE(dt) -
-                    DATA_VALUE(ct_thinning_exp, p_i) * (CT_i - Mat33f::eye()) * CT_i;
+        auto CT_0 = (CT_i * DATA_VALUE(vel_grad, p_i) +
+                     DATA_VALUE(vel_grad, p_i).transpose() * CT_i + DATA_VALUE(vel_grad, p_i) * CT_i +
+                     CT_i * DATA_VALUE(vel_grad, p_i).transpose()) / 2;
+
+        CT_0 = CT_i * DATA_VALUE(vel_grad, p_i) +
+               DATA_VALUE(vel_grad, p_i).transpose() * CT_i;
+
+        Mat33f dQ = (CT_0 - 1.f /
+                            (CONST_VALUE(ct_relaxation_time) +
+                             1e-5f) *
+                            (CT_i -
+                             Mat33f::eye()) -
+                     DATA_VALUE(ct_thinning_exp, p_i) * (CT_i - Mat33f::eye()) * CT_i) * CONST_VALUE(dt);
         DATA_VALUE(CT, p_i) += dQ;
-        DATA_VALUE(solution_vis, p_i) = DATA_VALUE(ct_vis_increase_exp, p_i) * CONST_VALUE(solution_vis_base);
-        DATA_VALUE(solution_vis, p_i) = fmin(DATA_VALUE(solution_vis, p_i), CONST_VALUE(solution_vis_max));
+        DATA_VALUE(solution_vis, p_i) = CONST_VALUE(solution_vis_base) / DATA_VALUE(ct_vis_increase_exp, p_i);
+        DATA_VALUE(solution_vis, p_i) = fmax(DATA_VALUE(solution_vis, p_i), CONST_VALUE(solution_vis_max));
 
         auto D = 0.5 * (DATA_VALUE(vel_grad, p_i) + DATA_VALUE(vel_grad, p_i).transpose());
         auto shearRate = sqrtf(0.5f * D.trace() * D.trace());
         DATA_VALUE(solution_vis, p_i) =
-                DATA_VALUE(solution_vis, p_i) + (CONST_VALUE(solution_vis_max) - DATA_VALUE(solution_vis, p_i)) /
+                CONST_VALUE(solution_vis_max) + (DATA_VALUE(solution_vis, p_i) - CONST_VALUE(solution_vis_max)) /
                                                 (1 + pow(10 * shearRate, 5)) * fmin(1.f, DATA_VALUE(vol_frac, p_i).y /
                                                                                          CONST_VALUE(
                                                                                                  polymer_vol_frac0));
 
         DATA_VALUE(viscoelastic_stress, p_i) =
-                DATA_VALUE(solution_vis, p_i) * (DATA_VALUE(CT, p_i) - Mat33f::eye());
+                1 / DATA_VALUE(solution_vis, p_i) * (DATA_VALUE(CT, p_i) - Mat33f::eye());
     }
 
     __global__ void
@@ -908,8 +917,17 @@ namespace SoSim {
                     DATA_VALUE(viscoelastic_stress, p_j) / powf(dens_j, 2)) * wGrad;
         }
 
-        DATA_VALUE(acc_phase_1, p_i) += acc * DATA_VALUE(rest_density, p_i) * DATA_VALUE(vol_frac, p_i).y;
-        DATA_VALUE(acc_phase_2, p_i) += acc * DATA_VALUE(rest_density, p_i) * DATA_VALUE(vol_frac, p_i).y;
+        acc *= DATA_VALUE(vol_frac, p_i).y * DATA_VALUE(rest_density, p_i);
+
+        DATA_VALUE(acc_phase_1, p_i) += acc * (DATA_VALUE(Cd, p_i) + (1 - DATA_VALUE(Cd, p_i)) *
+                                                                     (DATA_VALUE(rest_density, p_i) /
+                                                                      CONST_VALUE(rest_density).x));
+        DATA_VALUE(acc_phase_2, p_i) += acc * (DATA_VALUE(Cd, p_i) + (1 - DATA_VALUE(Cd, p_i)) *
+                                                                     (DATA_VALUE(rest_density, p_i) /
+                                                                      CONST_VALUE(rest_density).y));
+
+//        DATA_VALUE(acc_phase_1, p_i) += acc * DATA_VALUE(rest_density, p_i) * DATA_VALUE(vol_frac, p_i).x;
+//        DATA_VALUE(acc_phase_2, p_i) += acc * DATA_VALUE(rest_density, p_i) * DATA_VALUE(vol_frac, p_i).y;
     }
 
     __global__ void
@@ -968,11 +986,11 @@ namespace SoSim { // extra func cuda impl
             return;
 
         const float M_PI = 3.1415926;
-        float angleRadians = -0.04f * (M_PI / 180.0f);// 将角度转换为弧度
+        float angleRadians = -0.021f * (M_PI / 180.0f);// 将角度转换为弧度
         float cosAngle = cos(angleRadians);
         float sinAngle = sin(angleRadians);
 
-        Vec3f center_offset = {0, 0, 0};
+        Vec3f center_offset = {0, 0, -3.19756};
 
         auto pos = DATA_VALUE(pos, p_i) - center_offset;
         DATA_VALUE(pos, p_i).x = pos.x * cosAngle - pos.z * sinAngle + center_offset.x;
@@ -997,15 +1015,15 @@ namespace SoSim { // extra func cuda impl
                      NeighborSearchUGParams *d_nsParams) {
         CHECK_THREAD();
 
-        if (DATA_VALUE(mat, p_i) != MOVING_BOWL && DATA_VALUE(mat, p_i) != STIR_FAN)
+        if (DATA_VALUE(mat, p_i) != DYNAMIC_RIGID && DATA_VALUE(mat, p_i) != STIR_FAN)
             return;
 
         const float M_PI = 3.1415926;
-        float angleRadians = -0.0001;// 将角度转换为弧度
+        float angleRadians = 0.0001;// 将角度转换为弧度
         float cosAngle = cos(angleRadians);
         float sinAngle = sin(angleRadians);
 
-        Vec3f offset = {0, -6.8165, 0};
+        Vec3f offset = {0, -2.31037, -3.19756};
 
         auto pos = DATA_VALUE(pos, p_i) - offset;
         DATA_VALUE(pos, p_i).y = pos.y * cosAngle - pos.z * sinAngle + offset.y;
@@ -1027,11 +1045,12 @@ namespace SoSim { // extra func cuda impl
             if (DATA_VALUE(mat, p_j) == DATA_VALUE(mat, p_i) || DATA_VALUE(mat, p_j) == Emitter_Particle)
                 continue;
 
-            cnt++;
+            if (DATA_VALUE(mat, p_j) == FIXED_BOUND)
+                cnt++;
         }
 
         float f1 = 1;
-        if (cnt > 25)
+        if (cnt > 15)
             f1 = 1 - d_const->vis_bound_damp_factor;
 
         DATA_VALUE(vel_phase_1, p_i) *= f1;
@@ -1432,8 +1451,8 @@ namespace SoSim {
                          NeighborSearchUGConfig *d_nsConfig,
                          NeighborSearchUGParams *d_nsParams) {
         // set_Cd()
-//        update_Cd_cuda<<<h_const.block_num, h_const.thread_num>>>(
-//                d_const, d_data, d_nsConfig, d_nsParams);
+        update_Cd_cuda<<<h_const.block_num, h_const.thread_num>>>(
+                d_const, d_data, d_nsConfig, d_nsParams);
 
         // compute_shear_exp()
         compute_shear_exp_cuda<<<h_const.block_num, h_const.thread_num>>>(

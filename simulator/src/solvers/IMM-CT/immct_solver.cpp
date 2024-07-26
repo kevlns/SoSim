@@ -4,6 +4,8 @@
 
 #include "solvers/IMM-CT/immct_solver.hpp"
 
+#include <chrono>
+
 #include "immct_cuda_api.cuh"
 #include "libs/ModelL/model_helper.hpp"
 #include "libs/AnalysisL/statistic_util.hpp"
@@ -320,6 +322,12 @@ namespace SoSim {
         if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
 
+            if(frame <= 430){
+                frame++;
+                counter = 1;
+                return;
+            }
+
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
             std::vector<Vec2f> phase(part_num);
@@ -435,6 +443,24 @@ namespace SoSim {
         auto d_nsConfig = m_neighborSearch.d_config;
         auto d_nsParams = m_neighborSearch.d_params;
 
+        if (solver_config->cur_sim_time > 2.1 && solver_config->cur_sim_time < 9.5)
+            stirring(m_host_const,
+                     m_device_const,
+                     m_device_data,
+                     d_nsParams);
+
+//        if (solver_config->cur_sim_time > 7 && solver_config->cur_sim_time < 10)
+//            stirring(m_host_const,
+//                     m_device_const,
+//                     m_device_data,
+//                     d_nsParams);
+
+        if (solver_config->cur_sim_time > 11.2 && solver_config->cur_sim_time < 13)
+            rotate_bowl(m_host_const,
+                        m_device_const,
+                        m_device_data,
+                        d_nsParams);
+
         // neighbor search
         m_neighborSearch.update(m_host_data.pos);
 
@@ -470,6 +496,12 @@ namespace SoSim {
                                 d_nsConfig,
                                 d_nsParams);
 
+        ism_viscoelastic(m_host_const,
+                         m_device_const,
+                         m_device_data,
+                         d_nsConfig,
+                         d_nsParams);
+
         vfsph_incomp(m_host_const,
                      m_host_data,
                      m_unified_part_type_start_index,
@@ -483,12 +515,6 @@ namespace SoSim {
                            m_device_const,
                            m_device_data,
                            d_nsParams);
-
-        ism_viscoelastic(m_host_const,
-                         m_device_const,
-                         m_device_data,
-                         d_nsConfig,
-                         d_nsParams);
 
         artificial_vis_bound(m_host_const,
                              m_device_const,

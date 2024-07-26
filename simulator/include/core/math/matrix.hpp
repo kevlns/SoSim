@@ -8,9 +8,98 @@
 
 #include <cuda_runtime.h>
 #include <iostream>
+#include <vector>
 
 namespace SoSim {
 
+    template<typename T>
+    class Set {
+    public:
+        __host__ __device__
+        Set(size_t s = 0) :
+                m_size(s) {
+            m_data = new T[s];
+            memset(m_data, 0, s * sizeof(T));
+        };
+
+        __host__ __device__
+        Set(const std::vector<T> &data){
+            assign(data);
+        }
+
+        __host__ __device__
+        Set(const Set &src) {
+            mfree();
+            m_data = new T[src.m_size];
+            m_size = src.m_size;
+            memcpy_s(m_data, m_size * sizeof(T), src.m_data, m_size * sizeof(T));
+        }
+
+        __host__ __device__
+        Set &operator=(const Set &src) {
+            mfree();
+            m_data = new T[src.m_size];
+            m_size = src.m_size;
+            memcpy_s(m_data, m_size * sizeof(T), src.m_data, m_size * sizeof(T));
+            return *this;
+        }
+
+        // =
+        __host__ __device__
+        Set &operator=(const std::vector<T> &data) {
+            mfree();
+            m_data = new T[data.size()];
+            size_t s = sizeof (T) * data.size();
+            memcpy_s(m_data, s, data.data(), s);
+            m_size = data.size();
+            return *this;
+        }
+
+        __host__ __device__
+        ~Set() {
+            mfree();
+        }
+
+        __host__ __device__
+        size_t size() const {
+            return m_size;
+        }
+
+        T* data() const {
+            return m_data;
+        }
+
+        __host__ __device__
+        T &operator[](size_t index) {
+            return *(m_data + index);
+        }
+
+        __host__
+        const T &operator[](size_t index) const {
+            return *(m_data + index);
+        }
+
+        __host__
+        void assign(const std::vector<T> &data) {
+            mfree();
+            m_data = new T[data.size()];
+            size_t s = sizeof (T) * data.size();
+            memcpy_s(m_data, s, data.data(), s);
+            m_size = data.size();
+        }
+
+    private:
+        __host__ __device__
+        void mfree() {
+            if (m_data)
+                delete[] m_data;
+            m_size = 0;
+        }
+
+    private:
+        T *m_data{nullptr};
+        size_t m_size{0};
+    };
 
     struct Mat33f {
         float r0_0{0};
