@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/15.
 //
 
-#ifndef SOSIM_IMM_MACRO_HPP
-#define SOSIM_IMM_MACRO_HPP
+#ifndef SOSIM_DFSPH_MACRO_HPP
+#define SOSIM_DFSPH_MACRO_HPP
 
 #define CHECK_THREAD() \
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x; \
@@ -20,17 +20,8 @@
 #define CONST_VALUE(name) \
         d_const->name
 
-#define CONST_VALUE_PHASE(name, k) \
-        d_data->name[k]
-
 #define DATA_VALUE(name, index) \
         d_data->name[index]
-
-#define DATA_VALUE_PHASE(name, index, phase_num, k) \
-        d_data->name[index*phase_num + k]
-
-#define FOR_EACH_PHASE_k() \
-       for (int k=0; k < d_const->phase_num; ++k)     \
 
 #define CUBIC_KERNEL_VALUE() \
         cubic_value(pos_i - pos_j, d_const->sph_h)
@@ -38,4 +29,13 @@
 #define CUBIC_KERNEL_GRAD() \
         cubic_gradient(pos_i - pos_j, d_const->sph_h)
 
-#endif //SOSIM_IMM_MACRO_HPP
+#define DATA_VALUE_PHASE(name, index, phase_index) \
+        d_data->name[index * d_const->phase_num + phase_index]
+
+#define CONST_VALUE_PHASE(name, phase_index) \
+        d_const->name[phase_index]
+
+#define FOR_EACH_PHASE_k() \
+        for(int k = 0; k < d_const->phase_num; ++k)
+
+#endif //SOSIM_DFSPH_MACRO_HPP

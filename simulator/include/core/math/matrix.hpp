@@ -113,6 +113,58 @@ namespace SoSim {
         float r2_2{0};
 
         __host__ __device__
+        float& operator[](int index){
+            switch (index) {
+                case 0:
+                    return r0_0;
+                case 1:
+                    return r0_1;
+                case 2:
+                    return r0_2;
+                case 3:
+                    return r1_0;
+                case 4:
+                    return r1_1;
+                case 5:
+                    return r1_2;
+                case 6:
+                    return r2_0;
+                case 7:
+                    return r2_1;
+                case 8:
+                    return r2_2;
+                default:
+                    return r0_0;
+            }
+        }
+
+        __host__ __device__
+        const float& operator[](int index) const{
+            switch (index) {
+                case 0:
+                    return r0_0;
+                case 1:
+                    return r0_1;
+                case 2:
+                    return r0_2;
+                case 3:
+                    return r1_0;
+                case 4:
+                    return r1_1;
+                case 5:
+                    return r1_2;
+                case 6:
+                    return r2_0;
+                case 7:
+                    return r2_1;
+                case 8:
+                    return r2_2;
+                default:
+                    return r0_0;
+            }
+        }
+
+        __host__ __device__
         void operator*=(const float n) {
             this->r0_0 *= n;
             this->r0_1 *= n;

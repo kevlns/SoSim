@@ -2,10 +2,11 @@
 // Created by ADMIN on 2024/3/26.
 //
 
-#ifndef SOSIM_IMM_v2_CUDA_API_CUH
-#define SOSIM_IMM_v2_CUDA_API_CUH
+#ifndef SOSIM_IMM_CUDA_API_v2_CUH
+#define SOSIM_IMM_CUDA_API_v2_CUH
 
-#include "solvers/IMM-v2/imm_v2_parameters.hpp"
+#include "solvers/IMM-v2/imm_solver_v2.hpp"
+#include "solvers/IMM-v2/imm_parameters_v2.hpp"
 #include "libs/NeighborSearchL/unified_grid_ns.hpp"
 
 namespace SoSim {
@@ -14,10 +15,11 @@ namespace SoSim {
     init_data(IMMConstantParams_v2 &h_const,
               IMMConstantParams_v2 *d_const,
               IMMDynamicParams_v2 *d_data,
-              NeighborSearchUGParams *d_nsParams);
+              float *d_phase_density,
+              Vec3f *d_phase_color);
 
     __host__ void
-    prepare_ims(IMMConstantParams_v2 &h_const,
+    prepare_imm(IMMConstantParams_v2 &h_const,
                 IMMConstantParams_v2 *d_const,
                 IMMDynamicParams_v2 *d_data,
                 NeighborSearchUGConfig *d_nsConfig,
@@ -47,7 +49,7 @@ namespace SoSim {
                        NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    ism_gravity_vis_surface(IMMConstantParams_v2 &h_const,
+    imm_gravity_vis_surface(IMMConstantParams_v2 &h_const,
                             IMMConstantParams_v2 *d_const,
                             IMMDynamicParams_v2 *d_data,
                             NeighborSearchUGConfig *d_nsConfig,
@@ -84,33 +86,10 @@ namespace SoSim {
                         NeighborSearchUGParams *d_nsParams);
 
     __host__ void
-    update_color(IMMConstantParams_v2
-                 &h_const,
+    update_color(IMMConstantParams_v2 &h_const,
                  IMMConstantParams_v2 *d_const,
-                 IMMDynamicParams_v2
-                 *d_data,
+                 IMMDynamicParams_v2 *d_data,
                  NeighborSearchUGParams *d_nsParams);
-
 }
 
-namespace SoSim { // extra func
-    __host__ void
-    stirring(IMMConstantParams_v2 &h_const,
-             IMMConstantParams_v2 *d_const,
-             IMMDynamicParams_v2 *d_data,
-             NeighborSearchUGParams *d_nsParams);
-
-    __host__ void
-    rotate_bowl(IMMConstantParams_v2 &h_const,
-                IMMConstantParams_v2 *d_const,
-                IMMDynamicParams_v2 *d_data,
-                NeighborSearchUGParams *d_nsParams);
-
-    __host__ void
-    buckling(IMMConstantParams_v2 &h_const,
-             IMMConstantParams_v2 *d_const,
-             IMMDynamicParams_v2 *d_data,
-             NeighborSearchUGParams *d_nsParams);
-}
-
-#endif //SOSIM_IMM_v2_CUDA_API_CUH
+#endif //SOSIM_IMM_CUDA_API_v2_CUH
