@@ -1,10 +1,8 @@
 //
-// Created by ADMIN on 2024/6/27.
+// Created by ADMIN on 2024/4/9.
 //
-
 #include "framework/object_manager.hpp"
 #include "framework/solver_manager.hpp"
-#include "core/math/matrix.hpp"
 
 using namespace SoSim;
 
@@ -50,14 +48,14 @@ int main() {
     solver_config->scene_size = {30, 30, 30};
 
     // export config
-    solver_config->export_data = true;
+    solver_config->export_data = false;
     solver_config->export_phase = false;
     solver_config->export_fps = 33;
-    solver_config->export_partial = "fluid";
-    solver_config->export_path = "F:\\DataSet.Research\\Current\\sim\\ply\\imm_v2_test_7";
+    solver_config->export_partial = "fluid"; // fluid or all
+    solver_config->export_path = "path/to/export";
 
     // common
-    solver_config->phase_rest_density = {800, 900, 1000}; // only support 9 phases
+    solver_config->phase_rest_density = {800, 900, 1000};
     solver_config->phase_color = {
             {255, 0, 0},
             {0, 255, 0},
@@ -66,7 +64,6 @@ int main() {
     solver_config->rest_rigid_density = 1000;
     solver_config->rest_bound_density = 1000;
     solver_config->rest_viscosity = 0.005;
-//    solver_config->phase_vis = {0.01f};
     solver_config->div_free_threshold = 1e-4;
     solver_config->incompressible_threshold = 1e-4;
     solver_config->Cf = 0.05;
@@ -81,7 +78,5 @@ int main() {
     /**  =============================================================
      * run simulation
      */
-    solver->run(10);
-
-    return 0;
+    solver->run(5);
 }
