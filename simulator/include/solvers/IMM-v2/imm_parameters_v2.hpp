@@ -38,6 +38,7 @@ namespace SoSim {
         int phase_num{1};
         float *phase_rest_density;
         Vec3f *phase_color;
+        float *phase_vis;
     };
 
     struct IMMDynamicParams_v2 {

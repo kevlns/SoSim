@@ -184,18 +184,26 @@ namespace SoSim {
 
     bool IMMSolver_v2::initialize() {
         if (!m_config) {
-            std::cout << "ERROR:: solver config empty.\n";
+            std::cout << "ERROR:: solver config is empty.\n";
             return false;
         }
 
         if (m_objects.empty() && m_emitters.empty()) {
-            std::cout << "ERROR:: solver attach no object.\n";
+            std::cout << "ERROR:: solver attaches no object.\n";
             return false;
         }
 
         mergeObjects();
 
         auto solver_config = dynamic_cast<IMMSolverConfig_v2 *>(m_config.get());
+
+        if (solver_config->phase_rest_density.size() != solver_config->phase_vis.size() ||
+            solver_config->phase_rest_density.size() != solver_config->phase_color.size() ||
+            solver_config->phase_vis.size() != solver_config->phase_color.size()) {
+            std::cout << "ERROR:: phase num is not unified.\n";
+            return false;
+        }
+
         int device;
         cudaGetDevice(&device);
         cudaDeviceProp prop{};
@@ -250,6 +258,7 @@ namespace SoSim {
         cudaMalloc((void **) &m_device_data, sizeof(IMMDynamicParams_v2));
         cudaMalloc((void **) &m_device_phase_density, phase_num * sizeof(float));
         cudaMalloc((void **) &m_device_phase_color, phase_num * sizeof(Vec3f));
+        cudaMalloc((void **) &m_device_phase_vis, phase_num * sizeof(float));
         m_host_data.malloc(particle_num, phase_num);
         m_neighborSearch.malloc();
 
@@ -270,6 +279,8 @@ namespace SoSim {
                    phase_num * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(m_device_phase_color, solver_config->phase_color.data(),
                    phase_num * sizeof(Vec3f), cudaMemcpyHostToDevice);
+        cudaMemcpy(m_device_phase_vis, solver_config->phase_vis.data(),
+                   phase_num * sizeof(float), cudaMemcpyHostToDevice);
 
         // post-init emitter
         for (auto &emitter: m_emitters) {
@@ -308,6 +319,7 @@ namespace SoSim {
             // delete const_vector
             cudaFree(m_device_phase_density);
             cudaFree(m_device_phase_color);
+            cudaFree(m_device_phase_vis);
 
             if (cudaGetLastError() == cudaSuccess)
                 std::cout << "IMMSolver_v2 destroyed.\n";
@@ -367,8 +379,12 @@ namespace SoSim {
     }
 
     void IMMSolver_v2::run(float total_time) {
-        if (!m_is_init)
-            initialize();
+        if (!m_is_init) {
+            if (!initialize()) {
+                std::cout << "ERROR:: IMMSolver_v2 fail to initialize.\n";
+                return;
+            }
+        }
 
         std::cout << "IMMSolver run.\n";
 
@@ -383,7 +399,8 @@ namespace SoSim {
                       m_device_const,
                       m_device_data,
                       m_device_phase_density,
-                      m_device_phase_color);
+                      m_device_phase_color,
+                      m_device_phase_vis);
 
             prepare_imm(m_host_const,
                         m_device_const,

@@ -16,9 +16,11 @@ namespace SoSim {
     __global__ void
     update_const_vec_ptr_cuda(IMMConstantParams_v2 *d_const,
                               float *d_phase_density,
-                              Vec3f *d_phase_color) {
+                              Vec3f *d_phase_color,
+                              float *d_phase_vis) {
         d_const->phase_rest_density = d_phase_density;
         d_const->phase_color = d_phase_color;
+        d_const->phase_vis = d_phase_vis;
     }
 
     __global__ void
@@ -288,41 +290,6 @@ namespace SoSim {
     }
 
     __global__ void
-    add_acc_explicit_lap_vis_cuda(IMMConstantParams_v2 *d_const,
-                                  IMMDynamicParams_v2 *d_data,
-                                  NeighborSearchUGConfig *d_nsConfig,
-                                  NeighborSearchUGParams *d_nsParams) {
-        CHECK_THREAD();
-
-        // applied to all dynamic objects
-        if (DATA_VALUE(mat, p_i) != COMMON_NEWTON)
-            return;
-
-        Vec3f acc = {0, 0, 0};
-        float h2_001 = 0.001f * pow(CONST_VALUE(sph_h), 2);
-        auto pos_i = DATA_VALUE(pos, p_i);
-        auto vel_i = DATA_VALUE(vel, p_i);
-        FOR_EACH_NEIGHBOR_Pj() {
-            if (DATA_VALUE(mat, p_j) != DATA_VALUE(mat, p_i))
-                continue;
-
-            auto pos_j = DATA_VALUE(pos, p_j);
-            auto x_ij = pos_i - pos_j;
-            auto vel_j = DATA_VALUE(vel, p_j);
-            auto v_ij = vel_i - vel_j;
-
-            auto vis = CONST_VALUE(rest_viscosity);
-
-            auto pi = vis * DATA_VALUE(mass, p_j) / DATA_VALUE(rest_density, p_j) * dot(v_ij, x_ij) /
-                      (x_ij.length() * x_ij.length() + h2_001);
-
-            acc += 10 * pi * CUBIC_KERNEL_GRAD();
-        }
-
-        DATA_VALUE(acc, p_i) += acc;
-    }
-
-    __global__ void
     add_phase_acc_vis_cuda(IMMConstantParams_v2 *d_const,
                            IMMDynamicParams_v2 *d_data,
                            NeighborSearchUGConfig *d_nsConfig,
@@ -346,14 +313,13 @@ namespace SoSim {
             auto vel_j = DATA_VALUE(vel, p_j);
             auto v_ij = vel_i - vel_j;
             auto wGrad = CUBIC_KERNEL_GRAD();
-            auto vis = CONST_VALUE(rest_viscosity); // TODO avg(pi, pj)
 
             FOR_EACH_PHASE_k() {
                 auto v_k_mj = DATA_VALUE_PHASE(vel_phase, p_i, k) - vel_j;
                 DATA_VALUE_PHASE(acc_phase, p_i, k) += 10 * DATA_VALUE(volume, p_j) *
-                                                       dot(CONST_VALUE(rest_viscosity) * (1 - CONST_VALUE(Cd)) *
+                                                       dot(CONST_VALUE_PHASE(phase_vis, k) * (1 - CONST_VALUE(Cd)) *
                                                            v_k_mj +
-                                                           (CONST_VALUE(rest_viscosity) * CONST_VALUE(Cd) * v_ij),
+                                                           (CONST_VALUE_PHASE(phase_vis, k) * CONST_VALUE(Cd) * v_ij),
                                                            x_ij) * wGrad / dot(x_ij, x_ij);
             }
         }
@@ -872,9 +838,10 @@ namespace SoSim {
               IMMConstantParams_v2 *d_const,
               IMMDynamicParams_v2 *d_data,
               float *d_phase_density,
-              Vec3f *d_phase_color) {
+              Vec3f *d_phase_color,
+              float *d_phase_vis) {
         update_const_vec_ptr_cuda<<<1, 1>>>(
-                d_const, d_phase_density, d_phase_color);
+                d_const, d_phase_density, d_phase_color, d_phase_vis);
 
         init_data_cuda<<<h_const.block_num, h_const.thread_num>>>(
                 d_const, d_data);
@@ -991,37 +958,6 @@ namespace SoSim {
                 d_const, d_data, d_nsParams);
 
         update_vel_from_phase_vel_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsParams);
-    }
-
-    __host__ void
-    dfsph_gravity_vis_surface(IMMConstantParams_v2 &h_const,
-                              IMMConstantParams_v2 *d_const,
-                              IMMDynamicParams_v2 *d_data,
-                              NeighborSearchUGConfig *d_nsConfig,
-                              NeighborSearchUGParams *d_nsParams) {
-        // clear_phase_acc()
-        clear_acc_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsParams);
-
-        // add_phase_acc_gravity()
-        add_acc_gravity_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsParams);
-
-        // add_acc_explicit_lap_vis_cuda()
-        add_acc_explicit_lap_vis_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsConfig, d_nsParams);
-
-        // compute_surface_normal
-        compute_surface_normal_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsConfig, d_nsParams);
-
-        // add_acc_surface_tension_cuda()
-        add_acc_surface_tension_cuda<<<h_const.block_num, h_const.thread_num>>>(
-                d_const, d_data, d_nsConfig, d_nsParams);
-
-        // acc_2_vel()
-        acc_2_vel<<<h_const.block_num, h_const.thread_num>>>(
                 d_const, d_data, d_nsParams);
     }
 

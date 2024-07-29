@@ -45,6 +45,7 @@ namespace SoSim {
         float Cd;
         std::vector<float> phase_rest_density; // only support 9 phases
         std::vector<Vec3f> phase_color;
+        std::vector<float> phase_vis;
     };
 
     class IMMSolver_v2 : public Solver {
@@ -95,6 +96,7 @@ namespace SoSim {
 
         float *m_device_phase_density{nullptr};
         Vec3f *m_device_phase_color{nullptr};
+        float *m_device_phase_vis{nullptr};
 
         // custom
         std::vector<Vec3f> pos_all;
