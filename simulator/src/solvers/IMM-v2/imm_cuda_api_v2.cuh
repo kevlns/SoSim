@@ -16,7 +16,8 @@ namespace SoSim {
               IMMConstantParams_v2 *d_const,
               IMMDynamicParams_v2 *d_data,
               float *d_phase_density,
-              Vec3f *d_phase_color);
+              Vec3f *d_phase_color,
+              float *d_phase_vis);
 
     __host__ void
     prepare_imm(IMMConstantParams_v2 &h_const,
