@@ -2,8 +2,8 @@
 // Created by ADMIN on 2024/3/15.
 //
 
-#ifndef SOSIM_DFSPH_MACRO_HPP
-#define SOSIM_DFSPH_MACRO_HPP
+#ifndef SOSIM_IMM_MACRO_v2_HPP
+#define SOSIM_IMM_MACRO_v2_HPP
 
 #define CHECK_THREAD() \
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x; \
@@ -38,4 +38,4 @@
 #define FOR_EACH_PHASE_k() \
         for(int k = 0; k < d_const->phase_num; ++k)
 
-#endif //SOSIM_DFSPH_MACRO_HPP
+#endif //SOSIM_IMM_MACRO_v2_HPP
