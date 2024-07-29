@@ -62,6 +62,8 @@ struct ObjectConfig {
 #### 1. setup
 
 ```bash
+    git lfs install
+    git lfs initialized
     git clone https://github.com/kevlns/SoSim.git
     git submodule init
     git submodule update
@@ -73,7 +75,7 @@ struct ObjectConfig {
 
 select vcpkg tool in the project  
 ![select_vcpkg.png](pics/select_vcpkg.png)  
-vcpkg install  
+vcpkg install  (assimp & bullet3)
 ![vcpkg_install.png](pics/vcpkg_install.png)
 
 #### 3. Build and Run
