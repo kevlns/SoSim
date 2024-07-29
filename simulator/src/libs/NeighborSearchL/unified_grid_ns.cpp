@@ -130,8 +130,8 @@ namespace SoSim {
         std::cout << std::setw(25) << "UGBNeighborSearcher::" << std::setw(35) << "Grid Size: " << std::setw(20)
                   << std::to_string(h_config.gridSize.x) + " * " + std::to_string(h_config.gridSize.y)
                      + " * " + std::to_string(h_config.gridSize.z) << "\n";
-        std::cout << std::setw(25) << "UGBNeighborSearcher::" << std::setw(35) << "Allocated Mem: " << std::setw(20)
-                  << std::to_string(m_mem) + " MB" << "\n";
+//        std::cout << std::setw(25) << "UGBNeighborSearcher::" << std::setw(35) << "Allocated Mem: " << std::setw(20)
+//                  << std::to_string(m_mem) + " MB" << "\n";
         std::cout << std::setw(25) << "UGBNeighborSearcher::" << std::setw(35) << "Average PartNum per cell: "
                   << std::setw(20)
                   << (particleNum / cnt) << "\n";

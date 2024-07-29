@@ -45,6 +45,20 @@ target_link_libraries(${TARGET} PUBLIC
         ${BULLET_LIBRARIES})
 list(APPEND solver-libs ${TARGET})
 
+# IMM-v2
+set(TARGET sosim-imm-v2)
+file(GLOB IMM_HEADERS
+        ${SOSIM_SIMULATOR_ROOT}/include/solvers/IMM-v2/*.hpp)
+file(GLOB IMM_SRC
+        IMM-v2/*.cpp
+        IMM-v2/*.cuh
+        IMM-v2/*.cu)
+add_library(${TARGET} ${IMM_HEADERS} ${IMM_SRC})
+target_link_libraries(${TARGET} PUBLIC
+        sosim-framework
+        ${BULLET_LIBRARIES})
+list(APPEND solver-libs ${TARGET})
+
 # PBF
 set(TARGET sosim-pbf)
 file(GLOB PBF_HEADERS
@@ -54,6 +68,20 @@ file(GLOB PBF_SRC
         PBF/*.cuh
         PBF/*.cu)
 add_library(${TARGET} ${PBF_HEADERS} ${PBF_SRC})
+target_link_libraries(${TARGET} PUBLIC
+        sosim-framework
+        ${BULLET_LIBRARIES})
+list(APPEND solver-libs ${TARGET})
+
+# VisPBF
+set(TARGET sosim-vis_pbf)
+file(GLOB VisPBF_HEADERS
+        ${SOSIM_SIMULATOR_ROOT}/include/solvers/VisPBF/*.hpp)
+file(GLOB VisPBF_SRC
+        VisPBF/*.cpp
+        VisPBF/*.cuh
+        VisPBF/*.cu)
+add_library(${TARGET} ${VisPBF_HEADERS} ${VisPBF_SRC})
 target_link_libraries(${TARGET} PUBLIC
         sosim-framework
         ${BULLET_LIBRARIES})
