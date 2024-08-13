@@ -26,9 +26,14 @@ add_executable(SoSim-Examples-IMM_v2-Viewer example_imm_v2.cpp)
 target_link_libraries(SoSim-Examples-IMM_v2-Viewer PUBLIC
         sosim-rt)
 
+add_executable(SoSim-Examples-IMM_xyh-Viewer example_imm_xyh.cpp)
+target_link_libraries(SoSim-Examples-IMM_xyh-Viewer PUBLIC
+        sosim-rt)
+
 INSTALL(TARGETS SoSim-Examples-GenObj-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-DFSPH-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMMCT-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-PBF-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM_v2-Viewer DESTINATION examples)
+INSTALL(TARGETS SoSim-Examples-IMM_xyh-Viewer DESTINATION examples)
