@@ -34,6 +34,10 @@ add_executable(SoSim-Examples-IMM_cocktail-separate-Viewer example_imm_cocktail-
 target_link_libraries(SoSim-Examples-IMM_cocktail-separate-Viewer PUBLIC
         sosim-rt)
 
+add_executable(SoSim-Examples-IMM_ink-dif-Viewer example_imm_ink_dif.cpp)
+target_link_libraries(SoSim-Examples-IMM_ink-dif-Viewer PUBLIC
+        sosim-rt)
+
 INSTALL(TARGETS SoSim-Examples-GenObj-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-DFSPH-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM-Viewer DESTINATION examples)
@@ -42,3 +46,4 @@ INSTALL(TARGETS SoSim-Examples-PBF-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM_v2-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM_xyh-Viewer DESTINATION examples)
 INSTALL(TARGETS SoSim-Examples-IMM_cocktail-separate-Viewer DESTINATION examples)
+INSTALL(TARGETS SoSim-Examples-IMM_ink-dif-Viewer DESTINATION examples)

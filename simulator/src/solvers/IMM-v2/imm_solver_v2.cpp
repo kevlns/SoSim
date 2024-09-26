@@ -340,10 +340,10 @@ namespace SoSim {
         if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
 
-            if (frame > 300) {
-                m_is_crash = true;
-                return;
-            }
+//            if (frame > 300) {
+//                m_is_crash = true;
+//                return;
+//            }
 
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
