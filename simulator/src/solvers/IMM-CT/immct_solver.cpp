@@ -322,11 +322,11 @@ namespace SoSim {
         if (config->dt * counter >= gap) {
             std::cout << "export index: " << frame << "\n";
 
-            if(frame <= 430){
-                frame++;
-                counter = 1;
-                return;
-            }
+//            if(frame <= 430){
+//                frame++;
+//                counter = 1;
+//                return;
+//            }
 
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
