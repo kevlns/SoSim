@@ -29,7 +29,9 @@ int main() {
     fluid2_config->particle_mat = COMMON_NEWTON;
     fluid2_config->model_file = R"(D:\xuyuhang\sample_ply\multiple-waterdrops.ply)";
     fluid2_config->phases = {0.3, 0.7};
-    fluid2_config->vel_start = {0.2, 1.0, 0.0};
+    fluid2_config->vel_start = {0.3, 0.5, 0.1};
+//    fluid2_config->vel_start = {0.4, 0.5, 0.2};
+    fluid2_config->transfer = {0, -1.f, 0};
     fluid2->setName("fluid2");
     fluid2->update();
 
@@ -49,7 +51,7 @@ int main() {
     SolverManager solverManager;
     auto solver = solverManager.createSolver<IMMSolver_v2>();
     auto solver_config = dynamic_cast<IMMSolverConfig_v2 *>(solver->getConfig().get());
-    solver_config->dt = 0.001;
+    solver_config->dt = 0.0002;
     solver_config->gravity = {0, -9.8, 0};
     solver_config->scene_lb = {-15, -15, -15};
     solver_config->scene_size = {30, 30, 30};
@@ -63,19 +65,21 @@ int main() {
 //    solver_config->export_path = "D:\\xuyuhang\\simulation\\multi-fluid\\render\\ink-dif\\cylinder\\standing-water";
 
     // common
-    solver_config->phase_rest_density = {1000, 2000};
+    solver_config->phase_rest_density = {1000, 3000};
     solver_config->phase_color = {
             {255, 0, 0},
             {0, 255, 0},
     };
     solver_config->phase_vis = {0.0, 0.0};
-    solver_config->rest_rigid_density = 1000;
-    solver_config->rest_bound_density = 2000;
+    solver_config->rest_rigid_density = 3000;
+    solver_config->rest_bound_density = 3000;
     solver_config->rest_viscosity = 0.005;
     solver_config->div_free_threshold = 1e-4;
     solver_config->incompressible_threshold = 1e-4;
-    solver_config->Cf = 0.05;
-    solver_config->Cd = 0.6;
+//    solver_config->Cf = 0.05;
+//    solver_config->Cd = 0.6;
+    solver_config->Cf = 0.01;
+    solver_config->Cd = 1.0;
 
     // 根据cf cd vel 等设置export_path
     solver_config->export_path = "D:\\xuyuhang\\simulation\\multi-fluid\\render\\ink-dif\\cylinder\\cf"

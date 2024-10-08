@@ -70,6 +70,10 @@ namespace SoSim {
                 particles = ModelHelper::loadPly3DModel(config->model_file.value());
         }
 
+        for(auto &particle: particles){
+            particle += config->transfer;
+        }
+
         return particles;
     }
 
@@ -145,8 +149,11 @@ namespace SoSim {
         ofs.close();
     }
 
-    void ModelHelper::export3DModelAsPly(const std::vector<Vec3f> &particles, const std::vector<Vec2f> &phases,
-                                         const std::string &dir, const std::string &file_name) {
+    void ModelHelper::export3DModelAsPly(
+            const std::vector<Vec3f> &particles,
+            const std::vector<Vec2f> &phases,
+            const std::string &dir,
+            const std::string &file_name) {
         auto dir_ = dir;
 #if defined(WIN32)
         size_t pos = 0;
@@ -166,6 +173,7 @@ namespace SoSim {
 
         ofs << "ply\n";
         ofs << "format ascii 1.0\n";
+        ofs << "comment  ascii 1.0\n";
         ofs << "element vertex " << particles.size() << "\n";
         ofs << "property float x\n";
         ofs << "property float y\n";
@@ -177,6 +185,95 @@ namespace SoSim {
         for (int i = 0; i < particles.size(); ++i) {
             ofs << particles[i].x << " " << particles[i].y << " " << particles[i].z << " ";
             ofs << phases[i].x << " " << phases[i].y << "\n";
+        }
+
+        ofs.close();
+    }
+
+    void ModelHelper::export3DModelAsPly(
+            const std::vector<Vec3f> &particles,
+            const std::vector<Vec2f> &phases,
+            const std::vector<Vec3f> &velocity,
+            const std::vector<Vec3f> &velocity_phase,
+            const std::vector<Vec3f> &velocity_drift_phase,
+            const std::vector<float> &phase_rest_density,
+            const std::vector<float> &phase_vis,
+            const float &rest_bound_density,
+            const float &dt,
+            const float &Cf,
+            const float &Cd,
+            const std::string &dir,
+            const std::string &file_name
+    ){
+        auto dir_ = dir;
+        int phase_num = phase_rest_density.size();
+#if defined(WIN32)
+        size_t pos = 0;
+        while ((pos = dir_.find('/', pos)) != std::string::npos) {
+            dir_.replace(pos, 1, "\\");
+            pos += 1;
+        }
+
+        // TODO other platform file path transformation
+        // ...
+#endif
+
+        if (!std::filesystem::exists(dir_))
+            std::filesystem::create_directories(dir_);
+
+        std::ofstream ofs(dir_ + "\\" + file_name + ".ply");
+
+        ofs << "ply\n";
+        ofs << "format ascii 1.0\n";
+        ofs << "comment phase density:";
+        for(auto phase_density: phase_rest_density){
+            ofs << " " << phase_density ;
+        }
+        ofs << "\n";
+        ofs << "comment phase viscosity:";
+        for(auto phase_viscosity: phase_vis){
+            ofs << " " << phase_viscosity ;
+        }
+        ofs << "\n";
+        ofs << "comment rest bound density: " << rest_bound_density << "\n";
+        ofs << "comment dt: " << dt << "\n";
+        ofs << "comment cf cd: " << Cf << " " << Cd << "\n";
+        ofs << "element vertex " << particles.size() << "\n";
+        ofs << "property float x\n";
+        ofs << "property float y\n";
+        ofs << "property float z\n";
+        ofs << "property float f1" << std::endl;
+        ofs << "property float f2" << std::endl;
+        ofs << "property float vx" << std::endl;
+        ofs << "property float vy" << std::endl;
+        ofs << "property float vz" << std::endl;
+        for(int phase_index = 1; phase_index <= phase_num; ++phase_index){
+            ofs << "property float vx_phase_" << phase_index << std::endl;
+            ofs << "property float vy_phase_" << phase_index << std::endl;
+            ofs << "property float vz_phase_" << phase_index << std::endl;
+        }
+        for(int phase_index = 1; phase_index <= phase_num; ++phase_index){
+            ofs << "property float vx_drift_phase_" << phase_index << std::endl;
+            ofs << "property float vy_drift_phase_" << phase_index << std::endl;
+            ofs << "property float vz_drift_phase_" << phase_index << std::endl;
+        }
+        ofs << "end_header\n";
+
+        for (int i = 0; i < particles.size(); ++i) {
+            ofs << particles[i].x << " " << particles[i].y << " " << particles[i].z << " ";
+            ofs << phases[i].x << " " << phases[i].y << " ";
+            ofs << velocity[i].x << " " << velocity[i].y << " " << velocity[i].z;
+            for(int phase_index = 0; phase_index < phase_num; ++phase_index){
+                ofs << " " << velocity_phase[(i * phase_num) + phase_index].x;
+                ofs << " " << velocity_phase[(i * phase_num) + phase_index].y;
+                ofs << " " << velocity_phase[(i * phase_num) + phase_index].z;
+            }
+            for(int phase_index = 0; phase_index < phase_num; ++phase_index){
+                ofs << " " << velocity_drift_phase[(i * phase_num) + phase_index].x;
+                ofs << " " << velocity_drift_phase[(i * phase_num) + phase_index].y;
+                ofs << " " << velocity_drift_phase[(i * phase_num) + phase_index].z;
+            }
+            ofs << "\n";
         }
 
         ofs.close();

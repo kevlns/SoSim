@@ -348,11 +348,33 @@ namespace SoSim {
             std::vector<Vec3f> pos(part_num);
             std::vector<Vec3f> color(part_num);
             std::vector<Vec2f> phase(part_num);
-            if (config->export_phase)
+            std::vector<Vec3f> vel(part_num);
+            std::vector<Vec3f> vel_phase(part_num * m_host_const.phase_num);
+            std::vector<Vec3f> vel_drift_phase(part_num * m_host_const.phase_num);
+
+//            if (config->export_phase)
+//                cudaMemcpy(phase.data(),
+//                           m_host_data.vol_frac,
+//                           part_num * sizeof(Vec2f),
+//                           cudaMemcpyDeviceToHost);
+            if (config->export_phase){
                 cudaMemcpy(phase.data(),
                            m_host_data.vol_frac,
                            part_num * sizeof(Vec2f),
                            cudaMemcpyDeviceToHost);
+                cudaMemcpy(vel.data(),
+                           m_host_data.vel,
+                           part_num * sizeof(Vec3f),
+                           cudaMemcpyDeviceToHost);
+                cudaMemcpy(vel_phase.data(),
+                           m_host_data.vel_phase,
+                           part_num * sizeof(Vec3f) * m_host_const.phase_num,
+                           cudaMemcpyDeviceToHost);
+                cudaMemcpy(vel_drift_phase.data(),
+                           m_host_data.vel_drift_phase,
+                           part_num * sizeof(Vec3f)* m_host_const.phase_num,
+                           cudaMemcpyDeviceToHost);
+            }
             cudaMemcpy(pos.data(),
                        m_host_data.pos,
                        part_num * sizeof(Vec3f),
@@ -362,15 +384,31 @@ namespace SoSim {
                        part_num * sizeof(Vec3f),
                        cudaMemcpyDeviceToHost);
 
+//            if (config->export_phase)
+//                ModelHelper::export3DModelAsPly(pos,
+//                                                phase,
+//                                                config->export_path.value() + "_phase",
+//                                                std::to_string(frame));
+
             if (config->export_phase)
                 ModelHelper::export3DModelAsPly(pos,
                                                 phase,
+                                                vel,
+                                                vel_phase,
+                                                vel_drift_phase,
+                                                config->phase_rest_density,
+                                                config->phase_vis,
+                                                config->rest_bound_density,
+                                                config->dt,
+                                                config->Cf,
+                                                config->Cd,
                                                 config->export_path.value() + "_phase",
                                                 std::to_string(frame));
-            ModelHelper::export3DModelAsPly(pos,
-                                            color,
-                                            config->export_path.value(),
-                                            std::to_string(frame));
+            else
+                ModelHelper::export3DModelAsPly(pos,
+                                                color,
+                                                config->export_path.value(),
+                                                std::to_string(frame));
 
             frame++;
             counter = 0;
